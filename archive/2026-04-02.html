@@ -1,904 +1,815 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Morning Brief &mdash; 2026-04-02</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <title>Morning Brief &mdash; 2026-04-02</title>
     <style>
     :root {
-        --ink:          #1a1a1a;
-        --ink-light:    #4a4a4a;
-        --ink-faint:    #8a8a8a;
-        --paper:        #faf9f6;
-        --paper-dark:   #f0eeea;
-        --rule:         #1a1a1a;
-        --rule-light:   #d4d0c8;
-        --rule-hair:    #e8e5de;
-        --accent:       #8b0000;
-        --accent-light: #c41e3a;
-
-        --font-display: 'Playfair Display', Georgia, serif;
-        --font-body:    'Source Serif 4', Georgia, serif;
-        --font-ui:      'Source Sans 3', 'Helvetica Neue', sans-serif;
-
-        --page-max:     1100px;
-        --col-gap:      2rem;
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-        font-family: var(--font-body);
-        background: var(--paper);
-        color: var(--ink);
-        line-height: 1.65;
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
     }
 
-    a { color: inherit; text-decoration: none; }
-
-    .page {
-        max-width: var(--page-max);
+    .container {
+        max-width: 800px;
         margin: 0 auto;
         padding: 2rem 1.5rem;
     }
 
-    /* === MASTHEAD === */
-    .masthead { text-align: center; margin-bottom: 1.5rem; }
-
-    .masthead-rule {
-        height: 3px;
-        background: var(--rule);
-        margin-bottom: 0.5rem;
-        position: relative;
-    }
-    .masthead-rule::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0; right: 0;
-        height: 1px;
-        background: var(--rule);
-    }
-
-    .masthead-meta {
+    /* === HEADER === */
+    .header {
         display: flex;
         justify-content: space-between;
-        font-family: var(--font-ui);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--ink-faint);
-        padding: 0.5rem 0 0.25rem;
-    }
-
-    .masthead-title {
-        font-family: var(--font-display);
-        font-size: 3.25rem;
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
-        padding: 0.25rem 0;
-    }
-
-    .masthead-dateline {
-        font-family: var(--font-ui);
-        font-size: 0.875rem;
-        color: var(--ink-light);
-        padding-bottom: 0.5rem;
-    }
-
-    .masthead-dot { margin: 0 0.5rem; }
-    .masthead-link { text-decoration: underline; }
-    .masthead-link:hover { color: var(--accent); }
-
-    /* === TICKER === */
-    .ticker {
-        font-family: var(--font-ui);
-        font-size: 0.8125rem;
-        font-variant: small-caps;
-        letter-spacing: 0.05em;
-        border-top: 1px solid var(--rule-light);
-        border-bottom: 1px solid var(--rule-light);
-        padding: 0.5rem 0;
+        align-items: flex-start;
         margin-bottom: 2rem;
-        color: var(--ink-light);
-    }
-    .ticker-label {
-        font-weight: 600;
-        color: var(--accent);
-        margin-right: 0.75rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
     }
 
-    /* === FRONT PAGE === */
-    .front-page { margin-bottom: 2rem; }
-
-    .front-grid {
-        display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-        gap: var(--col-gap);
-    }
-
-    .front-sidebar { font-size: 0.875rem; }
-
-    .sidebar-header {
-        font-family: var(--font-display);
-        font-variant: small-caps;
-        font-size: 0.8125rem;
-        letter-spacing: 0.1em;
-        border-bottom: 2px solid var(--rule);
-        padding-bottom: 0.25rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .dispatch {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid var(--rule-hair);
-        font-size: 0.8125rem;
-        line-height: 1.5;
-    }
-
-    .pattern-list {
-        padding-left: 1rem;
-        font-size: 0.8125rem;
-        line-height: 1.6;
-    }
-    .pattern-list li {
-        margin-bottom: 0.5rem;
-        border-bottom: 1px solid var(--rule-hair);
-        padding-bottom: 0.5rem;
-    }
-
-    .lead-story {
-        border-left: 1px solid var(--rule-light);
-        border-right: 1px solid var(--rule-light);
-        padding: 0 var(--col-gap);
-    }
-
-    .lead-headline {
-        font-family: var(--font-display);
-        font-size: 1.75rem;
+    h1 {
+        font-size: 1.875rem;
         font-weight: 700;
-        line-height: 1.2;
-        margin-bottom: 0.75rem;
+        letter-spacing: -0.025em;
     }
 
-    .lead-body {
-        font-size: 1rem;
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
         line-height: 1.7;
     }
 
-    /* === SECTION HEADERS === */
-    .section { margin-bottom: 2.5rem; }
-
-    .section-header {
-        border-top: 3px solid var(--rule);
-        padding-top: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    .section-header h2 {
-        font-family: var(--font-display);
-        font-variant: small-caps;
-        font-size: 0.9375rem;
-        letter-spacing: 0.12em;
-        text-transform: lowercase;
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
     }
 
-    /* === HEADLINES (TRENDING) === */
-    .headlines-grid {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: var(--col-gap);
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
     }
 
-    .headline a {
-        display: block;
-        transition: color 0.15s;
-    }
-    .headline a:hover .headline-title { color: var(--accent); }
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
 
-    .headline-img {
-        width: 100%;
-        aspect-ratio: 16/9;
-        object-fit: cover;
-        filter: grayscale(100%);
-        transition: filter 0.3s;
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         margin-bottom: 0.5rem;
     }
-    .headline a:hover .headline-img { filter: grayscale(0%); }
-
-    .headline-title {
-        font-family: var(--font-display);
-        font-size: 1.125rem;
-        font-weight: 700;
-        line-height: 1.25;
-        margin-bottom: 0.25rem;
-        transition: color 0.15s;
-    }
-    .headline--lead .headline-title {
-        font-size: 1.625rem;
-    }
-
-    .headline-meta {
-        font-family: var(--font-ui);
-        font-size: 0.75rem;
-        color: var(--ink-faint);
-    }
-
-    .headline-why {
-        font-size: 0.875rem;
-        color: var(--ink-light);
-        margin-top: 0.25rem;
-        font-style: italic;
-    }
-
-    .headlines-secondary {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .headlines-secondary .headline {
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--rule-hair);
-    }
-    .headlines-secondary .headline-img {
-        display: none;
-    }
-
-    .delta {
-        font-family: var(--font-ui);
-        font-size: 0.6875rem;
+    .theme-header h3 {
+        font-size: 0.975rem;
         font-weight: 600;
-        color: #2d6a2e;
-        background: #edf7ed;
-        padding: 0.125rem 0.375rem;
-        border-radius: 2px;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
     }
 
     /* === CATEGORY SECTIONS === */
-    .category-insight {
-        font-size: 0.9375rem;
-        color: var(--ink-light);
-        font-style: italic;
-        margin-bottom: 1rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--rule-hair);
-    }
-    .themes {
-        font-style: normal;
-        font-family: var(--font-ui);
-        font-size: 0.75rem;
-        color: var(--ink-faint);
-        margin-top: 0.25rem;
-    }
-
-    .section-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: var(--col-gap);
-    }
-
-    .article--lead { margin-bottom: 1rem; }
-
-    .article--lead a { display: block; }
-    .article--lead a:hover .article-title { color: var(--accent); }
-
-    .article-img {
-        width: 100%;
-        aspect-ratio: 16/9;
-        object-fit: cover;
-        filter: grayscale(100%);
-        transition: filter 0.3s;
-        margin-bottom: 0.5rem;
-    }
-    .article--lead a:hover .article-img { filter: grayscale(0%); }
-
-    .article-title {
-        font-family: var(--font-display);
-        font-size: 1.25rem;
-        font-weight: 700;
-        line-height: 1.25;
-        margin-bottom: 0.25rem;
-        transition: color 0.15s;
-    }
-
-    .article-meta {
-        font-family: var(--font-ui);
-        font-size: 0.75rem;
-        color: var(--ink-faint);
-    }
-
-    .article-rule {
-        height: 1px;
-        background: var(--rule-light);
-        margin: 0.75rem 0;
-    }
-
-    /* === COMPACT ROWS === */
-    .compact-row {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid var(--rule-hair);
-    }
-    .compact-row a {
+    .category-header {
         display: flex;
-        justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
         gap: 1rem;
-    }
-    .compact-row a:hover .compact-title { color: var(--accent); }
-
-    .compact-title {
-        font-family: var(--font-display);
-        font-size: 0.9375rem;
-        font-weight: 600;
-        line-height: 1.3;
-        flex: 1;
-        transition: color 0.15s;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
     }
 
-    .compact-meta {
-        font-family: var(--font-ui);
-        font-size: 0.6875rem;
-        color: var(--ink-faint);
-        white-space: nowrap;
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
         flex-shrink: 0;
     }
 
-    /* === INSET BOXES === */
-    .section-sidebar {
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-    }
-
-    .inset {
-        background: var(--paper-dark);
-        border: 1px solid var(--rule-light);
-        padding: 1rem;
-    }
-
-    .inset-title {
-        font-family: var(--font-display);
-        font-size: 0.875rem;
-        font-weight: 700;
-        border-bottom: 1px solid var(--rule-light);
-        padding-bottom: 0.375rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .inset-body {
-        font-size: 0.8125rem;
-        line-height: 1.5;
-    }
-
-    .inset-vids {
-        font-family: var(--font-ui);
-        font-size: 0.6875rem;
-        color: var(--ink-faint);
-        margin-top: 0.375rem;
-        font-style: italic;
-    }
-
-    /* === COLOPHON === */
-    .colophon {
-        text-align: center;
-        font-family: var(--font-ui);
+        align-items: flex-end;
+        gap: 0.25rem;
         font-size: 0.75rem;
-        color: var(--ink-faint);
-        margin-top: 3rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
     }
 
-    .colophon-rule {
-        height: 3px;
-        background: var(--rule);
-        margin-bottom: 1rem;
-        position: relative;
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
     }
-    .colophon-rule::after {
-        content: '';
-        position: absolute;
-        top: -4px;
-        left: 0; right: 0;
-        height: 1px;
-        background: var(--rule);
-    }
-
-    .colophon a { text-decoration: underline; }
-    .colophon a:hover { color: var(--accent); }
 
     /* === ARCHIVE === */
     .archive-list {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        margin-top: 1.5rem;
     }
-    .archive-entry {
+    .archive-link {
         display: block;
         padding: 0.75rem 1rem;
-        font-family: var(--font-ui);
-        font-size: 0.9375rem;
-        border: 1px solid var(--rule-light);
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
         transition: border-color 0.15s;
     }
-    .archive-entry:hover { border-color: var(--rule); }
-    .archive-back {
-        font-weight: 600;
-        border-color: var(--rule);
-    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
 
-    .no-data {
-        font-family: var(--font-ui);
-        color: var(--ink-faint);
-        font-size: 0.875rem;
-        margin-top: 1rem;
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
     }
 
     /* === RESPONSIVE === */
-    @media (max-width: 1023px) {
-        .front-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-        .front-grid .front-sidebar:last-child {
-            grid-column: 1 / -1;
-        }
-        .lead-story {
-            border-left: none;
-            border-right: none;
-            padding: 0;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .page { padding: 1rem; }
-
-        .masthead-title { font-size: 2rem; }
-        .masthead-meta { flex-direction: column; align-items: center; gap: 0.125rem; }
-
-        .front-grid { grid-template-columns: 1fr; }
-        .headlines-grid { grid-template-columns: 1fr; }
-        .section-grid { grid-template-columns: 1fr; }
-
-        .lead-story {
-            border-left: none;
-            border-right: none;
-            padding: 0;
-            border-top: 1px solid var(--rule-light);
-            padding-top: 1rem;
-        }
-
-        .headlines-secondary .headline-img { display: block; }
-
-        .compact-row a { flex-direction: column; gap: 0.125rem; }
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
     }
 </style>
 </head>
 <body>
-    <div class="page">
-        <!-- MASTHEAD -->
-        <header class="masthead">
-            <div class="masthead-rule"></div>
-            <div class="masthead-meta">
-                <span>6 Channels</span>
-                <span>31 Videos</span>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Morning Brief</h1>
+                <p class="subtitle">2026-04-02 &middot; 6 channels &middot; 31 videos</p>
             </div>
-            <h1 class="masthead-title">The Morning Brief</h1>
-            <div class="masthead-dateline">
-                <span>Thursday, April 2, 2026</span>
-                <span class="masthead-dot">&middot;</span>
-                <a href="archive/index.html" class="masthead-link">Archives</a>
-            </div>
-            <div class="masthead-rule"></div>
+            <a href="archive/index.html" class="archive-btn">Archive</a>
         </header>
 
         
-    <div class="ticker">
-        <span class="ticker-label">Trending</span> Claude Code &bull; OpenClaw &bull; token hacks &bull; supply chain attack &bull; AI workflows &bull; multi-agent &bull; second brain &bull; Paperclip &bull; voice agents &bull; Gemini 3.1 Flash &bull; delegation &bull; Axios
+        <section class="card">
+            <p class="summary">Analysis unavailable. See raw data below.</p>
+        </section>
+        
+        
+        
+        
+        
+        <section class="card">
+            <div class="category-header">
+                <h2>Technology</h2>
+                <span class="badge badge-sm">7 videos</span>
+            </div>
+            
+            <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=T-HZHO_PQPY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/T-HZHO_PQPY/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">OpenClaw......RIGHT NOW??? (it&#x27;s not what you think)</p>
+                
+                <p class="video-meta">NetworkChuck &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>402.1K views</span>
+                <span class="badge-green">+11.4K</span>
+            </div>
+        </a>
     </div>
 
-        <!-- FRONT PAGE -->
-        <section class="front-page">
-            <div class="front-grid">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=eGSsoSEppNU" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/eGSsoSEppNU/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">the WORST hack of 2026</p>
                 
-        <aside class="front-sidebar">
-            <div class="sidebar-header">Channel Dispatches</div>
-            <div class="dispatch"><strong>Nate Herk | AI Automation</strong> &mdash; Publishing at an aggressive 9-video pace this week with laser focus on Claude Code — he&#x27;s betting his entire content strategy on becoming THE Claude Code creator, and it&#x27;s working (3 videos over 70K views).</div>
-<div class="dispatch"><strong>NetworkChuck</strong> &mdash; Only 2 videos but both are massive hits (393K and 311K views) — his ability to make technical topics (self-hosted AI, supply chain security) accessible to a broad audience continues to drive outsized engagement per video.</div>
-<div class="dispatch"><strong>Cole Medin</strong> &mdash; Positioning as the &#x27;AI Second Brain&#x27; builder with a focus on Archon and multi-agent workflows — his content is more technical and niche than Nate Herk&#x27;s but addresses a sophisticated developer audience building production systems.</div>
-<div class="dispatch"><strong>Chris Koerner on The Koerner Office Podcast</strong> &mdash; Two high-performing videos anchored on specific dollar amounts in titles ($2K in 2 hours, $400 to $2.5M) — the income-proof format continues to drive clicks with the &#x27;AI consulting&#x27; video hitting 87K views.</div>
-<div class="dispatch"><strong>Codie Sanchez</strong> &mdash; Highest volume publisher (8 videos) running a coordinated delegation/leadership theme — likely a planned content sprint, but the paycheck routine video (52K views, 1K daily delta) shows personal finance content still outperforms her management advice.</div>
-<div class="dispatch"><strong>A Life Engineered</strong> &mdash; Quietly consistent career-focused content — &#x27;Why Most Tech Professionals Are Terrible Communicators&#x27; at 18K views is the standout, suggesting soft skills content resonates more than coding advice in the current AI-anxious job market.</div>
-        </aside>
-                
-        <article class="lead-story">
-            <h2 class="lead-headline">Today's Landscape</h2>
-            <p class="lead-body">Claude Code dominates today&#x27;s landscape with 7 of 14 AI/ML videos directly about it — from source code leaks to token optimization to building AI second brains. OpenClaw is the breakout platform story, generating massive engagement across both NetworkChuck (393K views) and Nate Herk (167K views) with competing narratives (tutorial vs. Claude Code alternative comparison). Meanwhile, a major supply chain attack on Axios is drawing significant security attention (311K views), and the business channels are converging on a consistent message: delegate, automate, and sell into existing demand rather than creating new markets.</p>
-        </article>
-                
-        <aside class="front-sidebar">
-            <div class="sidebar-header">Patterns Observed</div>
-            <ul class="pattern-list"><li>Claude Code is the undisputed center of AI developer content right now — 50% of all AI/ML videos mention it directly, and creators are competing to own the optimization/tips niche.</li>
-<li>Creator-vs-creator narratives are emerging as engagement drivers: Nate Herk&#x27;s &#x27;Claude Code + Paperclip destroyed OpenClaw&#x27; directly counters NetworkChuck&#x27;s OpenClaw tutorial, creating a debate that benefits both channels.</li>
-<li>The AI content meta is shifting from &#x27;what is this tool&#x27; to &#x27;how do I squeeze more out of it&#x27; — token hacks, limits tips, and workflow optimization indicate a maturing user base.</li>
-<li>Business channels are converging on delegation and leverage as the answer to AI disruption — Codie Sanchez, Chris Koerner, and even A Life Engineered are all pointing toward &#x27;work on the business, not in it.&#x27;</li>
-<li>Supply chain security is breaking out of niche security channels into mainstream tech content, with the Axios attack video pulling 311K views on a general tech channel.</li>
-<li>Multi-agent orchestration is the emerging technical frontier — both Cole Medin and Nate Herk are independently covering adversarial and collaborative agent patterns, signaling this is about to become a major content category.</li></ul>
-        </aside>
+                <p class="video-meta">NetworkChuck &middot; 2026-03-31</p>
             </div>
+            <div class="video-stats">
+                <span>322.0K views</span>
+                <span class="badge-green">+13.2K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=kdy-C61fb5g" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/kdy-C61fb5g/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Why Most Tech Professionals Are Terrible Communicators</p>
+                
+                <p class="video-meta">A Life Engineered &middot; 2026-03-26</p>
+            </div>
+            <div class="video-stats">
+                <span>18.3K views</span>
+                <span class="badge-green">+216</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=P3rnpQJp8ns" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/P3rnpQJp8ns/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Would You Still Encourage People to Pick Up Coding With AI?</p>
+                
+                <p class="video-meta">A Life Engineered &middot; 2026-03-28</p>
+            </div>
+            <div class="video-stats">
+                <span>7.1K views</span>
+                <span class="badge-green">+42</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=LNOkdRDyYGo" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/LNOkdRDyYGo/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Should You Build Your Brand Online? Here&#x27;s the Minimum</p>
+                
+                <p class="video-meta">A Life Engineered &middot; 2026-03-27</p>
+            </div>
+            <div class="video-stats">
+                <span>3.6K views</span>
+                <span class="badge-green">+12</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Tk3SveTCbHE" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Tk3SveTCbHE/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The 3-Message Daily Strategy That Landed Tech Internships</p>
+                
+                <p class="video-meta">A Life Engineered &middot; 2026-03-29</p>
+            </div>
+            <div class="video-stats">
+                <span>3.1K views</span>
+                <span class="badge-green">+41</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=p5-ldzaAa5E" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/p5-ldzaAa5E/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Future For Engineers Is Not What You Think | Anjali Viramgama</p>
+                
+                <p class="video-meta">A Life Engineered &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>2.9K views</span>
+                <span class="badge-green">+127</span>
+            </div>
+        </a>
+    </div></div>
+        </section>
+        <section class="card">
+            <div class="category-header">
+                <h2>AI/ML</h2>
+                <span class="badge badge-sm">14 videos</span>
+            </div>
+            
+            <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=HJ-dwefABss" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/HJ-dwefABss/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Claude Code + Paperclip Just Destroyed OpenClaw</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-03-28</p>
+            </div>
+            <div class="video-stats">
+                <span>168.7K views</span>
+                <span class="badge-green">+2.1K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=tXtCK66fPj8" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/tXtCK66fPj8/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Claude Code Source Code Just Leaked… 8 Things You Must Do</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-04-01</p>
+            </div>
+            <div class="video-stats">
+                <span>90.4K views</span>
+                <span class="badge-green">+5.9K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Y3PcRp5RFzk" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Y3PcRp5RFzk/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">I Built 500 AI Workflows, These 5 Actually Sell in 2026</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>74.5K views</span>
+                <span class="badge-green">+2.1K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=B2Kh_ZoLVTM" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/B2Kh_ZoLVTM/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Codex Just 10x’d Claude Code Projects</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-03-31</p>
+            </div>
+            <div class="video-stats">
+                <span>73.5K views</span>
+                <span class="badge-green">+1.8K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Qt3zMBH-FNg" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Qt3zMBH-FNg/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Gemini 3.1 Flash Live Just Changed Voice Agents Forever</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-03-28</p>
+            </div>
+            <div class="video-stats">
+                <span>59.1K views</span>
+                <span class="badge-green">+455</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=UCKLHU5AkEM" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/UCKLHU5AkEM/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Gemini 3.1 Flash Live Just Changed Voice Agents Forever</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-03-28</p>
+            </div>
+            <div class="video-stats">
+                <span>23.5K views</span>
+                <span class="badge-green">+339</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=JoPmpwpRrBI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/JoPmpwpRrBI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Claude Code Just Gave Everyone Virtual Pets (April Fools?)</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-04-01</p>
+            </div>
+            <div class="video-stats">
+                <span>15.4K views</span>
+                <span class="badge-green">+1.9K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=49V-5Ock8LU" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/49V-5Ock8LU/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">18 Claude Code Token Hacks in 18 Minutes</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-04-02</p>
+            </div>
+            <div class="video-stats">
+                <span>13.6K views</span>
+                <span class="badge-green">+9.8K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=BXWpzOIVctI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/BXWpzOIVctI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Hitting Claude Code Limits? Here Are My Best Tips.</p>
+                
+                <p class="video-meta">Nate Herk | AI Automation &middot; 2026-04-02</p>
+            </div>
+            <div class="video-stats">
+                <span>12.1K views</span>
+                <span class="badge-green">+8.4K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=HAkSUBdsd6M" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/HAkSUBdsd6M/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Coding Agent Reliability EXPLODES When They Argue (New Adversarial Dev Technique)</p>
+                
+                <p class="video-meta">Cole Medin &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>8.0K views</span>
+                <span class="badge-green">+116</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=1FiER-40zng" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/1FiER-40zng/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Full Guide - Build Your Own AI Second Brain with Claude Code</p>
+                
+                <p class="video-meta">Cole Medin &middot; 2026-04-02</p>
+            </div>
+            <div class="video-stats">
+                <span>6.0K views</span>
+                <span class="badge-green">+3.3K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=NKWqXYykQ1o" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/NKWqXYykQ1o/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">My Claude Code Now Fixes My GitHub Issues Without Touching My Machine (Free Tool!)</p>
+                
+                <p class="video-meta">Cole Medin &middot; 2026-03-27</p>
+            </div>
+            <div class="video-stats">
+                <span>5.8K views</span>
+                <span class="badge-green">+25</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=iPHofrSJtQQ" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/iPHofrSJtQQ/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">This n8n Node Makes Powerful RAG SUPER Easy</p>
+                
+                <p class="video-meta">Cole Medin &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>3.0K views</span>
+                <span class="badge-green">+96</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=hdCZUNQ40VY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/hdCZUNQ40VY/mqdefault_live.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">I Taught My Second Brain to Run Multi-Agent Coding Workflows (Live Session)</p>
+                
+                <p class="video-meta">Cole Medin &middot; 2026-03-31</p>
+            </div>
+            <div class="video-stats">
+                <span>0 views</span>
+                <span class="badge-green">+0</span>
+            </div>
+        </a>
+    </div></div>
+        </section>
+        <section class="card">
+            <div class="category-header">
+                <h2>Business</h2>
+                <span class="badge badge-sm">10 videos</span>
+            </div>
+            
+            <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=y_ON1Qbb274" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/y_ON1Qbb274/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">He Turned $400 Into $2.5M Using AI (No Coding)</p>
+                
+                <p class="video-meta">Chris Koerner on The Koerner Office Podcast &middot; 2026-03-29</p>
+            </div>
+            <div class="video-stats">
+                <span>87.8K views</span>
+                <span class="badge-green">+1.3K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=_6funT0zJqQ" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/_6funT0zJqQ/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Sell Where Money Already Is</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-26</p>
+            </div>
+            <div class="video-stats">
+                <span>78.1K views</span>
+                <span class="badge-green">+583</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=SU3DRpmW5qM" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/SU3DRpmW5qM/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Do This Every Time You Get Paid (Paycheck Routine)</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>54.2K views</span>
+                <span class="badge-green">+3.0K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=cEeakn9C1VU" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/cEeakn9C1VU/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">You Weren’t Late. You’re Early.</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-28</p>
+            </div>
+            <div class="video-stats">
+                <span>36.4K views</span>
+                <span class="badge-green">+219</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=YqCfQ0APU2U" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/YqCfQ0APU2U/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">He Made $2K in 2 Hours on This New App Most People Overlook</p>
+                
+                <p class="video-meta">Chris Koerner on The Koerner Office Podcast &middot; 2026-03-31</p>
+            </div>
+            <div class="video-stats">
+                <span>33.0K views</span>
+                <span class="badge-green">+1.7K</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=gp6X1c5xejM" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/gp6X1c5xejM/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">CEOs Follow These 5 Rules</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-27</p>
+            </div>
+            <div class="video-stats">
+                <span>17.6K views</span>
+                <span class="badge-green">+89</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=utspXUJumzI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/utspXUJumzI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Level Up = Let Go</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-31</p>
+            </div>
+            <div class="video-stats">
+                <span>14.5K views</span>
+                <span class="badge-green">+763</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Il4RaSZOX0A" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Il4RaSZOX0A/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How I Hit 1M Followers</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-29</p>
+            </div>
+            <div class="video-stats">
+                <span>12.1K views</span>
+                <span class="badge-green">+131</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=57mbR1Wb_mg" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/57mbR1Wb_mg/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How to grow your business: Outsource &amp; delegate so you can focus on high-value work.</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-03-30</p>
+            </div>
+            <div class="video-stats">
+                <span>8.4K views</span>
+                <span class="badge-green">+195</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=DqT7qZo-dkQ" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/DqT7qZo-dkQ/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Pay Won’t Fix Performance</p>
+                
+                <p class="video-meta">Codie Sanchez &middot; 2026-04-01</p>
+            </div>
+            <div class="video-stats">
+                <span>7.3K views</span>
+                <span class="badge-green">+2.3K</span>
+            </div>
+        </a>
+    </div></div>
         </section>
 
-        
-    <section class="section">
-        <div class="section-header"><h2>Headlines</h2></div>
-        <div class="headlines-grid">
-            
-            <article class="headline headline--lead">
-                <a href="https://youtube.com/watch?v=T-HZHO_PQPY" target="_blank" rel="noopener">
-                    <img src="https://i.ytimg.com/vi/T-HZHO_PQPY/mqdefault.jpg" alt="" class="headline-img" loading="lazy" />
-                    <h3 class="headline-title">OpenClaw......RIGHT NOW??? (it&#x27;s not what you think)</h3>
-                    <p class="headline-meta">NetworkChuck &middot; 2026-03-30 &middot; 393.2K views <span class="delta">+2.4K</span></p>
-                    <p class="headline-why">Highest total views AND fastest growing — OpenClaw with 308K GitHub stars is clearly the platform moment of the week, and NetworkChuck&#x27;s tutorial approach is capturing massive search intent.</p>
-                </a>
-            </article>
-            <div class="headlines-secondary">
-            <article class="headline">
-                <a href="https://youtube.com/watch?v=eGSsoSEppNU" target="_blank" rel="noopener">
-                    <img src="https://i.ytimg.com/vi/eGSsoSEppNU/mqdefault.jpg" alt="" class="headline-img" loading="lazy" />
-                    <h3 class="headline-title">the WORST hack of 2026</h3>
-                    <p class="headline-meta">NetworkChuck &middot; 2026-03-31 &middot; 311.1K views <span class="delta">+2.2K</span></p>
-                    <p class="headline-why">Axios supply chain attack coverage hitting 311K views signals this is a major security incident that developers need to be aware of — 100M+ weekly downloads affected.</p>
-                </a>
-            </article>
-
-            <article class="headline">
-                <a href="https://youtube.com/watch?v=49V-5Ock8LU" target="_blank" rel="noopener">
-                    <img src="https://i.ytimg.com/vi/49V-5Ock8LU/mqdefault.jpg" alt="" class="headline-img" loading="lazy" />
-                    <h3 class="headline-title">18 Claude Code Token Hacks in 18 Minutes</h3>
-                    <p class="headline-meta">Nate Herk | AI Automation &middot; 2026-04-02 &middot; 5.8K views <span class="delta">+2.0K</span></p>
-                    <p class="headline-why">Only hours old but already the 3rd fastest growing video — token optimization is a pain point with high search demand right now.</p>
-                </a>
-            </article>
-
-            <article class="headline">
-                <a href="https://youtube.com/watch?v=BXWpzOIVctI" target="_blank" rel="noopener">
-                    <img src="https://i.ytimg.com/vi/BXWpzOIVctI/mqdefault.jpg" alt="" class="headline-img" loading="lazy" />
-                    <h3 class="headline-title">Hitting Claude Code Limits? Here Are My Best Tips.</h3>
-                    <p class="headline-meta">Nate Herk | AI Automation &middot; 2026-04-02 &middot; 5.4K views <span class="delta">+1.6K</span></p>
-                    
-                </a>
-            </article>
-
-            <article class="headline">
-                <a href="https://youtube.com/watch?v=tXtCK66fPj8" target="_blank" rel="noopener">
-                    <img src="https://i.ytimg.com/vi/tXtCK66fPj8/mqdefault.jpg" alt="" class="headline-img" loading="lazy" />
-                    <h3 class="headline-title">Claude Code Source Code Just Leaked… 8 Things You Must Do</h3>
-                    <p class="headline-meta">Nate Herk | AI Automation &middot; 2026-04-01 &middot; 85.9K views <span class="delta">+1.3K</span></p>
-                    <p class="headline-why">Published April 1st but gaining real traction (1.3K views/delta) — the source code open-sourcing is generating actionable content, not just news coverage.</p>
-                </a>
-            </article></div>
-        </div>
-    </section>
-        
-    <section class="section">
-        <div class="section-header"><h2>Technology</h2></div>
-        
-            <div class="category-insight">
-                <p>Technology content is splitting into two lanes: high-virality security/platform news (NetworkChuck pulling 300K+ per video) and steady-state career advice (A Life Engineered at 3-18K). The Axios supply chain attack is the must-know story — it affects anyone using npm packages and signals that dependency security is becoming mainstream awareness, not just a DevSecOps concern.</p>
-                <p class="themes">Themes: supply chain security, self-hosted AI, engineering careers, tech communication skills</p>
-            </div>
-        <div class="section-grid">
-            <div class="section-main">
-                
-                <article class="article article--lead">
-                    <a href="https://youtube.com/watch?v=T-HZHO_PQPY" target="_blank" rel="noopener">
-                        <img src="https://i.ytimg.com/vi/T-HZHO_PQPY/mqdefault.jpg" alt="" class="article-img" loading="lazy" />
-                        <h3 class="article-title">OpenClaw......RIGHT NOW??? (it&#x27;s not what you think)</h3>
-                        <p class="article-meta">NetworkChuck &middot; 2026-03-30 &middot; 393.2K views <span class="delta">+2.4K</span></p>
-                    </a>
-                </article>
-                <div class="article-rule"></div>
-                
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=eGSsoSEppNU" target="_blank" rel="noopener">
-                        <span class="compact-title">the WORST hack of 2026</span>
-                        <span class="compact-meta">NetworkChuck &middot; 311.1K <span class="delta">+2.2K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=kdy-C61fb5g" target="_blank" rel="noopener">
-                        <span class="compact-title">Why Most Tech Professionals Are Terrible Communicators</span>
-                        <span class="compact-meta">A Life Engineered &middot; 18.1K <span class="delta">+64</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=P3rnpQJp8ns" target="_blank" rel="noopener">
-                        <span class="compact-title">Would You Still Encourage People to Pick Up Coding With AI?</span>
-                        <span class="compact-meta">A Life Engineered &middot; 7.1K <span class="delta">+15</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=LNOkdRDyYGo" target="_blank" rel="noopener">
-                        <span class="compact-title">Should You Build Your Brand Online? Here&#x27;s the Minimum</span>
-                        <span class="compact-meta">A Life Engineered &middot; 3.6K <span class="delta">+0</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=Tk3SveTCbHE" target="_blank" rel="noopener">
-                        <span class="compact-title">The 3-Message Daily Strategy That Landed Tech Internships</span>
-                        <span class="compact-meta">A Life Engineered &middot; 3.1K <span class="delta">+0</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=p5-ldzaAa5E" target="_blank" rel="noopener">
-                        <span class="compact-title">The Future For Engineers Is Not What You Think | Anjali Viramgama</span>
-                        <span class="compact-meta">A Life Engineered &middot; 2.8K <span class="delta">+0</span></span>
-                    </a>
-                </div>
-            </div>
-            <aside class="section-sidebar">
-                <div class="inset">
-                    <h4 class="inset-title">OpenClaw Platform</h4>
-                    <p class="inset-body">OpenClaw is generating a rare cross-channel narrative — NetworkChuck is bullish with a tutorial, while Nate Herk is positioning Claude Code as the superior alternative. This creator-vs-creator dynamic is driving engagement on both sides and indicates the self-hosted AI agent space is becoming genuinely competitive.</p>
-                    <p class="inset-vids">OpenClaw......RIGHT NOW??? (it&#x27;s not what you think), Claude Code + Paperclip Just Destroyed OpenClaw, Codex Just 10x&#x27;d Claude Code Projects</p>
-                </div>
-
-                <div class="inset">
-                    <h4 class="inset-title">Security &amp; Supply Chain Attacks</h4>
-                    <p class="inset-body">The Axios hijacking represents a significant real-world security event. At 311K views with 2.2K daily growth, this is reaching well beyond the security community — mainstream tech audiences are paying attention to supply chain risk.</p>
-                    <p class="inset-vids">the WORST hack of 2026</p>
-                </div></aside>
-        </div>
-    </section>
-    <section class="section">
-        <div class="section-header"><h2>AI/ML</h2></div>
-        
-            <div class="category-insight">
-                <p>AI/ML content is in a consolidation phase — the tooling winners (Claude Code, n8n, Zapier) are established and creators are now competing on optimization and advanced techniques rather than introductions. The Claude Code source code release is creating a content gold rush, with multiple creators racing to extract actionable insights. Watch for multi-agent orchestration to become the next major content wave.</p>
-                <p class="themes">Themes: Claude Code optimization, OpenClaw vs alternatives, multi-agent workflows, AI second brain, voice agents, token management</p>
-            </div>
-        <div class="section-grid">
-            <div class="section-main">
-                
-                <article class="article article--lead">
-                    <a href="https://youtube.com/watch?v=HJ-dwefABss" target="_blank" rel="noopener">
-                        <img src="https://i.ytimg.com/vi/HJ-dwefABss/mqdefault.jpg" alt="" class="article-img" loading="lazy" />
-                        <h3 class="article-title">Claude Code + Paperclip Just Destroyed OpenClaw</h3>
-                        <p class="article-meta">Nate Herk | AI Automation &middot; 2026-03-28 &middot; 167.0K views <span class="delta">+476</span></p>
-                    </a>
-                </article>
-                <div class="article-rule"></div>
-                
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=tXtCK66fPj8" target="_blank" rel="noopener">
-                        <span class="compact-title">Claude Code Source Code Just Leaked… 8 Things You Must Do</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 85.9K <span class="delta">+1.3K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=Y3PcRp5RFzk" target="_blank" rel="noopener">
-                        <span class="compact-title">I Built 500 AI Workflows, These 5 Actually Sell in 2026</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 72.8K <span class="delta">+424</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=B2Kh_ZoLVTM" target="_blank" rel="noopener">
-                        <span class="compact-title">Codex Just 10x’d Claude Code Projects</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 72.1K <span class="delta">+416</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=Qt3zMBH-FNg" target="_blank" rel="noopener">
-                        <span class="compact-title">Gemini 3.1 Flash Live Just Changed Voice Agents Forever</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 58.7K <span class="delta">+118</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=UCKLHU5AkEM" target="_blank" rel="noopener">
-                        <span class="compact-title">Gemini 3.1 Flash Live Just Changed Voice Agents Forever</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 23.2K <span class="delta">+81</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=JoPmpwpRrBI" target="_blank" rel="noopener">
-                        <span class="compact-title">Claude Code Just Gave Everyone Virtual Pets (April Fools?)</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 13.9K <span class="delta">+447</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=HAkSUBdsd6M" target="_blank" rel="noopener">
-                        <span class="compact-title">Coding Agent Reliability EXPLODES When They Argue (New Adversarial Dev Technique)</span>
-                        <span class="compact-meta">Cole Medin &middot; 7.9K <span class="delta">+30</span></span>
-                    </a>
-                </div>
-            </div>
-            <aside class="section-sidebar">
-                <div class="inset">
-                    <h4 class="inset-title">Claude Code Ecosystem</h4>
-                    <p class="inset-body">Claude Code has become the center of gravity for AI developer tooling content. Creators are moving past introductions into optimization (token hacks, limits), ecosystem tools (Paperclip, Codex integration), and autonomous workflows (GitHub issue fixing without local machine). This signals a maturing user base hungry for advanced patterns.</p>
-                    <p class="inset-vids">Hitting Claude Code Limits? Here Are My Best Tips., 18 Claude Code Token Hacks in 18 Minutes, Claude Code Source Code Just Leaked… 8 Things You Must Do, Claude Code Just Gave Everyone Virtual Pets (April Fools?)</p>
-                </div>
-
-                <div class="inset">
-                    <h4 class="inset-title">Multi-Agent &amp; Adversarial AI Development</h4>
-                    <p class="inset-body">Cole Medin and Nate Herk are independently converging on multi-agent orchestration as the next frontier — separating planning, building, and evaluation into distinct agent roles. This adversarial/collaborative agent pattern is emerging as a best practice.</p>
-                    <p class="inset-vids">Coding Agent Reliability EXPLODES When They Argue (New Adversarial Dev Technique), I Taught My Second Brain to Run Multi-Agent Coding Workflows (Live Session), Codex Just 10x&#x27;d Claude Code Projects</p>
-                </div></aside>
-        </div>
-    </section>
-    <section class="section">
-        <div class="section-header"><h2>Business</h2></div>
-        
-            <div class="category-insight">
-                <p>Business content is heavily skewed toward &#x27;how to scale yourself&#x27; — delegation, outsourcing, and AI automation as force multipliers. Codie Sanchez&#x27;s personal finance content (paycheck routine at 52K) significantly outperforms her management clips (5-13K), suggesting audiences want tactical money advice over abstract leadership principles. Chris Koerner&#x27;s specific-dollar-amount format continues to be the highest-converting title strategy in this category.</p>
-                <p class="themes">Themes: delegation and leverage, AI-powered income, personal finance routines, leadership and management</p>
-            </div>
-        <div class="section-grid">
-            <div class="section-main">
-                
-                <article class="article article--lead">
-                    <a href="https://youtube.com/watch?v=y_ON1Qbb274" target="_blank" rel="noopener">
-                        <img src="https://i.ytimg.com/vi/y_ON1Qbb274/mqdefault.jpg" alt="" class="article-img" loading="lazy" />
-                        <h3 class="article-title">He Turned $400 Into $2.5M Using AI (No Coding)</h3>
-                        <p class="article-meta">Chris Koerner on The Koerner Office Podcast &middot; 2026-03-29 &middot; 86.9K views <span class="delta">+353</span></p>
-                    </a>
-                </article>
-                <div class="article-rule"></div>
-                
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=_6funT0zJqQ" target="_blank" rel="noopener">
-                        <span class="compact-title">Sell Where Money Already Is</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 77.7K <span class="delta">+121</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=SU3DRpmW5qM" target="_blank" rel="noopener">
-                        <span class="compact-title">Do This Every Time You Get Paid (Paycheck Routine)</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 52.3K <span class="delta">+1.0K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=cEeakn9C1VU" target="_blank" rel="noopener">
-                        <span class="compact-title">You Weren’t Late. You’re Early.</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 36.3K <span class="delta">+46</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=YqCfQ0APU2U" target="_blank" rel="noopener">
-                        <span class="compact-title">He Made $2K in 2 Hours on This New App Most People Overlook</span>
-                        <span class="compact-meta">Chris Koerner on The Koerner Office Podcast &middot; 31.8K <span class="delta">+524</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=gp6X1c5xejM" target="_blank" rel="noopener">
-                        <span class="compact-title">CEOs Follow These 5 Rules</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 17.5K <span class="delta">+19</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=utspXUJumzI" target="_blank" rel="noopener">
-                        <span class="compact-title">Level Up = Let Go</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 13.9K <span class="delta">+177</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=Il4RaSZOX0A" target="_blank" rel="noopener">
-                        <span class="compact-title">How I Hit 1M Followers</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 12.0K <span class="delta">+30</span></span>
-                    </a>
-                </div>
-            </div>
-            <aside class="section-sidebar">
-                <div class="inset">
-                    <h4 class="inset-title">AI-Powered Business &amp; Income</h4>
-                    <p class="inset-body">The &#x27;make money with AI&#x27; content is shifting from hype to specificity — naming exact workflows that sell, specific dollar amounts, and particular apps. The audience is past &#x27;AI will change everything&#x27; and wants concrete playbooks.</p>
-                    <p class="inset-vids">I Built 500 AI Workflows, These 5 Actually Sell in 2026, He Turned $400 Into $2.5M Using AI (No Coding), He Made $2K in 2 Hours on This New App Most People Overlook</p>
-                </div>
-
-                <div class="inset">
-                    <h4 class="inset-title">Delegation &amp; Leverage in Business</h4>
-                    <p class="inset-body">Codie Sanchez is running a sustained content campaign around delegation and leadership leverage — multiple videos in one week all hitting the same theme from different angles, likely tied to a Fiverr Pro sponsorship but reflecting genuine audience demand for scaling beyond solo work.</p>
-                    <p class="inset-vids">Level Up = Let Go, How to grow your business: Outsource &amp; delegate so you can focus on high-value work., Pay Won&#x27;t Fix Performance, CEOs Follow These 5 Rules</p>
-                </div></aside>
-        </div>
-    </section>
-        
-    <section class="section">
-        <div class="section-header"><h2>Recently Published</h2></div>
-        
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=BXWpzOIVctI" target="_blank" rel="noopener">
-                        <span class="compact-title">Hitting Claude Code Limits? Here Are My Best Tips.</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 5.4K <span class="delta">+1.6K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=49V-5Ock8LU" target="_blank" rel="noopener">
-                        <span class="compact-title">18 Claude Code Token Hacks in 18 Minutes</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 5.8K <span class="delta">+2.0K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=1FiER-40zng" target="_blank" rel="noopener">
-                        <span class="compact-title">Full Guide - Build Your Own AI Second Brain with Claude Code</span>
-                        <span class="compact-meta">Cole Medin &middot; 3.3K <span class="delta">+694</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=DqT7qZo-dkQ" target="_blank" rel="noopener">
-                        <span class="compact-title">Pay Won’t Fix Performance</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 5.6K <span class="delta">+564</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=JoPmpwpRrBI" target="_blank" rel="noopener">
-                        <span class="compact-title">Claude Code Just Gave Everyone Virtual Pets (April Fools?)</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 13.9K <span class="delta">+447</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=tXtCK66fPj8" target="_blank" rel="noopener">
-                        <span class="compact-title">Claude Code Source Code Just Leaked… 8 Things You Must Do</span>
-                        <span class="compact-meta">Nate Herk | AI Automation &middot; 85.9K <span class="delta">+1.3K</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=YqCfQ0APU2U" target="_blank" rel="noopener">
-                        <span class="compact-title">He Made $2K in 2 Hours on This New App Most People Overlook</span>
-                        <span class="compact-meta">Chris Koerner on The Koerner Office Podcast &middot; 31.8K <span class="delta">+524</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=utspXUJumzI" target="_blank" rel="noopener">
-                        <span class="compact-title">Level Up = Let Go</span>
-                        <span class="compact-meta">Codie Sanchez &middot; 13.9K <span class="delta">+177</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=hdCZUNQ40VY" target="_blank" rel="noopener">
-                        <span class="compact-title">I Taught My Second Brain to Run Multi-Agent Coding Workflows (Live Session)</span>
-                        <span class="compact-meta">Cole Medin &middot; 0 <span class="delta">+0</span></span>
-                    </a>
-                </div>
-
-                <div class="compact-row">
-                    <a href="https://youtube.com/watch?v=eGSsoSEppNU" target="_blank" rel="noopener">
-                        <span class="compact-title">the WORST hack of 2026</span>
-                        <span class="compact-meta">NetworkChuck &middot; 311.1K <span class="delta">+2.2K</span></span>
-                    </a>
-                </div>
-    </section>
-
-        <!-- COLOPHON -->
-        <footer class="colophon">
-            <div class="colophon-rule"></div>
-            <p>Generated at 01:05 &middot; The Morning Brief &middot; mx-brief</p>
-            <p><a href="archive/index.html">Browse the Archives</a></p>
+        <footer>
+            <p class="muted">Generated at 06:02 &middot; mx-brief</p>
         </footer>
     </div>
 </body>
