@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting Up Paperclip: Open-Source AI Agent Orchestration with Claude Code</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Nate Herk | AI Automation</span>
+                    <span>&middot;</span>
+                    <span>2026-03-28</span>
+                    <span>&middot;</span>
+                    <span>172,985 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Setting Up Paperclip: Open-Source AI Agent Orchestration with Claude Code</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Paperclip is a free, open-source (MIT license) orchestration platform for running multiple AI agents as a virtual company — complete with a dashboard, ticketing system, heartbeats, budgets, and approval workflows. This tutorial walks through setting it up from scratch with Claude Code, creating agents, assigning tasks, installing skills, and managing an autonomous agent organization.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/HJ-dwefABss"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>What Is Paperclip and Why It Blew Up</h2>
+            <p>Paperclip is a free, open-source orchestration tool for building &quot;zero human companies&quot; — organizations staffed entirely by AI agents. It launched in early March 2026 and had already hit over 36,000 GitHub stars within about three weeks. It carries an MIT license.</p>
+<p>The creator explains that one of Paperclip&#x27;s founders, Dota, described the core pain point: running 20 different terminal sessions with 20 different Claude Code instances, then coming back and having no visibility into what each one was doing or what you&#x27;d asked them to do. Paperclip solves this by providing a centralized dashboard that keeps all agent sessions synchronized, with each session understanding the overall goal being worked toward.</p>
+<p>Paperclip supports multiple providers and tools — you can use Claude Code, OpenClaw, Codex, Cursor, or bring your own agents. Each agent can use a different model and provider. By default it runs on localhost, but it can be deployed to a VPS for remote access.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Dashboard Overview and Core Concepts</h2>
+            <p>The Paperclip dashboard provides a mission-control-style view with several key areas:</p>
+<p>- **Agents panel**: Shows all enabled agents and what they&#x27;re currently working on. In the demo, seven agents were running across an existing company.</p>
+<p>- **Tasks panel**: Shows all tasks and their status (in progress, completed, pending).</p>
+<p>- **Inbox**: Displays items requiring human approval or review — this is how agents escalate decisions to you.</p>
+<p>- **Activity feed**: Logs all recent activity across agents.</p>
+<p>- **Issues/Ticketing**: A full ticketing system where every conversation and issue is logged. You can open issues, leave comments, and see what agents are thinking and doing.</p>
+<p>- **Projects**: Can optionally be synced to a GitHub repo for code-producing agents.</p>
+<p>- **Multiple companies**: You can run multiple companies inside a single Paperclip instance. Each company could represent a new startup idea, or different departments within an existing business.</p>
+<p>The key mental model is that you act as the &quot;board&quot; — giving high-level goals, metrics, and desired outcomes — while the AI agents act as operators who figure out the implementation details.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Installation and Initial Setup</h2>
+            <p>Setting up Paperclip is straightforward. Go to paperclip.ing, click &quot;Get Started,&quot; and it gives you a single command to run in your terminal. You don&#x27;t need to stay in the terminal after that — the command launches a server that opens a localhost dashboard in your browser.</p>
+<p>Prerequisites: You need Claude Code already authenticated on your machine. If you&#x27;re already authenticated into Claude Code somewhere on your terminal, Paperclip will be able to connect to it immediately.</p>
+            <pre class="code-block"><code class="lang-text"># Visit paperclip.ing, click &quot;Get Started&quot;, and copy the command shown.
+# Paste it into your terminal — it launches the Paperclip server
+# and opens the dashboard at localhost.</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Creating a New Company from Scratch</h2>
+            <p>The onboarding flow walks you through company creation step by step:</p>
+<p>1. **Name your company** — In the demo, the company was called &quot;Proofshot&quot; with the mission of letting customers record testimonials via a link, where AI cleans them up for embedding on websites.</p>
+<p>2. **Create your first agent** — This doesn&#x27;t have to be a CEO, but the demo starts with one. You select a model (Sonnet 4.6 was chosen) and run a quick connectivity test to verify the agent can hit the Claude Code CLI and respond.</p>
+<p>3. **Set the first task** — The default first task is &quot;Hire your first engineer and create a hiring plan,&quot; assigned to the CEO. You can add background context about your business here, or change the initial task entirely.</p>
+<p>4. **Launch** — Click to start the company. The CEO agent begins running immediately, creating a plan and executing commands just like working in Claude Code directly.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Agent Configuration: Instructions, Soul, Heartbeat, and Tools</h2>
+            <p>Each agent has four configuration files that define its behavior:</p>
+<p>- **Soul file**: Defines who the agent is and how it should act. For the CEO, this included directives like &quot;you own the P&amp;L,&quot; &quot;you default to action,&quot; &quot;you hold the long view while executing the near term,&quot; and &quot;you protect focus hard.&quot; You can customize voice, tone, and persona.</p>
+<p>- **Heartbeat file**: An execution and extraction checklist that runs on every heartbeat cycle.</p>
+<p>- **Tools file**: Defines what tools the agent has access to.</p>
+<p>- **Agents file**: Information about other agents in the organization.</p>
+<p>These files evolve over time and can be manually edited. All agents come pre-loaded with Paperclip skills, so they natively understand how Paperclip works — its API, protocols, and how to interact with the system.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Heartbeats: Keeping Agents Running Autonomously</h2>
+            <p>Heartbeats are a core feature that keeps agents proactive. Agents wake up on a configurable schedule — every 4 hours, 8 hours, or 12 hours. When they wake up, they start with fresh context and fresh memory. This is why the configuration files are critical: on each heartbeat, the agent checks its work, looks at its tasks, and gets re-familiarized with its environment before continuing.</p>
+<p>The creator noted that native heartbeats were one of the things that made OpenClaw blow up initially, because they made agents feel much more proactive rather than waiting for human input.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Hiring Agents and the Approval Workflow</h2>
+            <p>When the CEO agent was given the task to hire an engineer, it produced a hiring request that appeared in the inbox for board approval. The request specified a &quot;Founding Full Stack Engineer&quot; with capabilities in integrations, design, database, and front end.</p>
+<p>After approving the hire, the CEO automatically set up the new engineer agent with minimal initial instructions (just Paperclip skills) and then created five tasks for it. The CEO broke the work into milestones: MVP core back end, AI processing pipeline, front-end recording UI, embeddable testimonial card, and more.</p>
+<p>By default, Paperclip requires board approval for new hires. This can be toggled off in Settings under &quot;require board approval for new hires,&quot; which would let the CEO autonomously hire and grow the team.</p>
+<p>The creator then created a follow-up issue for the CEO: hire a QA agent to ensure code quality, safety, and bug-free output. The instruction was written as a high-level goal — &quot;continuously build, make improvements and refinements until you come back to me and say the QA agent and founding engineer are done&quot; — demonstrating the board-level interaction pattern.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Projects and GitHub Integration</h2>
+            <p>Under the Projects section, you can create projects and optionally sync them to a GitHub repo. The creator set up a project called &quot;Initial MVP&quot; described as &quot;getting our first version of the website up and running so that we can continuously improve and refine.&quot; Projects can have a status, goal, and target date. Issues can then be assigned to specific projects for organization.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Installing Skills from skills.sh</h2>
+            <p>Skills can be added at the company level or per individual agent. To install a skill, you paste a GitHub URL or path into the skills section of the dashboard.</p>
+<p>The creator demonstrated installing a &quot;front end design&quot; skill by copying its GitHub URL from skills.sh (a marketplace of mostly free agent skills) and pasting it into the Paperclip dashboard. A second skill, &quot;web design guidelines,&quot; was added the same way.</p>
+<p>The creator warned that while skills.sh does have security audits, you should still be careful and exercise judgment about what you install — &quot;you never ultimately know at the end of the day.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Routines (Beta): Recurring Automated Workflows</h2>
+            <p>Routines allow you to define recurring workflows. The creator demonstrated setting up a nightly security check routine — an agent would run code checks and integration reviews daily to ensure no secrets are exposed and no cybersecurity vulnerabilities exist.</p>
+<p>Routines can be assigned to specific agents, toggled active/inactive, and run on a configurable schedule. After creation, Paperclip takes you to a trigger setup for schedules, webhooks, or terminal runs. Note: you can only assign routines to agents that already exist (the creator couldn&#x27;t assign to the QA agent because it hadn&#x27;t been approved yet).</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Budget Controls</h2>
+            <p>Each agent can have a per-month budget set in the configuration. This lets you control exactly how much each agent spends. The creator noted that spend analytics only show up when using pay-per-token billing — if you&#x27;re using a subscription (as the creator was), the dashboard shows zero spend.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Importing Pre-Built Company Templates</h2>
+            <p>Paperclip has a growing catalog of pre-built company templates in its GitHub repo under a &quot;companies&quot; section. These are ready-to-deploy agent organizations that come with pre-configured agents, skills, and knowledge.</p>
+<p>Examples mentioned:</p>
+<p>- **G Stack**: Comes with a CEO, CTO, QA engineer, release engineer, staff engineer, and pre-loaded skills.</p>
+<p>- **Agency agents**: For running an AI agency.</p>
+<p>- **Scientific research company**: Specialized agents with specific domain knowledge (agents named after actual doctors).</p>
+<p>- One template had 48 agents pre-configured.</p>
+<p>The creator compared importing templates to a company acquisition — you bring in an existing team with established frameworks rather than building from zero.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Using Claude Code as a Paperclip Configuration Partner</h2>
+            <p>The creator set up a dedicated Claude Code project specifically to help manage and configure Paperclip. This project was given knowledge of the full Paperclip architecture, API, heartbeat protocol, agent configurations, secrets management, and VPS migration planning.</p>
+<p>This Claude Code project served as a &quot;partner in crime&quot; for:</p>
+<p>- Creating and managing secrets/environment variables (Paperclip does have a built-in mechanism for environment variables, but it&#x27;s not exposed in the UI — Claude Code knew how to access and configure it)</p>
+<p>- Querying the state of companies and agents</p>
+<p>- Monitoring and expanding the agent organization</p>
+<p>- Understanding gotchas and troubleshooting</p>
+<p>The creator recommended feeding Claude Code the Paperclip GitHub repo (since it&#x27;s open source), letting it research how people are using it on X/Twitter, and building up its knowledge base. This is especially valuable during initial setup and orientation, even if you rely on it less over time.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Paperclip is a free, MIT-licensed, open-source tool for orchestrating multiple Claude Code (or other AI) agents from a single dashboard — install it with one terminal command from paperclip.ing</li>
+<li>Act as the board, not the operator: give agents high-level goals and metrics, let them figure out implementation details, hiring, and task breakdown</li>
+<li>Each agent has four config files (soul, heartbeat, tools, agents) that define its persona and behavior — these are critical because agents wake up with fresh context on each heartbeat</li>
+<li>Heartbeats keep agents running autonomously on a schedule (4/8/12 hours) — they wake up, check their work and tasks, and continue without human prompting</li>
+<li>Set per-agent budgets to control costs, and use the approval workflow (togglable) to maintain human oversight on hiring decisions</li>
+<li>Install skills from skills.sh (a free marketplace) via GitHub URLs, but exercise caution and review what you&#x27;re installing</li>
+<li>Set up a dedicated Claude Code project to help you configure and manage Paperclip — feed it the open-source repo so it understands the full architecture and can help with secrets, monitoring, and troubleshooting</li>
+<li>Import pre-built company templates from Paperclip&#x27;s GitHub repo to start with a functional team rather than building from scratch</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Paperclip</strong> &mdash; The primary tool — an open-source AI agent orchestration platform (paperclip.ing) providing a dashboard to manage multiple AI agents as a virtual company with ticketing, heartbeats, budgets, approvals, and skills</div>
+<div class="tool-row"><strong>Claude Code</strong> &mdash; Used as the underlying AI agent provider powering each Paperclip agent. Also used separately as a configuration partner by setting up a dedicated Claude Code project with Paperclip knowledge</div>
+<div class="tool-row"><strong>skills.sh</strong> &mdash; A marketplace of mostly free agent skills that can be installed into Paperclip via GitHub URLs — demonstrated with front-end design and web design guidelines skills</div>
+<div class="tool-row"><strong>OpenClaw</strong> &mdash; Mentioned as an alternative agent provider that Paperclip supports, and as a predecessor that popularized native heartbeats</div>
+<div class="tool-row"><strong>Codex</strong> &mdash; Mentioned as another compatible agent provider for Paperclip</div>
+<div class="tool-row"><strong>Cursor</strong> &mdash; Mentioned as another compatible tool that can be used with Paperclip</div>
+<div class="tool-row"><strong>GitHub</strong> &mdash; Used for syncing Paperclip projects to repos, hosting the Paperclip open-source repo (36,000+ stars), and hosting pre-built company templates and skills</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

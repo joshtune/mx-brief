@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting Up OpenClaw: AI Agent Gateway on a VPS with Telegram Integration</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>NetworkChuck</span>
+                    <span>&middot;</span>
+                    <span>2026-03-30</span>
+                    <span>&middot;</span>
+                    <span>426,654 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Setting Up OpenClaw: AI Agent Gateway on a VPS with Telegram Integration</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>OpenClaw is an open-source AI agent gateway that connects AI models (OpenAI, Anthropic, local) to messaging channels (Telegram, Discord, Slack) with persistent memory and system-level tool access. This tutorial walks through installing it on a VPS, configuring an agent with Telegram, building quick projects (news dashboard, IT monitoring), and locking down security.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/T-HZHO_PQPY"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>What Is OpenClaw and Why Does It Matter?</h2>
+            <p>OpenClaw is not itself an AI — it&#x27;s a gateway (a Node.js service) that connects three things together: (1) any AI model you choose (OpenAI, Anthropic, local models via Ollama), (2) communication channels you already use (Telegram, Discord, Slack), and (3) a persistent memory system stored as markdown files on your server. At the time of recording, it had 308,000 GitHub stars, surpassing React and the Linux kernel. The creator was acqui-hired by OpenAI, and companies like Anthropic (with Channels in Dispatch) and Nvidia (with Nemo Claw) have built their own versions. Jensen Huang called OpenClaw &#x27;the operating system for personal AI.&#x27; The key insight is that it packages existing capabilities — tool use, memory, multi-channel communication — into one clean install that makes AI agents feel accessible. You install it on a machine and essentially say &#x27;this is your computer,&#x27; giving the agent access to bash, cron, file system, and more.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Prerequisites</h2>
+            <p>You need a server to install the OpenClaw Gateway on. The video uses a Hostinger VPS (KVM2 tier specifically), but any Linux server with SSH access works. You also need a Telegram account (for the messaging channel), and either an OpenAI API key or a ChatGPT Pro (or higher) subscription. Local models via Ollama are also officially supported but the creator notes you&#x27;ll have a better experience with OpenAI or Anthropic.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Step 1: Provision a Server and SSH In</h2>
+            <p>After provisioning your VPS (the video uses Hostinger&#x27;s KVM2 plan), copy the SSH command from your hosting dashboard, open your terminal, paste the SSH command, and connect to your server.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Step 2: Install OpenClaw</h2>
+            <p>Go to openclaw.ai and find the one-liner install command. Copy it, paste it into your terminal on the server, and run it. The installation completes quickly. You&#x27;ll see a security warning — the video says to scroll past it and hit &#x27;Yes, I understand&#x27; for now (security hardening is covered later). Then select &#x27;Quick Start.&#x27;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Step 3: Choose Your AI Model</h2>
+            <p>The installer prompts you to choose which AI model to use as the &#x27;brain.&#x27; Options include OpenAI, Anthropic, and local models (Ollama). The video recommends OpenAI. If you already pay for ChatGPT Pro or higher, you can use your existing subscription instead of a separate API key. Select the subscription option, and it walks you through an OAuth flow: you&#x27;ll get a URL to open in your browser, log into your ChatGPT account, copy the redirect URL from your browser&#x27;s address bar, paste it back into the terminal, and hit enter. When prompted for the model, the video goes with the default: GPT 5.4.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Step 4: Configure Telegram as Your Channel</h2>
+            <p>When prompted to choose a communication channel, select Telegram. You need to create a Telegram bot: open Telegram, start a chat with @BotFather, send &#x27;/newbot&#x27;, name your bot, give it a username (must end in &#x27;bot&#x27;), and BotFather gives you a bot token. Copy the token, paste it into the terminal when prompted. For web search, the video selected Brave but skipped the API key by hitting enter. Skip configuring skills for now (select &#x27;no&#x27;). For hooks, enable: boot, bootstrap, command logger, and session memory.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Step 5: Hatch Your Agent via TUI</h2>
+            <p>Choose TUI (Terminal User Interface) instead of the web UI to launch your agent. The agent wakes up and you configure it by talking to it directly — this is a key aspect of OpenClaw. You tell it who it is and who you are. The video names the agent &#x27;Terry Cruz&#x27; and describes the user as &#x27;a Network Chuck fan, chaotic, muscles emoji.&#x27; Everything you say gets written to the agent&#x27;s soul.md file. After the terminal setup, go to Telegram, find your bot, send &#x27;Start.&#x27; There&#x27;s a security handshake — not just anyone can talk to your agent out of the box. You need to sync it up by copying the configuration output from the terminal and pasting it to the agent in Telegram to finish configuring the channel.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Project 1: One-Shot News Briefing Dashboard</h2>
+            <p>To demonstrate OpenClaw&#x27;s capabilities, the video compares it to a previously complex N8N workflow that took an entire video to build. In Telegram, the creator simply told the agent: give me cybersecurity news, scrape Reddit, check Hacker News, include YouTube videos, rate whether each item is worth reading/watching. The agent completed the task autonomously. Then, after putting the agent in &#x27;high thinking mode,&#x27; the creator asked it to build a dashboard — and it generated a live web dashboard with the news results, accessible via a DNS name on the server.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Project 2: Self-Monitoring IT Engineer Dashboard</h2>
+            <p>The second demo turns the agent into an IT engineer monitoring its own server. Using &#x27;/new&#x27; for fresh context and enabling high thinking mode, the creator told the agent: &#x27;You&#x27;re an IT engineer. Your first job is to monitor the server you&#x27;re on. Check everything. Internet speed, RAM, CPU, security, logs, and create a dashboard for me.&#x27; The agent investigated its own system, made sure it wouldn&#x27;t break anything, then built a live-updating monitoring dashboard — all in one shot.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Under the Hood: OpenClaw&#x27;s File Structure</h2>
+            <p>OpenClaw is not magic — it&#x27;s directories and markdown files. The gateway itself is a Node.js process you can see running. The main files live in the agent&#x27;s workspace directory. The soul.md file contains the agent&#x27;s personality and core identity. The identity file holds what you filled in during first conversation. The memory file is long-term memory (like a wife&#x27;s birthday, favorite things). There&#x27;s also a memory directory with daily journal files — one file per day logging conversations and events. The agents.md file is the master instruction prompt: it defines first-run bootstrap behavior, session handling, memory loading rules (e.g., long-term memory isn&#x27;t loaded in group chats by default), red lines (security boundaries), and protocols for when to reach out vs. stay quiet. At the end of the day, it&#x27;s &#x27;just a fancy prompt&#x27; — and it&#x27;s not tied to any provider. You can swap AI models and keep all the memory intact, essentially doing a &#x27;brain transplant.&#x27;</p>
+            <pre class="code-block"><code class="lang-bash">ps aux | grep claw</code></pre><pre class="code-block"><code class="lang-bash">cd ~/openclaw
+ls</code></pre><pre class="code-block"><code class="lang-bash">cd workspace
+ls</code></pre><pre class="code-block"><code class="lang-bash">cat soul.md</code></pre><pre class="code-block"><code class="lang-bash">cat identity</code></pre><pre class="code-block"><code class="lang-bash">cat memory</code></pre><pre class="code-block"><code class="lang-bash">cd memory
+ls</code></pre><pre class="code-block"><code class="lang-bash">cat agents.md</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Cron Jobs and Heartbeats: What Makes It Feel Alive</h2>
+            <p>The creator emphasizes that crons and heartbeats are what make OpenClaw feel alive and differentiate it from competitors (Claude and others are trying to copy this). You can tell your agent to check in every hour, send a daily news briefing at 6 AM, or remind you to do things. Under the hood, these are real cron jobs on your server — nothing magical. In the demo, the creator told the agent &#x27;every 30 minutes, remind me to drink coffee&#x27; and &#x27;every hour, pop in to say hi.&#x27; The agent chose to implement both as cron jobs rather than heartbeats. You can view them in the cron directory or via the CLI.</p>
+            <pre class="code-block"><code class="lang-bash">openclaw cron list</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Skills and ClawhHub</h2>
+            <p>OpenClaw has a skills system with a directory called ClawhHub (clawhub) where you can browse over 33,000 community-contributed skills. Skills give your agent additional capabilities. The video demonstrates installing a Word document creation skill. ClawhHub partners with VirusTotal for scanning because 12% of skills were found to contain malware — be very careful and vet everything you install. After installing the Word skill, the agent was asked to create its own resume and produced a complete Word document.</p>
+            <pre class="code-block"><code class="lang-bash">npm -i -g clawhub</code></pre><pre class="code-block"><code class="lang-bash">clawhub install word-docx</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Additional Agent Capabilities</h2>
+            <p>The agent has a headless browser built in — the creator told it to go to networkchuck.coffee and it browsed the site and even added a product to a cart. OpenClaw also supports sub-agents: you can deploy a sub-agent for a specific research task (the demo deployed one to research the best way to make coffee). In Telegram, you can use commands like &#x27;/status&#x27; to see active sessions and sub-agents, and &#x27;/subagents list&#x27; to manage them. You can also install multiple agents under one gateway — the creator has an IT department setup with Ron Ezy as IT manager and Fred, George, and Charlie as individual engineers (network, storage, systems), all accessible via Slack.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Security: Auditing Your Installation</h2>
+            <p>The creator stresses that OpenClaw security was initially a &#x27;dumpster fire&#x27; but has improved significantly. The first thing to do after setup is run the security audit command. This analyzes your instance against security best practices. A fresh install following the video&#x27;s steps should show only two or three warnings, nothing critical. You can also run the auto-fix variant, though be careful as it might break things. The most important check is ensuring your web UI is not exposed to the internet. By default, OpenClaw binds to 127.0.0.1 (loopback), meaning only processes on the host can access it. The web UI runs on port 18789.</p>
+            <pre class="code-block"><code class="lang-bash">openclaw security audit</code></pre><pre class="code-block"><code class="lang-bash">openclaw security audit --fix</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Accessing the Web UI via SSH Tunnel</h2>
+            <p>Since the web UI is bound to localhost, you access it from your local machine via an SSH tunnel rather than exposing it to the internet. Run the SSH tunnel command from a new terminal window on your local machine (not the one logged into the server), substituting your username and IP. Then browse to localhost:18789. If prompted for a gateway token, run &#x27;openclaw config&#x27; on the server, navigate to Gateway settings, and find/generate your token. The web UI shows agent chat, sessions, instances, channels (Telegram, Discord), and cron jobs.</p>
+            <pre class="code-block"><code class="lang-bash">openclaw config</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Firewall Configuration</h2>
+            <p>Verify your firewall is enabled and properly configured. The video enables the firewall allowing only SSH (port 22) by default, blocking everything else. When the firewall was enabled, the dashboards the agent had built became inaccessible until port 8787 was explicitly allowed. The creator actually had the agent itself open the firewall port — demonstrating the approval flow where you must confirm the agent&#x27;s actions.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Security: Tools Profile and Execution Permissions</h2>
+            <p>Two key security configurations control what your agent can do. The tools.profile setting controls which tools the agent can see: &#x27;full&#x27; means every tool on the system is visible; &#x27;coding&#x27; is limited to read/write files and terminal commands (no browsing or web search). The tools.exec.security setting controls what the agent can do with tools it knows about: &#x27;full&#x27; means unrestricted execution, &#x27;allow-list&#x27; restricts to a configured list, &#x27;deny&#x27; blocks everything. There&#x27;s also a tools.exec.ask setting: &#x27;off&#x27; means never ask, &#x27;always&#x27; means always ask before using any tool, &#x27;only on miss&#x27; means only ask when the tool isn&#x27;t on the allow list. These settings are global across all sessions. Per-session configuration is possible in Telegram but not covered in this video. The full configuration can be viewed in the openclaw.json file.</p>
+            <pre class="code-block"><code class="lang-bash">openclaw config get tools.profile</code></pre><pre class="code-block"><code class="lang-bash">openclaw config set tools.profile full</code></pre><pre class="code-block"><code class="lang-bash">openclaw gateway restart</code></pre><pre class="code-block"><code class="lang-bash">openclaw config get tools.exec</code></pre><pre class="code-block"><code class="lang-bash">openclaw config set tools.exec.security allow-list</code></pre><pre class="code-block"><code class="lang-bash">openclaw config set tools.exec.ask off</code></pre><pre class="code-block"><code class="lang-bash">cat openclaw.json</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Red Lines, Yellow Lines, and Always-Allowed Actions</h2>
+            <p>After giving the agent broad permissions, you constrain it using the red lines system in the agents.md file. Red lines are hard stops — things the agent must never do without asking (e.g., don&#x27;t exfiltrate private data, don&#x27;t run destructive commands, don&#x27;t modify SSH config). Yellow lines are actions the agent can take but must log (e.g., firewall changes, running Docker commands). Always-allowed actions are things the agent can do freely. Important caveat: these are prompt-based instructions, not deterministic enforcement. There is nothing technically preventing the agent from violating red lines — it&#x27;s an instruction the AI model should follow, not a hard security boundary.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>How NetworkChuck Actually Uses OpenClaw</h2>
+            <p>The creator uses OpenClaw alongside Claude Code — for serious development work (research, scripting, coding), he prefers Claude Code for its better tooling. OpenClaw is used for purpose-built persistent agents: (1) An IT team with a CTO agent and specialist sub-agents (network engineer, storage engineer, systems engineer) managing his home lab and studio NAS, with a ticketing system. (2) A personal assistant named Hermione that checks email, speaks Japanese, and makes restaurant reservations and phone calls while he&#x27;s in Japan. (3) A health/training assistant modeled after Arnold Schwarzenegger. He describes himself as being in &#x27;dabble mode&#x27; — he has 7 agents running but acknowledges he hasn&#x27;t fully unlocked the potential yet.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>OpenClaw is a gateway/harness, not an AI itself — it connects any AI model to messaging channels with persistent memory and system tool access, all running as a Node.js service on your server</li>
+<li>Installation is a one-liner from openclaw.ai, and you can use your existing ChatGPT Pro subscription instead of a separate API key</li>
+<li>Everything is stored as markdown files (soul.md, identity, memory, daily journals, agents.md) — you can inspect and manually edit anything the agent does</li>
+<li>Run &#x27;openclaw security audit&#x27; immediately after installation to check for security issues; ensure the web UI (port 18789) is not exposed to the public internet</li>
+<li>12% of ClawhHub skills were found to contain malware — vet every skill before installing</li>
+<li>Red lines in agents.md are prompt-based constraints, not deterministic enforcement — there&#x27;s no hard technical barrier preventing the agent from violating them</li>
+<li>Cron jobs and heartbeats are what differentiate OpenClaw from standard AI assistants — they&#x27;re real scheduled tasks on your server that make the agent proactively useful</li>
+<li>The tools.profile (what tools the agent can see) and tools.exec.security (what it can do with them) are the two most important security configurations to understand</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>OpenClaw</strong> &mdash; The core AI agent gateway being installed and configured throughout the tutorial — connects AI models to messaging channels with persistent memory</div>
+<div class="tool-row"><strong>Hostinger VPS (KVM2)</strong> &mdash; Cloud server used to host the OpenClaw gateway; recommended as the installation target</div>
+<div class="tool-row"><strong>Telegram</strong> &mdash; Primary messaging channel configured for communicating with the OpenClaw agent; requires creating a bot via BotFather</div>
+<div class="tool-row"><strong>OpenAI / GPT 5.4</strong> &mdash; AI model used as the agent&#x27;s &#x27;brain&#x27;; connected via ChatGPT Pro subscription OAuth flow</div>
+<div class="tool-row"><strong>ClawhHub</strong> &mdash; Community skill directory with 33,000+ skills; installed via npm globally, used to add capabilities like Word document creation</div>
+<div class="tool-row"><strong>Ollama</strong> &mdash; Mentioned as officially supported for running local AI models with OpenClaw</div>
+<div class="tool-row"><strong>Brave Search</strong> &mdash; Selected as the web search provider during setup, though API key was skipped</div>
+<div class="tool-row"><strong>Claude Code</strong> &mdash; The creator&#x27;s preferred tool for serious development work — research, scripting, and coding — used alongside OpenClaw rather than replaced by it</div>
+<div class="tool-row"><strong>N8N</strong> &mdash; Referenced as comparison — building a news aggregator and IT engineer in N8N took significantly more time and complexity than OpenClaw&#x27;s one-shot approach</div>
+<div class="tool-row"><strong>BotFather (Telegram)</strong> &mdash; Used to create the Telegram bot and obtain the bot token needed for OpenClaw&#x27;s Telegram channel integration</div>
+<div class="tool-row"><strong>VirusTotal</strong> &mdash; Partnered with ClawhHub for scanning skills for malware</div>
+<div class="tool-row"><strong>UFW (firewall)</strong> &mdash; Used to lock down the VPS — enabling firewall, allowing only SSH (port 22), and selectively opening ports for agent-built dashboards</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

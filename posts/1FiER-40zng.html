@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Your Own AI Second Brain with Claude Code and Obsidian</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Cole Medin</span>
+                    <span>&middot;</span>
+                    <span>2026-04-02</span>
+                    <span>&middot;</span>
+                    <span>12,016 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Build Your Own AI Second Brain with Claude Code and Obsidian</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Cole Medin walks through the full architecture of his Claude Code + Obsidian-based AI second brain that he claims saves him 12+ hours per week. Rather than using an off-the-shelf solution like Open Claw, he argues for building your own for security and customization reasons, and provides a GitHub template that generates a phased PRD to guide you through building it.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/1FiER-40zng"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>Why Build Your Own Instead of Using Open Claw?</h2>
+            <p>Medin opens by addressing why you&#x27;d build a custom second brain rather than running an existing solution like Open Claw. He introduces the concept of the &quot;lethal trifecta&quot; — three criteria that, when all present, make an AI agent highly susceptible to security risks like prompt injection:</p>
+<p>1. **Private data access** — Your agent has access to email, calendar, or other sensitive information. This always applies to a second brain, otherwise it wouldn&#x27;t be useful.</p>
+<p>2. **Untrusted content** — Any input that doesn&#x27;t come from you (incoming emails, web page content) could theoretically contain malicious prompt injection instructions.</p>
+<p>3. **Exfiltration vector** — The agent can send data outward (messages, API calls), giving a potential attacker a way to extract your private data.</p>
+<p>He argues that if only two of the three are present, the risk drops significantly. But a useful second brain inherently has all three. The key insight: since you can&#x27;t avoid the trifecta, you need to limit each pillar as much as possible. Open Claw is a massive codebase you don&#x27;t fully understand, giving broad control to an agent without you knowing exactly what permissions are in play. By building your own, you define permissions upfront, start with zero-trust, and layer on capabilities incrementally.</p>
+<p>However, he doesn&#x27;t advocate ignoring Open Claw entirely. Instead, he pointed Claude Code at the Open Claw GitHub repository (which is fully open source) and told it to take inspiration from specific parts — like the memory layer implementation with soul.md/user.md, and the heartbeat for proactive agent behavior. The approach is: build it yourself, but stand on the shoulders of giants.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Architecture Overview: The Memory Layer</h2>
+            <p>The memory layer is the core of the second brain, directly inspired by Open Claw&#x27;s approach. It consists of markdown files managed inside an Obsidian vault:</p>
+<p>- **soul.md** — The personality definition for the second brain. Taken directly from Open Claw&#x27;s concept.</p>
+<p>- **user.md** — Information about you that evolves over time as the agent learns your preferences, communication style, and work patterns.</p>
+<p>- **memory.md** — Key decisions, lessons learned, and important facts. This is described as &quot;probably the most important file for the entire second brain&quot; since it&#x27;s always loaded into context.</p>
+<p>These core files are loaded into Claude Code&#x27;s context automatically through a **session start hook**. This means every conversation begins with the agent already knowing your personality, preferences, and recent decisions.</p>
+<p>Obsidian serves as the canvas — you can view and edit the generated documents, diagrams, and memory files visually. Every document visible in the Obsidian graph is part of the second brain&#x27;s knowledge base.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Context Persistence: Hooks and Daily Logs</h2>
+            <p>Hooks are a critical part of the architecture beyond just loading memory at session start. Medin describes three key hooks:</p>
+<p>1. **Session start hook** — Automatically loads soul.md, user.md, and memory.md into the Claude Code context at the beginning of every conversation.</p>
+<p>2. **Pre-compact hook** — When a conversation gets very long and memory compaction is triggered, this hook saves the conversation to a daily log file before compacting. This ensures nothing is lost.</p>
+<p>3. **End session hook** — When a Claude Code session ends, this hook also saves the conversation to the daily log.</p>
+<p>The daily log is a raw dump of everything from every conversation on a given day. Medin showed that he has a file for every single day since he started running his second brain.</p>
+<p>A **daily reflection process** then runs once a day via a cron job. This uses the Claude Agent SDK under the hood (not manual prompting) to perform a &quot;promotion process&quot; — it goes through the lengthy raw daily log and extracts key decisions, lessons learned, and important facts, promoting them into the memory.md file. This promotion process is described as &quot;one of the most important parts of the system that allows the agent to evolve over time.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Memory Search via RAG</h2>
+            <p>Since memory.md is a concise distillation, it won&#x27;t always contain everything you might want to reference later. To handle this, the agent can perform RAG (retrieval-augmented generation) over all daily logs.</p>
+<p>All daily logs are indexed into a **SQLite database** (Medin noted Postgres would also work). The agent can then search through the full history of daily logs to find specific information that wasn&#x27;t important enough to be promoted to memory.md but is still relevant to a current conversation. The searchable corpus includes everything visible in the Obsidian graph view.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Skills: Giving Arms to Your Second Brain</h2>
+            <p>Capabilities are added through Claude Code skills — no MCP servers needed. Medin emphasized this point: &quot;We don&#x27;t need other applications. We don&#x27;t even need MCP servers. I literally use my skills for everything.&quot;</p>
+<p>His .claude/skills directory contains many skills he uses at least weekly, including:</p>
+<p>- **Excalidraw diagram generation** — Creates diagrams like the architecture diagram shown in the video</p>
+<p>- **PowerPoint generation**</p>
+<p>- **YouTube script creation** — Uses the memory layer to understand his tone of voice and past scripting patterns</p>
+<p>- **Image/thumbnail generation**</p>
+<p>- **Habit tracking**</p>
+<p>- **A core integrations skill** — Explains all direct integrations and exactly how to use the APIs set up for each service</p>
+<p>The critical insight is that skills become personalized through the memory layer. A diagram skill would produce generic output without the memory context — but because soul.md, user.md, and memory.md are always loaded, every skill&#x27;s output is tailored to the user.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Direct Integrations via Python API Layer</h2>
+            <p>For connecting to external services, Medin built a Python API layer with carefully controlled permissions for each integration:</p>
+<p>- **Gmail** — Can create drafts, but cannot send emails</p>
+<p>- **Slack** — Can read messages, but cannot post messages</p>
+<p>- **Google Calendar** — Can read events, but cannot create or manage them</p>
+<p>- **Google Docs** — Cannot create documents</p>
+<p>- **Asana** — Can manage tasks, but only in certain projects</p>
+<p>- **Circle** (Dynamis AI community platform) — Has access</p>
+<p>The philosophy is **zero-trust by default**: start with read-only access, then add write capabilities incrementally and deliberately. Because it&#x27;s a custom build, you can be &quot;very nitpicky about the permissions.&quot;</p>
+<p>All integrations follow a common pattern, which has a powerful compound effect: the second brain can reference existing integrations and its memory of how it built things in the past to one-shot new integrations with Claude Code. The same pattern was used to build the Slack chat interface, and it could be easily replicated for Telegram, Discord, or any other platform.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>The Heartbeat: Proactive Agent Behavior</h2>
+            <p>The heartbeat is what makes the second brain proactive rather than purely reactive. It follows this flow:</p>
+<p>1. **Deterministic data gathering** — Before Claude Code is even invoked, the system gathers context from all integrated APIs (Gmail, task management, GitHub, etc.). This is the deterministic phase — no LLM involved yet.</p>
+<p>2. **Claude Agent SDK invocation** — All gathered information is sent into Claude Code programmatically via the Agent SDK with a preconfigured prompt. The agent is not being prompted manually by the user.</p>
+<p>3. **Reasoning and action** — The agent reasons about what needs attention: drafting email replies, handling GitHub pull requests, determining what to help with next.</p>
+<p>4. **Slack notification** — The agent sends a summary notification to Slack, keeping the user in the loop on everything it did proactively.</p>
+<p>5. **Threaded follow-up** — The user can reply to any notification in a Slack thread to continue the conversation on that specific item.</p>
+<p>Medin describes the heartbeat as &quot;the thing that saves me the most time out of everything in the second brain.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>The Starter Template: Generating Your PRD</h2>
+            <p>Rather than releasing his full codebase (which he says would just create &quot;another Open Claw&quot;), Medin provides a GitHub repo (linked in the video description) with a template system for generating a phased PRD (Product Requirements Document) for your own second brain.</p>
+<p>The workflow is:</p>
+<p>1. **Clone the repository** from the link in the video description.</p>
+<p>2. **Find and edit the `my-second-brain-requirements.md` file.** Fill in your personal information (name, timezone), check off which platforms you want to integrate, list tasks you want automated, and set your preferences.</p>
+<p>3. **Set your proactivity level** — Options range from &quot;observer&quot; (read-only) to &quot;partner&quot; (fully autonomous, can send emails on your behalf). Medin uses &quot;advisor&quot; level.</p>
+<p>4. **Define security boundaries** — Specify what the agent should never do.</p>
+<p>5. **Configure memory categories** — What types of knowledge should it track.</p>
+<p>6. **Choose infrastructure** — Local-only on your computer, or hosted remotely (e.g., Digital Ocean, Hostinger droplet) for 24/7 Slack access.</p>
+<p>7. **Set integration priorities** — This determines the phase ordering in the PRD.</p>
+<p>8. **Run the Claude Code skill** to generate the PRD. The skill does extensive research and accounts for all your customizations.</p>
+<p>The repo also includes a pre-filled example requirements file you can use as a reference. You can also point the skill at external repos like Open Claw for additional inspiration.</p>
+            <pre class="code-block"><code class="lang-text">/create-second-brain-prd &lt;path-to-your-filled-requirements.md&gt;</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>Building in Phases</h2>
+            <p>The generated PRD outputs to a `.agents/plans/` folder and breaks the build into sequential phases that map to the architecture components:</p>
+<p>1. **Phase 1: Memory foundation** — Set up soul.md, user.md, memory.md in your Obsidian vault. Already useful as a partial second brain.</p>
+<p>2. **Phase 2: Hooks for context persistence** — Build session start, pre-compact, and end session hooks to load memory and save daily logs.</p>
+<p>3. **Phase 3: Memory search** — Index daily logs into SQLite and implement RAG capability.</p>
+<p>4. **Phase 4+: Integrations, skills, and capabilities** — Add direct integrations, build skills, configure the heartbeat.</p>
+<p>The explicit advice is to NOT have your coding agent try to build the entire second brain in one shot. Build one phase at a time by opening a new Claude Code session, pointing it at the PRD, and saying something like &quot;Let&#x27;s build phase one&quot; or &quot;Let&#x27;s build phase four.&quot; Kick off a planning session for each phase, tweak anything from the PRD, write the code, test it, and move on.</p>
+<p>Medin claims you can have something as powerful as Open Claw in &quot;just a couple of days&quot; with this approach, but it will be entirely your own, simpler to maintain, and more secure.</p>
+            <pre class="code-block"><code class="lang-text"># Example: point Claude Code at the PRD and build incrementally
+# In a new Claude Code session:
+&quot;Let&#x27;s build phase one.&quot; + &lt;path to PRD&gt;
+
+# After completing earlier phases:
+&quot;Let&#x27;s build phase four.&quot; + &lt;path to PRD&gt;</code></pre>
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>The &#x27;lethal trifecta&#x27; (private data access + untrusted content + exfiltration vector) is unavoidable in a useful second brain — so limit each pillar by building your own with controlled permissions rather than running a large codebase you don&#x27;t understand.</li>
+<li>The memory layer (soul.md, user.md, memory.md) loaded via session start hooks is the core of the system — everything else builds on top of it.</li>
+<li>Use a daily log + promotion process (via cron job and Claude Agent SDK) to let your second brain evolve its memory over time without manual curation.</li>
+<li>Start with zero-trust permissions for all integrations (read-only), then add write capabilities incrementally and deliberately.</li>
+<li>Claude Code skills plus the memory layer is all you need for capabilities — no MCP servers or additional applications required.</li>
+<li>The heartbeat (proactive agent via Agent SDK + cron) is the highest-ROI component — it gathers context from APIs, reasons about what needs attention, acts, and notifies you via Slack.</li>
+<li>Build in phases, not all at once. Use the provided template to generate a phased PRD, then build one phase per Claude Code session.</li>
+<li>Take inspiration from existing open-source projects like Open Claw by pointing your coding agent at their repos, but maintain your own simpler, more secure implementation.</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Claude Code</strong> &mdash; The primary interface and runtime for the second brain — skills, hooks, and the Agent SDK drive all capabilities</div>
+<div class="tool-row"><strong>Obsidian</strong> &mdash; Knowledge base canvas — stores all markdown files (memory, daily logs, documents, diagrams) and provides visual graph view of the entire brain</div>
+<div class="tool-row"><strong>Claude Agent SDK</strong> &mdash; Used under the hood for the daily reflection cron job (memory promotion) and the heartbeat (proactive agent invocation without manual prompting)</div>
+<div class="tool-row"><strong>Open Claw</strong> &mdash; Referenced as inspiration for the memory layer architecture (soul.md, user.md, memory.md) and heartbeat concept — explicitly NOT used directly due to security concerns</div>
+<div class="tool-row"><strong>SQLite</strong> &mdash; Stores indexed daily logs for RAG search — allows the agent to find specific past information that wasn&#x27;t promoted to memory.md</div>
+<div class="tool-row"><strong>Slack</strong> &mdash; One of the chat interfaces for talking to the second brain, and the destination for heartbeat notifications with threaded follow-up</div>
+<div class="tool-row"><strong>Excalidraw</strong> &mdash; Used via a Claude Code skill for generating diagrams and architecture visuals</div>
+<div class="tool-row"><strong>Gmail</strong> &mdash; Direct integration — agent can create drafts but not send emails</div>
+<div class="tool-row"><strong>Asana</strong> &mdash; Direct integration — agent can manage tasks but only in certain projects</div>
+<div class="tool-row"><strong>Python</strong> &mdash; Used to build the API layer that mediates all direct integrations with controlled permissions</div>
+<div class="tool-row"><strong>Digital Ocean / Hostinger</strong> &mdash; Mentioned as hosting options for running the second brain remotely for 24/7 Slack access</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 3.1 Flash Live: Google&#x27;s Speech-to-Speech Model for Voice Agents</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Nate Herk | AI Automation</span>
+                    <span>&middot;</span>
+                    <span>2026-03-28</span>
+                    <span>&middot;</span>
+                    <span>24,056 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Gemini 3.1 Flash Live: Google&#x27;s Speech-to-Speech Model for Voice Agents</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Google released Gemini 3.1 Flash Live, a speech-to-speech voice model that skips the traditional speech-to-text-to-speech pipeline. It outperforms Gemini 2.5 Flash by ~19% on multi-step function calling, handles noisy environments, and understands vocal context like sarcasm and frustration — relevant for anyone building voice-based customer support or sales agents.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/UCKLHU5AkEM"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>What Is Gemini 3.1 Flash Live?</h2>
+            <p>Google released Gemini 3.1 Flash Live, which they are calling their &quot;biggest upgrade yet&quot; for voice models. The core architectural change is that the model is now speech-to-speech — it no longer converts speech to text and then text back to speech. Instead, it processes audio directly, which has implications for latency, accuracy, and contextual understanding. The model also has vision capabilities, meaning it can see and interpret what&#x27;s in front of a camera in real time.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Vision Demo: Real-Time Object Recognition</h2>
+            <p>The video opens with two demos of the model&#x27;s multimodal (vision + voice) capabilities. In the first, the creator shows a pair of scissors that came apart and asks how to fix them. The model identifies that the scissors are designed to come apart for cleaning and instructs the user to align the rivet on one blade with the slot on the other to slide them back together. In the second demo, the model correctly identifies the room&#x27;s features (light gray walls, shelf with trophies, microphone) and specifically recognizes the microphone as a Shure MV7 on a Rode arm — which the creator confirms is correct. No code or configuration was shown for these demos.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Benchmark: Multi-Step Function Calling</h2>
+            <p>The creator highlights a benchmark for multi-step function calling, where Gemini 3.1 Flash Live outperformed the previous Gemini 2.5 Flash model by approximately 19%. No further details about the benchmark methodology or dataset were provided in the video — the creator displayed a chart but did not elaborate on specifics beyond the percentage improvement.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Key Benefits for Voice Agent Builders</h2>
+            <p>The creator calls out several specific benefits of the speech-to-speech architecture:</p>
+<p>1. **Lower latency** — because the model is not doing an intermediate text conversion step.</p>
+<p>2. **Noise resilience** — a demo clip showed the model handling a conversation on the side of a road with traffic and horns in the background. The model was described as &quot;unfazed&quot; and able to continue the interaction, even offering to look up a vehicle registration plate and postcode.</p>
+<p>3. **Higher accuracy with alphanumeric strings** — because the model interprets speech directly rather than relying on a transcription step that might garble letters and numbers.</p>
+<p>4. **Contextual awareness of tone** — because raw audio is processed, the model can pick up on sarcasm, stress, and frustration. The creator explicitly notes this matters for customer support bots and sales-type agents, where understanding a caller&#x27;s emotional state is important.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Note: No Implementation Steps Were Shown</h2>
+            <p>Despite this being categorized as a tutorial, the video is an announcement and demo overview. No code, API calls, SDK setup, or implementation steps were shown. The creator references a separate, longer breakdown video at the end (&quot;click on that play button right here&quot;) but does not link to it by URL in the transcript. If you are looking to actually build with Gemini 3.1 Flash Live, you would need to consult Google&#x27;s API documentation separately — this video does not cover integration details.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Gemini 3.1 Flash Live is speech-to-speech, eliminating the speech-to-text-to-speech pipeline — this reduces latency and improves contextual understanding of tone</li>
+<li>It outperforms Gemini 2.5 Flash by ~19% on multi-step function calling benchmarks</li>
+<li>The model handles noisy environments and is more accurate with alphanumeric strings (e.g., registration plates, postcodes) because it interprets audio directly</li>
+<li>For voice agent use cases (customer support, sales), the ability to detect sarcasm, stress, and frustration from raw audio is a meaningful upgrade over text-based intermediary models</li>
+<li>No implementation code or API setup was shown in this video — it is a feature announcement and demo, not a step-by-step build tutorial</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Gemini 3.1 Flash Live</strong> &mdash; The main subject of the video — Google&#x27;s new speech-to-speech voice model with vision capabilities, demoed for real-time conversation and object recognition</div>
+<div class="tool-row"><strong>Gemini 2.5 Flash</strong> &mdash; Referenced as the previous model that Gemini 3.1 Flash Live outperforms by ~19% on multi-step function calling</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

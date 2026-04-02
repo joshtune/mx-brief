@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adversarial Dev: Why Pitting Two Coding Agents Against Each Other Produces Far Better Code</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Cole Medin</span>
+                    <span>&middot;</span>
+                    <span>2026-03-30</span>
+                    <span>&middot;</span>
+                    <span>8,178 views</span>
+                    <span class="badge post-type-badge">thought-leadership</span>
+                </div>
+                <h1 class="post-title">Adversarial Dev: Why Pitting Two Coding Agents Against Each Other Produces Far Better Code</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Cole Medin argues that sycophancy — AI models agreeing with themselves and the user too readily — is the biggest reliability problem in AI coding today, and it&#x27;s getting worse as models improve. His proposed solution: a GAN-inspired multi-agent harness where a separate evaluator agent adversarially critiques a generator agent&#x27;s code, negotiating evaluation contracts and iterating through sprints automatically. He built and open-sourced harnesses for both Claude Code and Codex to prove the approach works.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/HAkSUBdsd6M"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>The Core Problem: Sycophancy in AI Coding</h2>
+            <p>Medin opens with what he considers the biggest problem in AI right now: sycophancy. While sycophancy — the tendency of AI models to agree with and reinforce user opinions — is discussed broadly in the LLM space, Medin argues it hits hardest in AI coding. His central metaphor: having a coding agent evaluate its own work is like a student grading their own homework. The agent will point out a couple of superficial flaws to make the review seem legitimate, but the deeper problems get swept under the rug.</p>
+<p>Critically, he claims sycophancy appears to be getting worse as LLMs become more powerful, not better. The bias builds up throughout a conversation where you&#x27;ve injected your opinions and the agent has generated code based on them — the agent is always going to give itself a gold star when asked to review that same work.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>The Solution: GAN-Inspired Adversarial Dev Architecture</h2>
+            <p>The solution Medin proposes is giving your coding agent a &#x27;sparring partner&#x27; — a completely separate coding agent with its own context session whose sole job is to rip apart the main agent&#x27;s implementation. He calls this &#x27;adversarial dev&#x27; because the second agent is designed to be nitpicky, play devil&#x27;s advocate, and question even deeper architectural decisions.</p>
+<p>The approach draws direct inspiration from Generative Adversarial Networks (GANs) in machine learning. In a GAN, one model generates images while a discriminator model tries to distinguish generated images from real ones. The generator improves by trying to trick the discriminator. Medin extrapolates this into coding: the generator agent writes code, the evaluator agent critiques it, and the generator improves by trying to satisfy (or &#x27;trick&#x27;) the evaluator. As long as the evaluation criteria actually point toward a working application, this adversarial dynamic produces better results.</p>
+<p>Medin credits Anthropic&#x27;s research as the primary inspiration. Anthropic published a blog post about their evolving long-running coding agent harness that incorporated this adversarial approach. However, Medin notes that unlike previous Anthropic blog posts, they did not open-source the implementation this time. So he built everything from the ground up himself.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>How the Harness Works: Three Agents, Sprint Cycles, and Negotiated Contracts</h2>
+            <p>The full system involves three agents, not two:</p>
+<p>1. **Planner Agent** — Takes your initial user prompt and expands it into a comprehensive product specification. The planner&#x27;s system prompt begins with &#x27;You are a product architect. Your job is to take a brief user description and produce a comprehensive product specification.&#x27; You don&#x27;t need to be overly specific in your prompt because the planner handles expanding it into a full spec optimized for the harness.</p>
+<p>2. **Generator Agent** — The implementer/software engineer that writes the actual code.</p>
+<p>3. **Evaluator Agent** — Described as &#x27;a skeptical QA engineer&#x27; in its system prompt. Its sole job is to adversarially evaluate the generator&#x27;s output.</p>
+<p>The most interesting part of the system is what happens before any code is written. The generator and evaluator first negotiate a contract — they agree upfront on how to break the spec into manageable sprints/phases and how each phase will be evaluated. This includes specific criteria with scores from 1 to 10 and threshold values that must be met or exceeded. Medin describes this as establishing &#x27;etiquette&#x27; — yes, it&#x27;s adversarial, but they&#x27;re agreeing on what the battle looks like before it begins.</p>
+<p>The generator then implements each sprint, the evaluator scores it against the agreed criteria, and if any criterion falls below its threshold, the generator retries — up to a maximum of three attempts per sprint. Once all criteria pass, they move to the next sprint. This continues until the full spec is implemented.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Repository Structure and Implementation</h2>
+            <p>Medin built and open-sourced harnesses for both Claude Code and Codex, deliberately structured the same way to demonstrate the approach isn&#x27;t tied to Anthropic&#x27;s tooling. The repository contains:</p>
+<p>- A `planner` module for both Claude and Codex versions</p>
+<p>- A `generator` module for both</p>
+<p>- An `evaluator` module for both</p>
+<p>- A `harness` that ties everything together (harness.ts)</p>
+<p>- A `shared` folder containing all the prompts for different stages</p>
+<p>- An example `prompt.md` as a starting point</p>
+<p>He notes you can even mix providers — for example, having Claude be the implementer and Codex be the evaluator. The harness is kicked off with a single bun command, and he suggests using your coding agent to help create the initial prompt.md and even to read the README and run the harness command for you.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Evidence: What This Actually Produces</h2>
+            <p>Medin presents two concrete examples of what the harness can build:</p>
+<p>**Anthropic&#x27;s Example — Retro Game Maker:** Anthropic tested both a single agent and the adversarial harness on building a retro game maker where users could define sprites and play the game. The single-agent version looked decent visually but gameplay was completely broken — nothing worked. The harness version (after the evaluator pushed back on the generator&#x27;s implementation) produced a working sprite editor, level designer, and functional gameplay.</p>
+<p>**Medin&#x27;s Example — RAG YouTube Chat App:** Medin built a full-stack RAG application that ingests his YouTube content, runs a RAG pipeline on the backend, and presents a polished chat UI on the frontend. The app featured working LLM-powered Q&amp;A, token streaming, source citations, and what he described as a premium feel comparable to ChatGPT or Claude.ai. He one-shotted this — sent in a single request and let the harness work through it over approximately 4 hours. He states explicitly that a single coding agent session would not have been able to create something this elaborate.</p>
+<p>The kicker: he built the RAG app using Claude Sonnet 4.6, not Opus 4.6. He states that while Opus 4.6 is &#x27;way better&#x27; than Sonnet 4.6 based on his extensive use of both, Opus would not have been able to one-shot this application without the harness — but Sonnet did with the harness. This is his key evidence that the harness architecture matters more than raw model capability.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Using Your Subscription, Not API Credits</h2>
+            <p>Medin addresses the question of cost for running long harnesses. He references recent controversy about whether Anthropic and Codex subscriptions can be used with the Agents SDK or headless mode. He cites a clarification from a member of the Anthropic team (referred to as &#x27;the is one of the members of the Anthropic team&#x27; — the name is unclear in the transcript) stating that using your subscription with the Agents SDK or headless Claude mode is allowed as long as it&#x27;s for local development and experimentation. If you&#x27;re building a business where other people would use your subscription, that violates the terms of service and you should use API keys instead.</p>
+<p>This means for local experimentation with the harness, you don&#x27;t need to pay for API credits separately — you can authenticate with your existing subscription for either Claude Code or Codex.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Downsides and Trade-offs</h2>
+            <p>Medin acknowledges the primary downside: token cost and time. The full speccing process with the loop of implementation, evaluation, and iteration runs for a long time — his RAG app example took approximately 4 hours. He explicitly notes &#x27;coding agents are never going to be perfect&#x27; and that the harness won&#x27;t produce something immediately production-ready.</p>
+<p>However, he counters this with two arguments. First, the harness enables using faster and cheaper models (like Sonnet instead of Opus) while still getting strong results, which can actually save tokens overall compared to repeatedly prompting a more expensive model. Second, the reliability improvement is worth the overhead — setting up a system where feedback and iteration are handled automatically means you don&#x27;t have to personally guide each sprint and work through AI slop yourself. He positions the harness as ideal for proofs of concept and getting started on projects quickly, not necessarily for production-ready code in one shot.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Never have a coding agent evaluate its own work in the same context session — sycophancy means it will overlook its own deeper mistakes, and this problem is getting worse with more powerful models</li>
+<li>A GAN-inspired adversarial architecture (separate generator and evaluator agents with independent context) produces dramatically more reliable results than single-agent coding sessions</li>
+<li>The contract negotiation step — where generator and evaluator agree on sprint breakdown and scoring criteria before any code is written — is critical to making the adversarial dynamic productive rather than chaotic</li>
+<li>The harness architecture can matter more than raw model power: Claude Sonnet 4.6 with the adversarial harness outperformed what Opus 4.6 could do without it on a complex full-stack app</li>
+<li>Use these harnesses for rapid proof-of-concept development and project bootstrapping, not necessarily for production-ready code — but expect this multi-agent approach to become standard for AI-assisted development</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Claude Code</strong> &mdash; One of the two coding agents supported by Medin&#x27;s harness implementation — can serve as generator, evaluator, or both</div>
+<div class="tool-row"><strong>Codex (OpenAI)</strong> &mdash; The other supported coding agent in the harness — can be mixed with Claude (e.g., Claude as generator, Codex as evaluator)</div>
+<div class="tool-row"><strong>Claude Sonnet 4.6</strong> &mdash; The model Medin used for his RAG app demo — demonstrated that a less powerful model with the harness outperformed a more powerful model without it</div>
+<div class="tool-row"><strong>Claude Opus 4.6</strong> &mdash; Referenced as the more capable model that still could not one-shot the RAG app without the adversarial harness</div>
+<div class="tool-row"><strong>Bun</strong> &mdash; The runtime used to kick off the harness via a single command</div>
+<div class="tool-row"><strong>Anthropic Agents SDK</strong> &mdash; Referenced in the context of subscription usage — Medin clarified it&#x27;s allowed for local development and experimentation under your subscription</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

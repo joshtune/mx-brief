@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Claude Code&#x27;s Leaked Source Code Reveals: 8 Insights for Power Users</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Nate Herk | AI Automation</span>
+                    <span>&middot;</span>
+                    <span>2026-04-01</span>
+                    <span>&middot;</span>
+                    <span>98,809 views</span>
+                    <span class="badge post-type-badge">thought-leadership</span>
+                </div>
+                <h1 class="post-title">What Claude Code&#x27;s Leaked Source Code Reveals: 8 Insights for Power Users</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Claude Code&#x27;s source code was inadvertently leaked via an NPM package source map, revealing that it&#x27;s a full agent runtime — not just a chatbot in your terminal. The creator breaks down 8 practical insights from the leak, covering hidden commands, the memory system, permissions tuning, multi-agent architecture, and a framework for using Claude Code like a top 1% user.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/tXtCK66fPj8"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>How the Leak Happened</h2>
+            <p>Anthropic published an NPM package that included a source map file pointing to readable TypeScript source on their servers. A security researcher found it, followed the breadcrumbs, and the full source — roughly 2,000 files and over 500,000 lines of production code — was mirrored publicly on GitHub within hours. The creator notes a disclaimer: he does not show any actual source code in the video and cautions viewers about downloading it, since Anthropic still owns the copyright and has issued DMCA takedown notices.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>A Fun Detail: 187 Spinner Verbs</h2>
+            <p>As a quick appetizer before the main insights, the creator points out that the loading spinner messages you see while Claude Code is thinking come from a file containing 187 spinner verbs. These range from standard ones like &quot;computing&quot; and &quot;generating&quot; to humorous ones like &quot;boondoggling,&quot; &quot;discombobulating,&quot; &quot;fibridding,&quot; and &quot;moonwalking.&quot; The creator&#x27;s take: &quot;That&#x27;s the energy I want from the people building my tools.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 1: It&#x27;s Not What You Think It Is</h2>
+            <p>The first and foundational insight is that Claude Code is not simply &quot;Claude but in your terminal&quot; — it&#x27;s a full agent runtime. The source code reveals it&#x27;s built with Bun, TypeScript, and React, and includes a tool system, a command system, a memory system, a permission engine, a task manager, a multi-agent coordinator, and an MCP client and server, all wired together under one execution pipeline.</p>
+<p>The execution flow works like this: your input hits a CLI parser, goes to something called the &quot;query engine,&quot; calls the LLM API, runs a tool execution loop, and then renders results back in your terminal.</p>
+<p>The creator&#x27;s argument: if you&#x27;re using Claude Code like a chatbot — just typing questions and hoping for good answers — you&#x27;re using maybe 10% of what it can actually do. The rest of the value is in the systems built around the model.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 2: The Command Service You&#x27;re Ignoring</h2>
+            <p>The source code reveals roughly 85 slash commands in Claude Code. The creator argues most users know maybe five of them — typically just /help and maybe /context. Power users, he says, use these commands like shortcuts and get 10x more value.</p>
+<p>The commands he highlights as most important:</p>
+<p>- **/init** — Sets up project context by generating a claude.md file that acts as Claude Code&#x27;s operating manual for your repository.</p>
+<p>- **/plan** — Puts Claude Code into planning mode. Instead of immediately executing, it maps out the full approach first and asks before touching files. The creator calls this &quot;huge&quot; for complex work and notes it saves tokens long-term.</p>
+<p>- **/compact** — Compresses conversation history to keep important context but drop noise. The creator calls this &quot;one of the fastest fixes&quot; for token burn. You can also pass a prompt to it (e.g., &quot;/compact keep all important information about the website integration&quot;) to control what gets preserved.</p>
+<p>- **/review and /security review** — Built-in structured code review workflows. The creator notes that having these as dedicated commands signals that review is a &quot;first-class workflow&quot; in the product, not an afterthought.</p>
+<p>- **/context** — Manages what files Claude Code is paying attention to. Important because every file in context costs tokens.</p>
+<p>- **/cost** — Shows what you&#x27;ve actually spent in a session. The creator says most people have no idea how much a session costs until they see the bill.</p>
+<p>- **/resume and /summary** — Let you pick up where you left off between sessions without re-explaining everything.</p>
+<p>The creator&#x27;s key point: better prompts are one lever, but knowing these commands is a completely separate lever that most people aren&#x27;t touching.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 3: The Memory System Is Way More Important Than You Think</h2>
+            <p>The source code reveals a full memory system, centered on a file called claude.md. The creator argues that most people either ignore this file or dump random notes into it, and that&#x27;s a huge mistake.</p>
+<p>His framing: claude.md is not documentation — it&#x27;s operating context. If Claude Code is an employee, then claude.md is their onboarding document. It tells them: here&#x27;s how we do things, here&#x27;s what matters, here&#x27;s what we never do, here&#x27;s how this project is structured.</p>
+<p>The best users, he says, keep claude.md short, opinionated, and operational. He gives specific examples of what belongs in it: &quot;We use TypeScript strict mode — always.&quot; &quot;Tests go in test folders next to the source file.&quot; &quot;Never modify the database schema without running migrations.&quot; &quot;Use pnpm, not npm.&quot; The content should be decision rules, constraints, and conventions — not a novel about your project&#x27;s history.</p>
+<p>The source also reveals multiple layers to the memory system: user-level memory, extracted memories, and even team memory synchronization. This means Claude Code has persistent memory mechanisms across project, user, and session contexts. The creator emphasizes that claude.md is &quot;one of the highest-leverage inputs&quot; shaping behavior in future sessions, and that these files get injected before every single chat.</p>
+<p>His strongest recommendation: &quot;If you get nothing else from this video, go update your claude.md file today — whether that&#x27;s on the global level or the project level.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 4: Permissions Are Why Claude Might Feel Slow</h2>
+            <p>The source code reveals a deep permission system with multiple modes: a default mode where it asks about everything, a plan mode, and bypass/auto modes where it can just execute.</p>
+<p>The creator identifies the &quot;real gem&quot; as wildcard permissions — the ability to set rules like &quot;allow all git commands&quot; or &quot;allow all file edits in my src folder.&quot; Instead of Claude Code asking 15 times whether it can run git status, edit a file, or run a test, you set the rule once and it just works.</p>
+<p>These are configured in settings.local.json or settings.json, where you can set global, user-level, or project-level permissions for actions you always want to allow, always deny, or always want it to ask about.</p>
+<p>The creator frames this as one of the highest-ROI changes for recurring workflows: &quot;This lets you go from babysitting every action to actually being able to let it operate like an agent while you step away.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 5: It&#x27;s Built for Multi-Agent Work</h2>
+            <p>The source code reveals a full coordinator subsystem, agent tools, team tools, and a task system designed for background and parallel work. The creator says this one surprised him.</p>
+<p>In plain terms: the architecture supports decomposition — splitting work across multiple agents that can run in parallel. The creator paints a picture: one agent exploring your codebase, another implementing changes, another validating tests. There are even concepts for background tasks — work that continues while you&#x27;re focused on something else.</p>
+<p>The creator acknowledges a caveat: how much of this is fully user-facing today versus still rolling out is harder to say from the source alone. But the architectural intent is clear — Claude Code is designed to handle complex multi-step work by breaking it apart, not by cramming it all into one thread.</p>
+<p>Practical takeaway: instead of one massive prompt like &quot;refactor this entire module, update the tests, and fix the documentation,&quot; break that up. Let Claude Code decompose the work. The best results, he argues, come from breaking complex work into clear sequential or parallel steps rather than hoping one giant instruction to one giant agent gets everything right.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 6: MCP, Plugins, and Skills Are the Real Extension Layer</h2>
+            <p>The source code confirms that MCP (Model Context Protocol) isn&#x27;t just supported by Claude Code — it&#x27;s baked into the architecture. Claude Code is both an MCP client and an MCP server. It can connect to external tools through MCP, and other systems can connect to it.</p>
+<p>Beyond MCP, the source reveals a skills and plugin layer. Power users can build repeatable workflows, custom capabilities, and domain-specific extensions that compound over time.</p>
+<p>The creator&#x27;s argument: this is where Claude Code stops being just a coding tool and becomes an integration layer. You can connect it to databases, APIs, internal tools, documentation systems — anything with an MCP server — and then layer skills and plugins on top for repetitive tasks. The more systems you connect, the more useful it becomes.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 7: Features We Don&#x27;t Have Access to Yet</h2>
+            <p>The codebase includes checks for something called &quot;user type,&quot; and one of the values is &quot;ant&quot; — meaning Anthropic. This indicates certain capabilities are gated behind internal feature flags.</p>
+<p>The source references specific unreleased features: voice mode, a system called &quot;Chyros,&quot; a daemon mode, and a coordinator mode — all behind flags suggesting they&#x27;re internal, experimental, or being rolled out gradually.</p>
+<p>The creator is transparent about the limits of what can be concluded: &quot;We can&#x27;t say for sure how different the internal experience actually is. Some of these could be early prototypes. Some might be close to shipping publicly. The source alone doesn&#x27;t tell us that.&quot;</p>
+<p>What the source does confirm is that Claude Code is heavily feature-flagged, meaning different users may already be getting meaningfully different experiences depending on their environment, build, or rollout group. The creator points to how many features Claude Code has been shipping recently as evidence that they&#x27;ve been built and tested internally before release, noting he&#x27;s heard rumors that computer use had been around internally for a long time before its public release.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Insight 8: How to Actually Use This — The 7 Habits of Top 1% Users</h2>
+            <p>The creator ties everything together with what he calls the single biggest insight from the entire source code: &quot;Top users don&#x27;t just write better prompts. They design a better operating environment for their Claude Code.&quot;</p>
+<p>He lays out seven specific practices:</p>
+<p>**1. Treat claude.md like a force multiplier.** Keep it short, opinionated, updated regularly. Route to other files. This single file shapes every interaction.</p>
+<p>**2. Learn the command service.** You don&#x27;t need all 85 commands, but /plan, /compact, /context, /review, /cost, and /resume will change your daily workflow immediately.</p>
+<p>**3. Configure permissions for recurring workflows.** Stop babysitting every action. Set wildcard rules for stuff you do every day.</p>
+<p>**4. Think in decomposition, not monolithic prompts.** Break complex work into a search phase, a plan phase, an execute phase, and a verify phase. Let Claude Code use its architecture the way it was designed.</p>
+<p>**5. Manage context like it&#x27;s money — because it literally is.** Use /compact when conversations get long. Use /context to control what&#x27;s loaded. Use /summary and /resume to carry work across sessions. Every unnecessary file in context is tokens you&#x27;re paying for. The creator explicitly calls context management &quot;an actual discipline&quot; and &quot;something you need to build a habit around.&quot;</p>
+<p>**6. Connect things to it.** MCP servers, CLIs, plugins, skills — the more tools Claude Code can access, the more valuable it becomes.</p>
+<p>**7. Treat it like infrastructure, not an app.** The source reveals a massive configuration surface: model routing, sub-agent model overrides, shell behavior, privacy controls, the ability to route through different cloud backends like AWS Bedrock or Google Vertex. Most people never touch these settings, but there&#x27;s real leverage in tuning the environment to fit your workflow.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Claude Code is a full agent runtime (tool system, memory system, permission engine, multi-agent coordinator, MCP client/server) — not just a chatbot in your terminal. Using it like a chatbot means you&#x27;re accessing maybe 10% of its capabilities.</li>
+<li>There are roughly 85 slash commands. The most impactful ones to learn immediately are /plan, /compact, /context, /review, /cost, and /resume.</li>
+<li>claude.md is the single highest-leverage file — treat it as an operational onboarding document with short, opinionated decision rules and constraints, not project documentation.</li>
+<li>Configure wildcard permissions in settings.json for recurring workflows (e.g., allow all git commands, allow file edits in src/) to stop babysitting every action.</li>
+<li>Break complex work into phases (search, plan, execute, verify) rather than sending monolithic prompts — the architecture is designed for decomposition and parallel agents.</li>
+<li>Manage context like money: use /compact to compress history, /context to control loaded files, and /summary + /resume to carry work across sessions without token waste.</li>
+<li>Connect Claude Code to external systems via MCP servers and build repeatable workflows with skills and plugins — the more you connect, the more useful it becomes.</li>
+<li>The codebase is heavily feature-flagged with unreleased capabilities (voice mode, daemon mode, coordinator mode) — stay current on updates to leverage new features as they ship.</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Claude Code</strong> &mdash; The primary subject of the video — the creator analyzes its leaked source code to extract practical usage insights across its command system, memory system, permission engine, multi-agent architecture, and MCP integration.</div>
+<div class="tool-row"><strong>MCP (Model Context Protocol)</strong> &mdash; Discussed as being deeply baked into Claude Code&#x27;s architecture. Claude Code is both an MCP client and server, enabling connections to databases, APIs, internal tools, and documentation systems.</div>
+<div class="tool-row"><strong>AWS Bedrock</strong> &mdash; Mentioned as one of the cloud backends that Claude Code can route through via its configuration surface.</div>
+<div class="tool-row"><strong>Google Vertex</strong> &mdash; Mentioned alongside AWS Bedrock as another cloud backend routing option available in Claude Code&#x27;s configuration.</div>
+<div class="tool-row"><strong>NPM</strong> &mdash; The vector through which the leak occurred — Anthropic published an NPM package that included a source map file pointing to readable TypeScript source.</div>
+<div class="tool-row"><strong>Bun</strong> &mdash; Identified in the source code as part of Claude Code&#x27;s technology stack (Bun, TypeScript, and React).</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

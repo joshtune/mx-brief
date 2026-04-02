@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Voice Agents with Gemini 3.1 Flash Live: Free Playground to Production Demos</title>
+    <style>
+    :root {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --accent: oklch(0.269 0 0);
+        --radius: 0.625rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.875rem; margin-top: 0.25rem; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === SUMMARY === */
+    .summary {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /* === KEYWORDS === */
+    .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--foreground);
+    }
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === THEMES === */
+    .themes-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .theme-item {
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .theme-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .theme-header h3 {
+        font-size: 0.975rem;
+        font-weight: 600;
+    }
+    .theme-item > p {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+    /* === PATTERNS === */
+    .pattern-list {
+        padding-left: 1.25rem;
+    }
+    .pattern-list li {
+        margin-bottom: 0.5rem;
+        color: var(--card-foreground);
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    /* === CATEGORY SECTIONS === */
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .category-header h2 { margin-bottom: 0; }
+
+    .takeaways {
+        padding-left: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .takeaways li {
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .one-liner {
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+        margin-top: 0.125rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .video-meta { font-size: 0.6875rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 999px;
+        background: oklch(0.35 0.15 145);
+        color: oklch(0.85 0.15 145);
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-02</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Nate Herk | AI Automation</span>
+                    <span>&middot;</span>
+                    <span>2026-03-28</span>
+                    <span>&middot;</span>
+                    <span>59,940 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Building Voice Agents with Gemini 3.1 Flash Live: Free Playground to Production Demos</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Google released Gemini 3.1 Flash Live, a speech-to-speech voice model with vision, tool calling, and low latency. This walkthrough covers using it free in Google AI Studio, customizing agents with system instructions, and building two demo integrations (a product website voice widget and a personal assistant with ClickUp/Calendar tools) using Claude Code — all built in under 30 minutes each.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/Qt3zMBH-FNg"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>What is Gemini 3.1 Flash Live and Why It Matters</h2>
+            <p>Google released Gemini 3.1 Flash Live, which they&#x27;re calling their biggest upgrade yet. The key architectural difference: it&#x27;s speech-to-speech, not speech-to-text-to-speech. This means the model interprets audio directly rather than transcribing it first, which enables better contextual awareness — it can understand sarcasm, stress, and frustration from vocal cues rather than just words.</p>
+<p>Google&#x27;s benchmarks show it outperformed the previous Gemini 2.5 Flash model by approximately 19% on multi-step function calling. On the Audio Multi-Challenge benchmark, it outperformed both previous Gemini models and models from other providers. A major claimed improvement is handling noisy environments — traffic, horns, restaurant noise — which matters for real-world business voice agent deployments.</p>
+<p>The model also has improved accuracy with alphanumeric strings (since it&#x27;s interpreting speech directly rather than relying on transcription), and it supports over 70 languages, making it potentially useful as a real-time translator.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Getting Started: Free Access in Google AI Studio</h2>
+            <p>You can try Gemini 3.1 Flash Live for free in Google AI Studio. No billing information or API key is required for the free tier.</p>
+<p>Steps to access:</p>
+<p>1. Go to Google AI Studio</p>
+<p>2. On the main screen, look at the top right for the model selector</p>
+<p>3. By default it may be set to &quot;all&quot; or another model — click on the &quot;Live&quot; tab</p>
+<p>4. Select &quot;Gemini 3.1 Flash Live Preview&quot;</p>
+<p>5. You&#x27;ll see pricing information below, but notice it says &quot;no API key&quot; — meaning you&#x27;re on the free plan</p>
+<p>The creator noted the free tier has limitations: your data is used by Google to improve products, rate limits are much lower (roughly 3 active sessions), and you don&#x27;t get features like context caching or batch API. On the paid tier, you get enterprise-grade privacy (data not used by Google), higher rate limits, and additional features.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>First Impressions: Latency and Interruption Handling</h2>
+            <p>The creator&#x27;s first observation was the speed improvement. When testing in Google AI Studio, the model responded quickly and handled interruptions naturally. With previous voice agents, interrupting would create an awkward back-and-forth (&quot;Oh sorry, no you go&quot;). With Gemini 3.1 Flash Live, when interrupted, the model stops immediately and lets you speak. The creator demonstrated this by cutting the model off mid-sentence and it stopped instantly, which felt significantly more human.</p>
+<p>The creator also demonstrated the webcam/vision capability. The model correctly identified the room details (light gray walls, shelf with trophies, microphone), identified the microphone as a Shure MV7, and identified the mic arm as a Rode arm — all from the webcam feed.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Customizing Agents with System Instructions</h2>
+            <p>Google AI Studio lets you build custom voice agents directly in the interface using system instructions.</p>
+<p>Steps:</p>
+<p>1. In the Google AI Studio interface, find the system instructions area</p>
+<p>2. Create instructions and save them with a name (the creator named his &quot;my coach&quot;)</p>
+<p>3. Write your prompt with tone, style, and behavior instructions</p>
+<p>The creator&#x27;s example prompt was something like: &quot;You are my personal fitness coach. You will help me get on a plan to eat healthier, build muscle, stuff like that. And you also have a very strong Scottish accent.&quot;</p>
+<p>After saving, the agent immediately adopted the persona. When asked about taking a 3-week gym break, it responded in a Scottish accent and asked relevant follow-up questions about the reason for the break. The creator noted the accent came and went, which was amusing but demonstrated how quickly you can customize agent behavior.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Studio Configuration Options</h2>
+            <p>Beyond system instructions, Google AI Studio exposes several configuration options:</p>
+<p>- **Voice selection**: Multiple voice options to choose from (must end the session to change)</p>
+<p>- **Media resolution**: Adjustable setting for webcam/vision input</p>
+<p>- **Thinking level**: Options for no thinking (default), low, medium, or high thinking</p>
+<p>- **Session context**: Configurable max context and target context sizes (described as &quot;a lot bigger&quot;)</p>
+<p>- **Function calling**: Toggle to enable tool/function use</p>
+<p>- **Automatic function response**: Additional function calling setting</p>
+<p>- **Grounding with Google Search**: When enabled, the agent performs Google searches on the backend to answer questions</p>
+<p>For function calling, you can define functions by clicking &quot;edit&quot; after toggling it on, but you&#x27;d need to provide actual code snippets for the tools. This is where the Gemini Live API becomes relevant — it lets you connect the voice model to external systems like websites or phone numbers rather than being limited to Google AI Studio.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Demo 1: Product Website Voice Widget (Apex Keyboards)</h2>
+            <p>The first demo was a fake keyboard website called &quot;Apex&quot; with an embedded Gemini 3.1 Flash Live voice agent. The site was described as &quot;very vibe coded&quot; and built as a quick proof of concept.</p>
+<p>The implementation had a button on the site that, when clicked, opened a voice agent widget. The agent had been given knowledge about the Apex brand and products. In the demo:</p>
+<p>- The agent explained what Apex makes (premium mechanical keyboards with great switches, customizable features, durable builds)</p>
+<p>- When asked for a recommendation, it asked clarifying questions (gaming, typing, or office work?)</p>
+<p>- The creator said they&#x27;d be working in an office with some travel, and the agent adapted its recommendation</p>
+<p>- The creator chose the 60% model and asked about shipping; the agent responded with &quot;free standard shipping takes 5 to 7 business days&quot; before being interrupted</p>
+<p>The creator emphasized how conversational and natural the interaction felt, and that you can give the agent domain-specific knowledge.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Demo 2: Personal Assistant &#x27;Arya&#x27; with Calendar and ClickUp Integration</h2>
+            <p>The second demo was a personal assistant named &quot;Arya&quot; with actual tool integrations — specifically Google Calendar and ClickUp. The creator acknowledged the interface was ugly but wanted to demonstrate function calling capabilities.</p>
+<p>In the live demo:</p>
+<p>1. Asked Arya to look at tomorrow&#x27;s calendar (Saturday, March 28th)</p>
+<p>2. Arya called the calendar function and returned: a walk from 9:00 AM to 10:00 AM and a meeting from 12:30 PM to 1:30 PM</p>
+<p>3. Asked Arya to block off 3:00 PM to 5:00 PM called &quot;research block&quot; — Arya created the calendar event</p>
+<p>4. Asked Arya to look up the &quot;research queue&quot; in ClickUp under the &quot;Upai&quot; workspace, specifically in the &quot;Upai Consulting&quot; space</p>
+<p>5. Arya navigated to the correct list and found one existing task called &quot;Chipotle&quot;</p>
+<p>6. Asked Arya to add a new task called &quot;Microsoft&quot; — Arya confirmed it was added</p>
+<p>Both demos were built as localhost applications because connecting the websocket locally is straightforward. The creator stated both sites and integrations were built in under 30 minutes each using Claude Code.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>How the Demos Were Built with Claude Code</h2>
+            <p>The creator&#x27;s workflow for building both demos:</p>
+<p>1. Opened a fresh Claude Code project</p>
+<p>2. Fed it the Gemini API documentation — specifically the API docs, the Live API docs, and the function calling documentation</p>
+<p>3. Had Claude Code analyze all the documentation</p>
+<p>4. Optionally: asked Claude Code to create a resource guide markdown file (e.g., &quot;Gemini flash MD&quot;) to store the information for later reference</p>
+<p>5. Asked Claude Code questions: &quot;How does this work? What can you do? What should we do as a demo?&quot;</p>
+<p>6. Claude Code helped come up with the two different demo use cases</p>
+<p>7. Spun up two separate Claude Code sessions, one per demo, providing API keys and the use case description</p>
+<p>The creator organized everything into a single project folder and planned to drop it into their Free School community (link in the video description) along with a resource guide explaining what the project does and where to find things.</p>
+<p>The creator emphasized: &quot;The best way to learn is just to get your hands dirty and to ask a ton of questions.&quot;</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Gotcha: Function Calling Causes Silent Pauses</h2>
+            <p>A significant current limitation: when the model calls a function/tool, it stops speaking entirely and waits for the response. There is no way to prompt it to keep talking while the function executes in the background.</p>
+<p>The creator explained: &quot;A lot of times what you want to do with voice agents is you want to have them keep talking as they are calling a function because they call the function and they have to wait for the response. You can usually prompt them and have them working out so that they talk so there&#x27;s not awkward silences. But right now with this Gemini 3.1 Flash Live, it doesn&#x27;t do that.&quot;</p>
+<p>The creator described this as a synchronous vs. asynchronous issue and expects it to be resolved in time, but it&#x27;s something to be aware of when building with this model today.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Gotcha: Deploying to Production Is Not Trivial</h2>
+            <p>Both demos ran on localhost because connecting the websocket locally to Gemini is straightforward. Pushing to a live production website or phone number is significantly more complex than using a platform like ElevenLabs.</p>
+<p>The creator contrasted the two approaches:</p>
+<p>- **ElevenLabs**: Handles hosting, manages the persistent websocket connection, and lets you embed a widget with essentially one click</p>
+<p>- **Gemini Live**: Requires a persistent server process. Deploying to Vercel or adding the widget to an existing live site requires thinking about key management, connection handling, and server infrastructure</p>
+<p>The creator noted Claude Code can get you there if you give it structured planning information and the right documentation, but warned: &quot;It&#x27;s not one click of a button the same way that ElevenLabs is.&quot; You&#x27;ll need to go back and forth more and think about how to transfer over keys, connections, and related infrastructure.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Pricing Breakdown</h2>
+            <p>The free tier requires no API key or billing information. Once you move to paid:</p>
+<p>- Pricing is per-token with separate charges for input tokens and output tokens</p>
+<p>- A roughly 10-minute voice call costs approximately 14 cents</p>
+<p>- Paid tier benefits: enterprise-grade data privacy (Google does not use your data to improve products), higher rate limits, context caching, and batch API access</p>
+<p>- Free tier limitations: data used by Google, approximately 3 active sessions, lower rate limits</p>
+<p>The creator&#x27;s recommendation: stay on the free tier while testing and experimenting.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Gemini 3.1 Flash Live is free to try in Google AI Studio with no API key required — just select the &#x27;Live&#x27; tab and choose the model</li>
+<li>The speech-to-speech architecture (not speech-to-text-to-speech) means lower latency, better interruption handling, and contextual understanding of tone/emotion</li>
+<li>You can build custom voice agents directly in Google AI Studio using system instructions with saved presets — no code required for basic experimentation</li>
+<li>For production integrations with tools (calendar, task management, etc.), use Claude Code with the Gemini Live API documentation to build websocket-based applications</li>
+<li>Current limitation: function calling is synchronous — the agent stops speaking while waiting for tool responses, creating awkward silences</li>
+<li>Deploying Gemini Live voice agents to production websites requires managing persistent websocket connections and server infrastructure — significantly more complex than widget-based platforms like ElevenLabs</li>
+<li>A 10-minute voice call costs roughly 14 cents on the paid tier; free tier works for testing but has lower rate limits and uses your data for Google product improvement</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Google AI Studio</strong> &mdash; Primary playground for testing Gemini 3.1 Flash Live — used for voice interaction demos, system instruction configuration, and agent customization</div>
+<div class="tool-row"><strong>Gemini 3.1 Flash Live</strong> &mdash; The voice model being demonstrated — speech-to-speech with vision, tool calling, and 70+ language support</div>
+<div class="tool-row"><strong>Gemini Live API</strong> &mdash; The API that enables connecting the voice model to external systems like websites and phone numbers via websockets</div>
+<div class="tool-row"><strong>Claude Code</strong> &mdash; Used to build both demo projects — the creator fed it Gemini API documentation and had it build the websocket integrations, tool calling, and demo sites in under 30 minutes each</div>
+<div class="tool-row"><strong>ElevenLabs</strong> &mdash; Mentioned as a comparison platform that makes voice agent embedding simpler by handling hosting and websocket management, unlike the more manual Gemini Live approach</div>
+<div class="tool-row"><strong>ClickUp</strong> &mdash; Integrated as a tool in the &#x27;Arya&#x27; personal assistant demo — the agent could look up task lists and create new tasks</div>
+<div class="tool-row"><strong>Google Calendar</strong> &mdash; Integrated as a tool in the &#x27;Arya&#x27; demo — the agent could read calendar events and create new time blocks</div>
+<div class="tool-row"><strong>Perplexity</strong> &mdash; Mentioned by the creator as another AI tool they use alongside Claude Code for researching and fact-checking technical topics</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-02 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>
