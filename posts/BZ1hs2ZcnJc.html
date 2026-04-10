@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthropic&#x27;s Claude Code Leak Reveals the Post-Prompting Era: AI That Acts Without Being Asked</title>
+    <style>
+    :root {
+        --background: oklch(0.12 0 0);
+        --foreground: oklch(0.93 0 0);
+        --card: oklch(0.17 0.005 260);
+        --card-foreground: oklch(0.93 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.6 0 0);
+        --border: oklch(1 0 0 / 8%);
+        --accent-blue: oklch(0.7 0.15 250);
+        --accent-green: oklch(0.7 0.15 155);
+        --accent-amber: oklch(0.75 0.15 75);
+        --accent-purple: oklch(0.7 0.12 300);
+        --radius: 0.5rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === HERO SUMMARY === */
+    .hero {
+        margin-bottom: 1.5rem;
+    }
+    .summary {
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, oklch(0.95 0 0), var(--accent-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === CROSSOVERS === */
+    .crossovers-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .crossover-item {
+        padding: 0.5rem 0;
+    }
+    .crossover-item h3 {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-purple);
+        margin-bottom: 0.375rem;
+    }
+    .perspectives { display: flex; flex-direction: column; gap: 0.125rem; }
+    .perspective {
+        padding: 0.125rem 0;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+    }
+    .perspective-channel {
+        font-weight: 700;
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        display: inline;
+        margin-right: 0.375rem;
+    }
+    .perspective p { color: var(--card-foreground); display: inline; }
+    .so-what {
+        margin-top: 0.5rem;
+        padding-top: 0.375rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--accent-amber);
+    }
+
+    /* === CHANNEL SECTIONS === */
+    .channel-card { }
+    .channel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .channel-header h2 {
+        margin-bottom: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: var(--accent-blue);
+    }
+    .ch-count {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .channel-takeaway {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: var(--foreground);
+        margin-bottom: 0.75rem;
+        font-style: italic;
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+
+    /* === SEEN SECTION === */
+    .seen-section {
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+    }
+    .seen-section > summary {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+    }
+    .seen-section > summary:hover { color: var(--foreground); }
+    .seen-section > .video-list { margin-top: 0.5rem; opacity: 0.75; }
+
+    /* === TOOL UPDATES === */
+    .tool-section-title { color: var(--accent-green) !important; }
+    .tool-link { justify-content: space-between; }
+    .tool-version {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-green);
+        background: oklch(0.2 0.08 155);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    /* === VIDEO CONTEXT === */
+    .video-context {
+        padding: 0.125rem 0.75rem 0.25rem;
+    }
+    .video-about {
+        font-size: 0.75rem;
+        color: var(--card-foreground);
+        line-height: 1.3;
+    }
+    .video-why {
+        font-size: 0.6875rem;
+        color: var(--accent-green);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+        font-style: italic;
+    }
+
+    /* === EXPANDABLE DETAILS === */
+    .video-details {
+        padding: 0 0.75rem 0.5rem;
+    }
+    .video-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .video-details summary:hover { color: oklch(0.85 0.15 250); }
+    .detail-body {
+        padding: 0.5rem 0;
+    }
+    .detail-hook {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 0.375rem;
+    }
+    .detail-line {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.25rem;
+    }
+    .detail-line strong {
+        color: var(--foreground);
+    }
+    .detail-list {
+        padding-left: 1.25rem;
+        margin: 0.25rem 0 0.5rem;
+    }
+    .detail-list li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.125rem;
+    }
+    .detail-list li strong {
+        color: var(--foreground);
+    }
+    .detail-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        border-bottom: 1px solid oklch(0.7 0.15 250 / 30%);
+    }
+    .detail-link:hover {
+        color: oklch(0.85 0.15 250);
+        border-bottom-color: oklch(0.85 0.15 250);
+    }
+
+    /* === CROSSOVER DETAILS === */
+    .crossover-head { }
+    .crossover-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        margin-top: 0.25rem;
+        letter-spacing: 0.03em;
+    }
+    .crossover-details summary:hover { color: oklch(0.85 0.15 250); }
+    .crossover-details .perspectives { margin-top: 0.375rem; }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .one-liner {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+    }
+    .video-meta { font-size: 0.625rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        border-radius: 999px;
+        background: oklch(0.25 0.12 155);
+        color: var(--accent-green);
+        letter-spacing: 0.02em;
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-10</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Matt Wolfe</span>
+                    <span>&middot;</span>
+                    <span>2026-04-03</span>
+                    <span>&middot;</span>
+                    <span>98,553 views</span>
+                    <span class="badge post-type-badge">thought-leadership</span>
+                </div>
+                <h1 class="post-title">Anthropic&#x27;s Claude Code Leak Reveals the Post-Prompting Era: AI That Acts Without Being Asked</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>A leaked Claude Code source revealed Anthropic is building &#x27;Chyros,&#x27; an always-on daemon that autonomously fixes bugs, responds to messages, and monitors your GitHub — signaling a shift toward proactive AI that works in the background without prompts. This week also saw OpenAI&#x27;s record $122B raise with plans for a &#x27;super app,&#x27; new open-weight LLMs approaching frontier quality, and Microsoft&#x27;s best-in-class transcription model.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/BZ1hs2ZcnJc"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>The Claude Code Leak: What Was Actually Found</h2>
+            <p>The biggest news of the week was the leak of Anthropic&#x27;s Claude Code source code. According to Matt Wolfe, the original discovery was made by a user called &quot;Fried Rice&quot; on X, who found that Claude Code&#x27;s source was exposed via a map file in their npm registry. Anthropic — described as a company that typically keeps things close to their chest — has been issuing DMCA takedowns as the code spread across GitHub, but the most interesting aspect isn&#x27;t the leak itself; it&#x27;s what people found inside.</p>
+<p>A VentureBeat article (cited as the best breakdown) revealed a sophisticated three-layer memory architecture. At its core is a file called memory.md — a lightweight index of pointers that is perpetually loaded into context. Critically, this index doesn&#x27;t store data; it stores locations. Raw transcripts are never fully read back into context — instead they&#x27;re grepped for specific identifiers. Wolfe&#x27;s interpretation: as you talk to Claude Code, it saves information and references in a memory file, and that memory file tells the context where to search for relevant information.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Chyros: The Always-On Background Agent</h2>
+            <p>The most significant finding, in Wolfe&#x27;s opinion, was something called Chyros — described in the leaked code as an &#x27;autonomous daemon mode.&#x27; A daemon is a process that runs in the background of your computer, waiting for triggers. Chyros would allow Claude Code to operate as an always-on background agent.</p>
+<p>Wolfe cited an X post that he said did the best job explaining it: Chyros runs in the background 24/7 while you work or sleep. Every few seconds, it receives a &#x27;heartbeat&#x27; — essentially a prompt that asks &#x27;anything worth doing right now?&#x27; It evaluates the current state and either acts or stays quiet. When it acts, it can fix code errors, respond to messages, update files, or run tasks — anything Claude Code can already do, just without the user initiating it.</p>
+<p>Chyros has three exclusive tools that regular Claude Code doesn&#x27;t get: (1) Push notifications — it can reach you on your phone or desktop even when you&#x27;re not in the terminal. (2) File delivery — it can send you things it created without you asking. (3) Pull request subscriptions — it can watch your GitHub and react to code changes autonomously. It also keeps daily logs of everything: what it noticed, what it decided, and what it did.</p>
+<p>Examples given: Your website goes down while you&#x27;re asleep — Chyros detects it, restarts the server, sends you a notification, and by the time you see it, it&#x27;s already resolved. A customer complaint email arrives at 2 AM — Chyros reads it, sends the reply, and logs what it did. Your Stripe subscription page has a typo that&#x27;s been live for 3 days — Chyros spots it, fixes it, and logs the change.</p>
+<p>Wolfe emphasized that Chyros is NOT yet rolled out into Claude Code — it was only discovered in the source code. But he sees it as evidence of a direction he&#x27;s been discussing publicly, including at a CES panel: a &#x27;post-prompting era&#x27; where AI becomes proactive, learns what you do and what you need, and acts on your behalf without explicit prompts. He noted that OpenAI is making similar moves with cron jobs and autonomous heartbeat patterns in their tools.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Other Leak Findings: Capiara, Mythos, and a Tamagotchi</h2>
+            <p>People also found more evidence of &#x27;Capiara&#x27; (discussed in a previous video), which appears to be used interchangeably with &#x27;Mythos&#x27; — described as the next level of model for Anthropic. Additionally, a &#x27;hidden buddy system&#x27; was discovered: a Tamagotchi-style terminal pet with stats like &#x27;chaos&#x27; and &#x27;snark.&#x27; Wolfe noted that many people are speculating this was a planned April Fool&#x27;s joke that got sidelined because of the leak.</p>
+<p>Boris Churnney, described as the head of Claude Code, publicly addressed the leak, calling it a developer error. His statement: &#x27;Mistakes happen. As a team, the important thing is to recognize it&#x27;s never an individual&#x27;s fault. It&#x27;s the process, the culture, or the infrastructure.&#x27; He explained there was a manual deploy step that should have been better automated, and the team has already made improvements. Wolfe noted that no customer data was leaked, Anthropic hasn&#x27;t made a big public statement about it, and nobody appears to have been fired. However, Wolfe predicted spin-off versions of Claude Code will likely appear on the market soon from people leveraging the leaked source.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>OpenAI&#x27;s Record $122 Billion Raise and the &#x27;Super App&#x27; Vision</h2>
+            <p>OpenAI raised $122 billion at a valuation of $852 billion — described as the largest fundraising raise by any company ever, making OpenAI the fastest-growing company in history. From their own blog post: &#x27;At this stage, we are growing revenue four times faster than the companies who defined the internet and mobile eras, including Alphabet and Meta.&#x27; They are now generating $2 billion in revenue per month. Notably, Microsoft participated in this round despite widespread speculation about a falling out between the two companies.</p>
+<p>Buried at the bottom of the fundraising announcement, Wolfe found what he considers the most interesting part — OpenAI&#x27;s roadmap. They stated: &#x27;We&#x27;re building a unified AI super app. As models become more capable, the limiting factors shift from intelligence to usability. Users do not want disconnected tools. They want a single system that can understand intent, take action, and operate across applications, data, and workflows. Our super app will bring together chat, GPTs, Codex, browsing, and our broader agentic capabilities into one agent-first experience.&#x27;</p>
+<p>Wolfe drew a parallel to Anthropic&#x27;s existing approach, where Claude&#x27;s single app already integrates Claude chat, Claude Co-work, and Claude Code. He speculated that OpenAI is heading in this same direction and wouldn&#x27;t be surprised if they also follow Anthropic&#x27;s lead on proactive background agents — especially since they brought on Peter Steinberger, the creator of OpenClaw, to the OpenAI team. This is also cited as the reason they phased out Sora and appear to be skipping a planned &#x27;adult mode,&#x27; instead focusing on core competencies: intelligent models for chat, research, coding, and agentic use cases.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Sora Was Losing $1 Million Per Day</h2>
+            <p>A Wall Street Journal article revealed that Sora, OpenAI&#x27;s video generation model that was shut down the prior week, was losing roughly $1 million per day — over a third of a billion dollars per year. Wolfe noted that with that context, the shutdown makes obvious sense.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Microsoft MAI-Transcribe-1: Best-in-Class Speech Recognition</h2>
+            <p>Microsoft released MAI-Transcribe-1, a new speech recognition model achieving best-in-class accuracy across 25 languages, purpose-built for transcription workloads. On the WER (Word Error Rate) benchmark, it significantly outperforms GPT Transcribe, Scribe V2, Gemini 3.1 Flash, and OpenAI&#x27;s Whisper model. It also reportedly works well in noisy environments.</p>
+<p>Wolfe tested it with early access in the MAI playground, using sentences loaded with homophones (words that sound the same but have different meanings — like &#x27;see&#x27; vs. &#x27;sea,&#x27; &#x27;here&#x27; vs. &#x27;hear&#x27;). The model correctly distinguished between all the homophones, which Wolfe attributed to its contextual understanding. He also noted that MAI-Transcribe-1, along with MAI Voice One and MAI Image 2, are now available inside Microsoft Foundry for developers to build on top of.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Google Veo 3.1 Lite and Price Drops</h2>
+            <p>Google rolled out Veo 3.1 Lite, a more cost-effective video generation model. Pricing: Veo 3.1 standard is about 40 cents per video with audio, Veo 3.1 Fast is 15 cents, and Veo 3.1 Lite is only 5 cents for 720p video. The Lite model does not support 4K generation — you need the standard or Fast tier for that. Logan Kilpatrick from Google announced that prices for Veo 3.1 Fast were also being reduced on April 7th. Wolfe speculated (without insider info) that there may be additional Google announcements around that date.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>New LLM Releases: Open-Weight Models Closing the Gap</h2>
+            <p>Several new large language models dropped this week:</p>
+<p>**Gemma 4 (Google):** An open-weight model released under Apache 2.0, designed to run on Android devices and laptop GPUs. For users with more powerful hardware like an Nvidia Spark or Apple Mac Studio with decent memory, it&#x27;s also designed to run agentic workflows (e.g., OpenClaw running locally). Benchmarks were only compared to past Gemma models but showed strong results.</p>
+<p>**Qwen 3.5 Omni (Alibaba):** An omnimodal model handling text, image, audio, and video understanding. A standout feature: &#x27;audio-visual vibe coding&#x27; where you describe your vision to the camera and it builds a functional website or game. Claims to outperform Gemini 3.1 Pro in audio and match its audio-visual understanding.</p>
+<p>**Qwen 3.6 Plus (Alibaba):** Released just days after the 3.5 Omni, this model targets real-world agents with enhanced agentic coding, multimodal vision, and a 1 million token context window available by default. Benchmarks compare it to Claude 4.5 Opus (not the newest Opus) and Gemini 3 Pro (not 3.1). On Terminal Bench it beats those models; on SWE-Bench Pro it&#x27;s roughly on par with Opus 4.5. This model is not open-weight, though Alibaba mentioned plans to open-source more models soon.</p>
+<p>**Arcee Trinity Large Thinking:** From a company called Arcee (Wolfe&#x27;s first time hearing of them), this is an open-source model under Apache 2.0. Benchmarks compare it to Opus 4.6, Kimmy K 2.5, GLM5, and Minimax M2.7 — roughly on par but not clearly beating them.</p>
+<p>Wolfe&#x27;s broader observation: open-weight models keep gaining ground on closed-source frontier models. The closed-source models always seem &#x27;a few steps further,&#x27; but the gap is shrinking. He also candidly admitted he struggles to test new LLMs because existing models already handle his use cases well, and expressed interest in creating an &#x27;everyday user benchmark&#x27; — inviting collaboration via X or LinkedIn.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Rapid Fire: Claude Computer Use, Codex in Claude Code, ChatGPT in CarPlay, and More</h2>
+            <p>**Computer Use in Claude Code:** Anthropic&#x27;s computer use feature (mouse and keyboard control in the browser) has been added to Claude Code, available in preview for Pro or Max plan subscribers.</p>
+<p>**Codex Plugin for Claude Code:** A Codex plugin now exists for Claude Code, allowing users to bring their OpenAI key into Claude Code&#x27;s workflow so Codex can review code and delegate tasks. Wolfe expressed surprise that Anthropic would allow this.</p>
+<p>**ChatGPT in Apple CarPlay:** ChatGPT is now available inside Apple CarPlay for in-vehicle conversations.</p>
+<p>**OpenAI Acquires TBPN:** OpenAI acquired TBPN (Tech Business Production Network), described as &#x27;the ESPN of tech/business&#x27; — a daily three-hour live show on X and YouTube featuring founder interviews and news. Wolfe found this surprising given OpenAI&#x27;s stated focus on avoiding &#x27;side quests,&#x27; and raised editorial independence questions: Can they still joke about OpenAI? Can they interview competitors like Anthropic and Google?</p>
+<p>**Perplexity Computer for Taxes:** Perplexity released a tax-focused use case for their computer model that can help draft federal income tax returns on official IRS forms, review professionally prepared returns, and build dashboards for complex tax scenarios.</p>
+<p>**Salesforce Making Slack More Agentic:** 30 new capabilities announced for Slackbot, including meeting transcription and note-taking (even for Zoom meetings), reusable AI skills, MCP client functionality, native customer management, deep research, and voice input. Currently on Business Plus and Enterprise Plus plans, with free and pro plans getting access starting in April.</p>
+<p>**GM Using AI for Car Design:** GM is using AI to transform hand-drawn sketches into concept videos, suggest design changes, and run early-stage aerodynamic testing — dramatically compressing the design timeline.</p>
+<p>**Instacart AI Shopping Carts:** Instacart introduced physical AI-powered smart carts with touchscreens, outward-facing cameras, basket cameras, location sensors, and certified scales — all powered by Nvidia Jetson. These process what&#x27;s happening in real time to influence shopping while it&#x27;s happening. Wolfe was skeptical about consumer reception, questioning whether shoppers actually want product recommendations from their cart.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>The Post-Prompting Thesis: Where All of This Is Heading</h2>
+            <p>The throughline Wolfe draws across this week&#x27;s news is the shift toward what he calls the &#x27;post-prompting era.&#x27; Anthropic&#x27;s Chyros daemon, OpenAI&#x27;s super app vision with agentic capabilities, cron jobs, and the hiring of OpenClaw&#x27;s creator — all point in the same direction: LLMs are moving into the background to become &#x27;plumbing&#x27; rather than the primary interface users interact with.</p>
+<p>As Wolfe put it: &#x27;I don&#x27;t want to have to sit and have conversations with it. I want it to know what it&#x27;s supposed to be doing and just go do the things it&#x27;s supposed to be doing.&#x27; The vision is AI that learns your workflows, monitors your systems, and acts proactively — notifying you after the fact rather than waiting for instructions. This is corroborated by OpenAI&#x27;s own words: &#x27;the limiting factors shift from intelligence to usability.&#x27;</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>Anthropic&#x27;s leaked &#x27;Chyros&#x27; daemon reveals a near-future where Claude Code runs autonomously in the background — monitoring GitHub PRs, fixing errors, and sending push notifications without user prompting. It&#x27;s not shipped yet, but it signals the direction.</li>
+<li>Claude Code&#x27;s leaked memory architecture uses a three-layer system with a lightweight pointer index (memory.md) that stores locations rather than data, grepping for specifics only when needed — a pattern worth understanding for anyone building context-aware AI systems.</li>
+<li>OpenAI&#x27;s $122B raise (largest ever) buries the real news: they&#x27;re building a &#x27;unified AI super app&#x27; merging chat, GPTs, Codex, browsing, and agentic capabilities into one agent-first experience — consolidation over fragmentation.</li>
+<li>Open-weight LLMs (Gemma 4, Qwen 3.5/3.6, Arcee Trinity) are rapidly approaching frontier model performance. Gemma 4 runs on laptop GPUs under Apache 2.0, making local agentic workflows increasingly viable.</li>
+<li>Microsoft&#x27;s MAI-Transcribe-1 significantly outperforms Whisper, GPT Transcribe, and Gemini Flash on word error rate across 25 languages — available now in Microsoft Foundry for developers.</li>
+<li>Sora was losing roughly $1M/day before shutdown — a concrete reminder that even well-funded AI products need sustainable unit economics.</li>
+<li>The broader trend across Anthropic, OpenAI, and Salesforce/Slack is toward proactive, always-on AI agents that act autonomously rather than waiting for prompts — the &#x27;post-prompting era.&#x27;</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Claude Code</strong> &mdash; Source code was leaked via npm registry map file. Leak revealed three-layer memory architecture, Chyros daemon mode, and Capiara/Mythos model references. Computer Use feature was also added to Claude Code this week.</div>
+<div class="tool-row"><strong>Chyros (Anthropic)</strong> &mdash; Unreleased autonomous daemon found in leaked Claude Code source. Runs 24/7 in background with heartbeat mechanism, push notifications, file delivery, and PR subscriptions.</div>
+<div class="tool-row"><strong>Recraft V4</strong> &mdash; Sponsored segment. AI image generation tool with V4/V4 Pro (photorealistic) and V4 Vector (native SVG generation) models for professional design assets.</div>
+<div class="tool-row"><strong>MAI-Transcribe-1 (Microsoft)</strong> &mdash; New speech recognition model with best-in-class accuracy across 25 languages. Demonstrated with homophone-heavy test sentences. Available in Microsoft Foundry.</div>
+<div class="tool-row"><strong>Microsoft Foundry</strong> &mdash; Developer platform now offering MAI-Transcribe-1, MAI Voice One, and MAI Image 2 for building applications.</div>
+<div class="tool-row"><strong>Veo 3.1 Lite (Google)</strong> &mdash; Cost-effective video generation at 5 cents per 720p video. Standard Veo 3.1 is 40 cents, Fast is 15 cents.</div>
+<div class="tool-row"><strong>Google AI Inbox</strong> &mdash; Smart email prioritization with daily personalized briefings. Beta, only for Google AI Ultra subscribers ($250/month).</div>
+<div class="tool-row"><strong>Gemma 4 (Google)</strong> &mdash; Open-weight LLM under Apache 2.0 designed for Android devices and laptop GPUs, suitable for local agentic workflows.</div>
+<div class="tool-row"><strong>Qwen 3.5 Omni (Alibaba)</strong> &mdash; Omnimodal model for text, image, audio, and video with &#x27;audio-visual vibe coding&#x27; feature. Claims to outperform Gemini 3.1 Pro in audio.</div>
+<div class="tool-row"><strong>Qwen 3.6 Plus (Alibaba)</strong> &mdash; Agent-focused model with 1M token context window, competitive with Claude 4.5 Opus on SWE-Bench Pro.</div>
+<div class="tool-row"><strong>Arcee Trinity Large Thinking</strong> &mdash; Open-source LLM under Apache 2.0 from Arcee, roughly on par with Opus 4.6 on benchmarks.</div>
+<div class="tool-row"><strong>Codex (OpenAI)</strong> &mdash; Now available as a plugin for Claude Code, allowing OpenAI&#x27;s coding model to review code and delegate tasks within Claude Code&#x27;s UI.</div>
+<div class="tool-row"><strong>ChatGPT</strong> &mdash; Now available in Apple CarPlay for in-vehicle voice conversations.</div>
+<div class="tool-row"><strong>TBPN</strong> &mdash; Tech media company (daily live show) acquired by OpenAI.</div>
+<div class="tool-row"><strong>Perplexity Computer for Taxes</strong> &mdash; Tax-focused use case for Perplexity&#x27;s computer model — drafts federal returns, reviews prepared returns, builds tax dashboards.</div>
+<div class="tool-row"><strong>Slack (Salesforce)</strong> &mdash; 30 new agentic capabilities including meeting transcription, reusable AI skills, MCP client, native CRM, deep research, and voice input.</div>
+<div class="tool-row"><strong>Instacart AI Smart Carts</strong> &mdash; Physical shopping carts with cameras, touchscreens, location sensors, and Nvidia Jetson processing for real-time in-store product recommendations.</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-10 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

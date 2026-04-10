@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intel Arc Pro B70 vs Nvidia RTX Pro 4000 vs AMD R9700: Local AI GPU Benchmarks with vLLM</title>
+    <style>
+    :root {
+        --background: oklch(0.12 0 0);
+        --foreground: oklch(0.93 0 0);
+        --card: oklch(0.17 0.005 260);
+        --card-foreground: oklch(0.93 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.6 0 0);
+        --border: oklch(1 0 0 / 8%);
+        --accent-blue: oklch(0.7 0.15 250);
+        --accent-green: oklch(0.7 0.15 155);
+        --accent-amber: oklch(0.75 0.15 75);
+        --accent-purple: oklch(0.7 0.12 300);
+        --radius: 0.5rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === HERO SUMMARY === */
+    .hero {
+        margin-bottom: 1.5rem;
+    }
+    .summary {
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, oklch(0.95 0 0), var(--accent-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === CROSSOVERS === */
+    .crossovers-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .crossover-item {
+        padding: 0.5rem 0;
+    }
+    .crossover-item h3 {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-purple);
+        margin-bottom: 0.375rem;
+    }
+    .perspectives { display: flex; flex-direction: column; gap: 0.125rem; }
+    .perspective {
+        padding: 0.125rem 0;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+    }
+    .perspective-channel {
+        font-weight: 700;
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        display: inline;
+        margin-right: 0.375rem;
+    }
+    .perspective p { color: var(--card-foreground); display: inline; }
+    .so-what {
+        margin-top: 0.5rem;
+        padding-top: 0.375rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--accent-amber);
+    }
+
+    /* === CHANNEL SECTIONS === */
+    .channel-card { }
+    .channel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .channel-header h2 {
+        margin-bottom: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: var(--accent-blue);
+    }
+    .ch-count {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .channel-takeaway {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: var(--foreground);
+        margin-bottom: 0.75rem;
+        font-style: italic;
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+
+    /* === SEEN SECTION === */
+    .seen-section {
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+    }
+    .seen-section > summary {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+    }
+    .seen-section > summary:hover { color: var(--foreground); }
+    .seen-section > .video-list { margin-top: 0.5rem; opacity: 0.75; }
+
+    /* === TOOL UPDATES === */
+    .tool-section-title { color: var(--accent-green) !important; }
+    .tool-link { justify-content: space-between; }
+    .tool-version {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-green);
+        background: oklch(0.2 0.08 155);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    /* === VIDEO CONTEXT === */
+    .video-context {
+        padding: 0.125rem 0.75rem 0.25rem;
+    }
+    .video-about {
+        font-size: 0.75rem;
+        color: var(--card-foreground);
+        line-height: 1.3;
+    }
+    .video-why {
+        font-size: 0.6875rem;
+        color: var(--accent-green);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+        font-style: italic;
+    }
+
+    /* === EXPANDABLE DETAILS === */
+    .video-details {
+        padding: 0 0.75rem 0.5rem;
+    }
+    .video-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .video-details summary:hover { color: oklch(0.85 0.15 250); }
+    .detail-body {
+        padding: 0.5rem 0;
+    }
+    .detail-hook {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 0.375rem;
+    }
+    .detail-line {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.25rem;
+    }
+    .detail-line strong {
+        color: var(--foreground);
+    }
+    .detail-list {
+        padding-left: 1.25rem;
+        margin: 0.25rem 0 0.5rem;
+    }
+    .detail-list li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.125rem;
+    }
+    .detail-list li strong {
+        color: var(--foreground);
+    }
+    .detail-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        border-bottom: 1px solid oklch(0.7 0.15 250 / 30%);
+    }
+    .detail-link:hover {
+        color: oklch(0.85 0.15 250);
+        border-bottom-color: oklch(0.85 0.15 250);
+    }
+
+    /* === CROSSOVER DETAILS === */
+    .crossover-head { }
+    .crossover-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        margin-top: 0.25rem;
+        letter-spacing: 0.03em;
+    }
+    .crossover-details summary:hover { color: oklch(0.85 0.15 250); }
+    .crossover-details .perspectives { margin-top: 0.375rem; }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .one-liner {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+    }
+    .video-meta { font-size: 0.625rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        border-radius: 999px;
+        background: oklch(0.25 0.12 155);
+        color: var(--accent-green);
+        letter-spacing: 0.02em;
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-10</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Alex Ziskind</span>
+                    <span>&middot;</span>
+                    <span>2026-04-05</span>
+                    <span>&middot;</span>
+                    <span>239,660 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">Intel Arc Pro B70 vs Nvidia RTX Pro 4000 vs AMD R9700: Local AI GPU Benchmarks with vLLM</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>Alex Ziskind benchmarks Intel&#x27;s new Arc Pro B70 (32GB VRAM, under $1,000) against the Nvidia RTX Pro 4000 ($1,699, 24GB GDDR7) and AMD Radeon AI R9700 ($1,300, 32GB GDDR6) for local AI inference, image generation, and video generation. He then scales to four B70s (128GB total VRAM) and tests multi-GPU performance. The B70 delivers competitive or better performance than cards costing significantly more, though Intel&#x27;s software stack remains a limiting factor.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/RcIWhm16ouQ"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>The Hardware Lineup and Pricing</h2>
+            <p>The video compares three professional-tier GPUs for local AI workloads:</p>
+<p>**Intel Arc Pro B70**: 32GB VRAM, 68 GB/s memory bandwidth, under $1,000. Requires an external power cable (unlike the smaller B50 which draws power from PCIe alone).</p>
+<p>**Nvidia RTX Pro 4000 Black**: 24GB GDDR7, 672 GB/s memory bandwidth, $1,699 at MicroCenter (retail $1,999). Single-slot design with four DisplayPort outputs.</p>
+<p>**AMD Radeon AI R9700**: 32GB GDDR6, 640 GB/s memory bandwidth, approximately $1,300. Until the B70&#x27;s release, this was the only GPU with 32GB VRAM available under $1,300.</p>
+<p>For context, a single Nvidia RTX 5090 also has 32GB VRAM but costs just under $4,000. The B70 comes in at the lowest price but also has the lowest memory bandwidth of the three cards tested.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>B60 Baseline Results (Recap from Previous Video)</h2>
+            <p>Before testing the B70, Alex recapped his B60 benchmarks running the Qwen 34B model at Q4KM quantization to establish baseline expectations. Performance varied dramatically depending on the software stack:</p>
+<p>**SYCL (Intel-specific stack via Llama CPP):**</p>
+<p>- Concurrency 1: 1,000 tokens/sec prompt processing, 66 tokens/sec generation</p>
+<p>- Concurrency 4: 898 tokens/sec prompt processing, 83 tokens/sec generation</p>
+<p>**Vulkan (cross-platform via Llama CPP):**</p>
+<p>- Concurrency 1: 1,162 tokens/sec prompt processing, 44 tokens/sec generation</p>
+<p>- Vulkan beat SYCL on prompt processing, but SYCL won on token generation</p>
+<p>**vLLM (4-bit AWQ quantization):**</p>
+<p>- Concurrency 1: 8,118 tokens/sec prompt processing, 67 tokens/sec generation</p>
+<p>- Concurrency 4: 215 tokens/sec token generation</p>
+<p>vLLM showed massively better prompt processing performance and significantly better concurrency scaling than Llama CPP, making it the clear winner for professional GPU workloads.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Benchmarking Setup and Tools</h2>
+            <p>Alex used vLLM as the inference server for all head-to-head GPU comparisons (not Llama CPP). The primary model tested was Qwen 34B in both full BF16 and AWQ (Activation Aware Quantization, 4-bit) versions.</p>
+<p>For benchmarking, he used **Llama Beni** (by Yugger), an open-source benchmarking tool. He emphasized this is different from &#x27;Llama Bench.&#x27; Key advantages of Llama Beni:</p>
+<p>- Works with any server, not just Llama CPP (including vLLM)</p>
+<p>- Allows prefilling context so you can test with filled contexts, not just empty context</p>
+<p>vLLM&#x27;s behavior is to consume as much available VRAM as possible — it fills all available memory for KV cache. On the RTX 4000, it consumed all 24GB; on the B70, all 32GB.</p>
+<p>He verified GPU power with nvidia-smi, showing 145 watts available on the RTX Pro 4000.</p>
+            <pre class="code-block"><code class="lang-bash">nvidia-smi</code></pre>
+        </section>
+        <section class="post-section">
+            <h2>B70 vs RTX Pro 4000: Full BF16 Qwen 34B</h2>
+            <p>Running the full BF16 (unquantized) version of Qwen 34B on vLLM:</p>
+<p>**Concurrency 1:**</p>
+<p>- B70: 12,910 tokens/sec prompt processing, 56 tokens/sec generation</p>
+<p>- RTX 4000: 11,745 tokens/sec prompt processing, 51 tokens/sec generation</p>
+<p>- B70 wins on both metrics, which was unexpected since the RTX 4000 has significantly higher memory bandwidth (672 vs 68 GB/s)</p>
+<p>Results were consistent on re-runs: 56 on the B70, 51 on the RTX 4000 for token generation. Prompt processing showed more variance on the B70 (second run hit 14,624). Time to first response was also faster on the B70.</p>
+<p>**Concurrency 4:**</p>
+<p>- B70: ~12,000 tokens/sec prompt processing, 194 tokens/sec generation</p>
+<p>- RTX 4000: ~10,000 tokens/sec prompt processing, 173 tokens/sec generation</p>
+<p>- B70 maintains its lead under load</p>
+<p>The RTX 4000 has less VRAM (24 vs 32GB), costs almost twice as much, and delivered slightly lower performance on this model.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>B70 vs RTX Pro 4000: AWQ 4-bit Quantization</h2>
+            <p>Switching to AWQ (Activation Aware Quantization) — a 4-bit quantization format designed specifically for vLLM — produced different results. AWQ analyzes activations to identify which weights are most important to model quality and protects those weights from aggressive quantization, unlike uniform quantization in Llama CPP or MLX.</p>
+<p>**Concurrency 1:**</p>
+<p>- B70: 9,825 tokens/sec prompt processing, 72 tokens/sec generation</p>
+<p>- RTX 4000: 11,490 tokens/sec prompt processing, 89 tokens/sec generation</p>
+<p>- Nvidia wins significantly with AWQ quantization</p>
+<p>**Concurrency 4:**</p>
+<p>- B70: 9,981 tokens/sec prompt processing, 236 tokens/sec generation</p>
+<p>- RTX 4000: 10,470 tokens/sec prompt processing, 275 tokens/sec generation</p>
+<p>- The gap widens further at higher concurrency</p>
+<p>This demonstrates that performance rankings can flip depending on model and quantization format. The RTX 4000&#x27;s higher memory bandwidth appears to give it an advantage specifically with AWQ quantized models.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>B70 vs AMD R9700: Full BF16 and AWQ</h2>
+            <p>The AMD R9700 uses the ROCm software stack. Alex noted that ROCm has had a &#x27;rocky history&#x27; but is catching up, though neither Intel nor AMD match Nvidia&#x27;s software maturity.</p>
+<p>**Qwen 34B BF16, Concurrency 1:**</p>
+<p>- B70: 16,742 tokens/sec prompt processing, 56 tokens/sec generation</p>
+<p>- R9700: 10,800 tokens/sec prompt processing, 43 tokens/sec generation</p>
+<p>- B70 dominates despite the R9700 having higher memory bandwidth and costing $350 more</p>
+<p>**Qwen 34B BF16, Concurrency 4:**</p>
+<p>- B70: 12,564 prompt processing, 197 tokens/sec generation</p>
+<p>- R9700: 9,879 prompt processing, 149 tokens/sec generation</p>
+<p>**Qwen 34B AWQ, Concurrency 1:**</p>
+<p>- B70: 9,281 prompt processing, 72 tokens/sec generation</p>
+<p>- R9700: 13,733 prompt processing, 25 tokens/sec generation</p>
+<p>- AMD had better prompt processing but catastrophically low token generation at 25 tokens/sec</p>
+<p>**Qwen 34B AWQ, Concurrency 4:**</p>
+<p>- B70: 10,300 prompt processing, 234 tokens/sec generation</p>
+<p>- R9700: 8,900 prompt processing, 94 tokens/sec generation</p>
+<p>Alex attributed the R9700&#x27;s poor showing primarily to ROCm&#x27;s software maturity, noting that Llama CPP might actually produce better results on this card than vLLM with ROCm.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Image and Video Generation: B70 vs R9700</h2>
+            <p>Since both the B70 and R9700 have 32GB VRAM, Alex tested image and video generation workloads that require that much memory.</p>
+<p>**Image Generation** using Qwen Image 2512 FP8 quantization at 1328x1328 resolution via ComfyUI:</p>
+<p>- Both cards finished at approximately the same time</p>
+<p>- At a smaller resolution: R9700 finished in 133 seconds, B70 in 147 seconds</p>
+<p>However, there&#x27;s an important caveat: the B70 was running ComfyUI 0.8.2 while the R9700 ran ComfyUI 0.18.1 (much newer). The B70 is limited to the version bundled in Intel&#x27;s **LLM Scaler vLLM Omni package**, which includes Intel-specific patches, custom nodes for XPU (Intel&#x27;s GPU label), IPEX (Intel PyTorch extension), ComfyUI GGUF with SYCL support, and preconfigured custom nodes. AMD&#x27;s ROCm works through PyTorch&#x27;s existing HIP/CUDA compatibility layer, allowing use of the latest ComfyUI.</p>
+<p>**Video Generation** using LTX2, 5-second video at 1280x720:</p>
+<p>- B70: 144 seconds</p>
+<p>- R9700: 169 seconds</p>
+<p>- B70 wins by about 25 seconds</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Four B70s: Multi-GPU Scaling (128GB Total VRAM)</h2>
+            <p>Alex installed four B70s for 128GB total VRAM. All four cards ran at PCIe Gen 5. However, while per-GPU bandwidth is 68 GB/s, GPU-to-GPU PCIe communication is limited to 63 GB/s, which creates a bottleneck.</p>
+<p>**Qwen 34B AWQ (same model as single-GPU tests):**</p>
+<p>- Concurrency 1: 18,170 tokens/sec prompt processing (nearly doubled from 9,281), but token generation dropped from 72 to 52 tokens/sec</p>
+<p>- Concurrency 4: ~18,000 prompt processing, 183 tokens/sec generation (down from 234 with single GPU)</p>
+<p>**Qwen 34B BF16:**</p>
+<p>- Concurrency 1: 31,700 tokens/sec prompt processing (impressive for large context workloads)</p>
+<p>- Concurrency 4: 172 tokens/sec generation (down from 197 with single GPU)</p>
+<p>The pattern is clear: prompt processing scales well with more GPUs, but token generation actually decreases for models that fit on a single GPU. This is due to the PCIe communication overhead between GPUs. Multi-GPU only makes sense when you need the extra VRAM for larger models or larger context windows.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Four B70s with Larger Models: Qwen 3 Coder 30B A3B</h2>
+            <p>To properly utilize 128GB of VRAM, Alex tested Qwen 3 Coder 30B A3B Instruct — a 30 billion parameter mixture-of-experts model with 3 billion active parameters. vLLM showed 100% GPU utilization across all four cards and consumed nearly all available VRAM (the extra space is used for KV cache and context).</p>
+<p>**Concurrency 1:**</p>
+<p>- 19,296 tokens/sec prompt processing</p>
+<p>- 28 tokens/sec generation</p>
+<p>Alex noted that 30-32 billion parameter models are a practical sweet spot for 128GB of VRAM. While you could technically run larger models, you&#x27;d lose headroom for KV cache and context. You need that extra VRAM beyond what the model weights consume.</p>
+<p>He demonstrated the model running in the Zed code editor, using it for both chat and agentic coding tasks. The model responded but was noted as being &#x27;an older model&#x27; and &#x27;not the best model out there&#x27; — a limitation of Intel&#x27;s software support lagging behind the latest model releases. He tested it by generating a Python Plotly script and a web application architecture design, showing decent GPU saturation on both memory and compute.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>The Software Stack Problem</h2>
+            <p>A recurring theme throughout all benchmarks: hardware capability is not the bottleneck — software support is. The key software stacks and their status as discussed:</p>
+<p>**Nvidia (CUDA)**: The most mature ecosystem. Nvidia charges premium prices partly because their software layer is far ahead and has the broadest adoption.</p>
+<p>**Intel (SYCL, IPEX, vLLM Omni)**: Capable hardware at great prices, but the software stack limits which models can run, which versions of tools like ComfyUI are available, and how quickly new models are supported. Intel needs to update model support more quickly.</p>
+<p>**AMD (ROCm)**: Has had a historically rough software experience but is catching up. ROCm&#x27;s advantage is that it works through PyTorch&#x27;s HIP/CUDA compatibility layer, which means broader tool compatibility (like running the latest ComfyUI). However, inference performance on vLLM was poor compared to both Intel and Nvidia in these tests.</p>
+<p>Alex emphasized checking model compatibility before purchasing — by the time you watch the video, newer models may or may not be supported on Intel&#x27;s stack.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>The Intel Arc Pro B70 at under $1,000 with 32GB VRAM delivers competitive or better performance than the Nvidia RTX Pro 4000 ($1,699, 24GB) and AMD R9700 ($1,300, 32GB) in most vLLM benchmarks with Qwen 34B BF16, though Nvidia wins with AWQ quantization</li>
+<li>vLLM is the clear inference server choice for professional GPUs — it dramatically outperforms Llama CPP (SYCL and Vulkan backends) on prompt processing and concurrency scaling</li>
+<li>Multi-GPU scaling with B70s doubles prompt processing throughput but actually decreases token generation speed for models that fit on a single card, due to PCIe GPU-to-GPU communication bottleneck (63 GB/s limit)</li>
+<li>Performance rankings flip depending on quantization format — always benchmark your specific model and quantization combination rather than assuming one GPU universally wins</li>
+<li>Intel&#x27;s biggest weakness is software, not hardware — limited model support, older ComfyUI versions, and slower updates for new models; check compatibility before buying</li>
+<li>For 128GB total VRAM (4x B70), 30-32B parameter models are the practical sweet spot — you need headroom beyond model weights for KV cache and context</li>
+<li>Use Llama Beni (not Llama Bench) for benchmarking — it works with any server including vLLM and supports prefilled context testing</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>vLLM</strong> &mdash; Primary inference server for all head-to-head GPU benchmarks. Described as the best option for professional GPUs with high concurrency and throughput. Consumes all available VRAM for KV cache.</div>
+<div class="tool-row"><strong>Llama CPP</strong> &mdash; Used for initial B60 benchmarks with SYCL (Intel-specific) and Vulkan (cross-platform) backends. Showed inferior concurrency scaling compared to vLLM.</div>
+<div class="tool-row"><strong>Llama Beni</strong> &mdash; Open-source benchmarking tool by Yugger. Used for all benchmark measurements. Key advantage: works with any server (not just Llama CPP) and supports prefilled context testing.</div>
+<div class="tool-row"><strong>ComfyUI</strong> &mdash; Used for image generation (Qwen Image 2512) and video generation (LTX2). B70 limited to version 0.8.2 via Intel&#x27;s package; R9700 ran version 0.18.1.</div>
+<div class="tool-row"><strong>LLM Scaler vLLM Omni package</strong> &mdash; Intel-specific package that bundles vLLM with Intel patches, custom ComfyUI nodes for XPU, IPEX PyTorch support, SYCL-enabled GGUF, and preconfigured nodes for the Intel platform.</div>
+<div class="tool-row"><strong>nvidia-smi</strong> &mdash; Used to verify GPU power (145W) and VRAM (24GB) on the RTX Pro 4000.</div>
+<div class="tool-row"><strong>SYCL</strong> &mdash; Intel-specific compute backend used with Llama CPP. Gave better token generation than Vulkan (66 vs 44 tokens/sec) on the B60.</div>
+<div class="tool-row"><strong>ROCm</strong> &mdash; AMD&#x27;s GPU compute stack, used for the R9700 benchmarks. Noted as having a historically rough experience but catching up. Works through PyTorch&#x27;s HIP/CUDA compatibility layer.</div>
+<div class="tool-row"><strong>IPEX (Intel Extension for PyTorch)</strong> &mdash; Intel&#x27;s PyTorch extension providing XPU support, bundled in the LLM Scaler package.</div>
+<div class="tool-row"><strong>Zed</strong> &mdash; Code editor used to demonstrate the Qwen 3 Coder 30B model running on four B70s for coding tasks, including chat and agent modes.</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-10 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>

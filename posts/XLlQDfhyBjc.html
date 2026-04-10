@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TurboQuant: How KV Cache Compression Makes 16GB Machines Run Bigger LLMs</title>
+    <style>
+    :root {
+        --background: oklch(0.12 0 0);
+        --foreground: oklch(0.93 0 0);
+        --card: oklch(0.17 0.005 260);
+        --card-foreground: oklch(0.93 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.6 0 0);
+        --border: oklch(1 0 0 / 8%);
+        --accent-blue: oklch(0.7 0.15 250);
+        --accent-green: oklch(0.7 0.15 155);
+        --accent-amber: oklch(0.75 0.15 75);
+        --accent-purple: oklch(0.7 0.12 300);
+        --radius: 0.5rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === HERO SUMMARY === */
+    .hero {
+        margin-bottom: 1.5rem;
+    }
+    .summary {
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, oklch(0.95 0 0), var(--accent-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === CROSSOVERS === */
+    .crossovers-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .crossover-item {
+        padding: 0.5rem 0;
+    }
+    .crossover-item h3 {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-purple);
+        margin-bottom: 0.375rem;
+    }
+    .perspectives { display: flex; flex-direction: column; gap: 0.125rem; }
+    .perspective {
+        padding: 0.125rem 0;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+    }
+    .perspective-channel {
+        font-weight: 700;
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        display: inline;
+        margin-right: 0.375rem;
+    }
+    .perspective p { color: var(--card-foreground); display: inline; }
+    .so-what {
+        margin-top: 0.5rem;
+        padding-top: 0.375rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--accent-amber);
+    }
+
+    /* === CHANNEL SECTIONS === */
+    .channel-card { }
+    .channel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .channel-header h2 {
+        margin-bottom: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: var(--accent-blue);
+    }
+    .ch-count {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .channel-takeaway {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: var(--foreground);
+        margin-bottom: 0.75rem;
+        font-style: italic;
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+
+    /* === SEEN SECTION === */
+    .seen-section {
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+    }
+    .seen-section > summary {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+    }
+    .seen-section > summary:hover { color: var(--foreground); }
+    .seen-section > .video-list { margin-top: 0.5rem; opacity: 0.75; }
+
+    /* === TOOL UPDATES === */
+    .tool-section-title { color: var(--accent-green) !important; }
+    .tool-link { justify-content: space-between; }
+    .tool-version {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-green);
+        background: oklch(0.2 0.08 155);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    /* === VIDEO CONTEXT === */
+    .video-context {
+        padding: 0.125rem 0.75rem 0.25rem;
+    }
+    .video-about {
+        font-size: 0.75rem;
+        color: var(--card-foreground);
+        line-height: 1.3;
+    }
+    .video-why {
+        font-size: 0.6875rem;
+        color: var(--accent-green);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+        font-style: italic;
+    }
+
+    /* === EXPANDABLE DETAILS === */
+    .video-details {
+        padding: 0 0.75rem 0.5rem;
+    }
+    .video-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .video-details summary:hover { color: oklch(0.85 0.15 250); }
+    .detail-body {
+        padding: 0.5rem 0;
+    }
+    .detail-hook {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 0.375rem;
+    }
+    .detail-line {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.25rem;
+    }
+    .detail-line strong {
+        color: var(--foreground);
+    }
+    .detail-list {
+        padding-left: 1.25rem;
+        margin: 0.25rem 0 0.5rem;
+    }
+    .detail-list li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.125rem;
+    }
+    .detail-list li strong {
+        color: var(--foreground);
+    }
+    .detail-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        border-bottom: 1px solid oklch(0.7 0.15 250 / 30%);
+    }
+    .detail-link:hover {
+        color: oklch(0.85 0.15 250);
+        border-bottom-color: oklch(0.85 0.15 250);
+    }
+
+    /* === CROSSOVER DETAILS === */
+    .crossover-head { }
+    .crossover-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        margin-top: 0.25rem;
+        letter-spacing: 0.03em;
+    }
+    .crossover-details summary:hover { color: oklch(0.85 0.15 250); }
+    .crossover-details .perspectives { margin-top: 0.375rem; }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .one-liner {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+    }
+    .video-meta { font-size: 0.625rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        border-radius: 999px;
+        background: oklch(0.25 0.12 155);
+        color: var(--accent-green);
+        letter-spacing: 0.02em;
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+
+    
+    .post-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .post-header { margin-bottom: 2rem; }
+
+    .post-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.25;
+        margin-top: 0.5rem;
+    }
+
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+    }
+
+    .post-type-badge { text-transform: capitalize; }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+    .video-embed iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+
+    .tldr-box { border-left: 3px solid oklch(0.7 0.15 250); }
+    .tldr-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tldr-box p { font-size: 0.9375rem; line-height: 1.7; }
+
+    .post-section { margin-bottom: 2rem; }
+    .post-section h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.015em;
+    }
+    .post-section p {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--card-foreground);
+        margin-bottom: 0.75rem;
+    }
+
+    .code-block {
+        background: oklch(0.12 0 0);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.6;
+        color: oklch(0.85 0.05 160);
+    }
+
+    .takeaways-box { border-left: 3px solid oklch(0.7 0.15 145); }
+    .takeaways-box h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .takeaways-box ul { padding-left: 1.25rem; }
+    .takeaways-box li {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: var(--card-foreground);
+    }
+
+    .tool-row {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        color: var(--card-foreground);
+    }
+    .tool-row:last-child { border-bottom: none; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="post-nav">
+            <a href="../index.html" class="back-link">&larr; Back to Brief</a>
+            <span class="muted">2026-04-10</span>
+        </nav>
+
+        <article class="post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span>Alex Ziskind</span>
+                    <span>&middot;</span>
+                    <span>2026-04-08</span>
+                    <span>&middot;</span>
+                    <span>234,307 views</span>
+                    <span class="badge post-type-badge">tutorial</span>
+                </div>
+                <h1 class="post-title">TurboQuant: How KV Cache Compression Makes 16GB Machines Run Bigger LLMs</h1>
+            </header>
+
+            <div class="card tldr-box">
+                <h2>TL;DR</h2>
+                <p>TurboQuant is a new technique that compresses the KV cache (not model weights) when running LLMs locally, enabling 2x more usable context on memory-constrained machines. Alex Ziskind benchmarks it on a 16GB M4 Mac Mini and 128GB M5 Max MacBook Pro, finding that asymmetric quantization (Q8 for K, Turbo for V) preserves quality while dramatically reducing memory usage.</p>
+            </div>
+
+            <div class="video-embed">
+                <iframe
+                    src="https://www.youtube.com/embed/XLlQDfhyBjc"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            
+        <section class="post-section">
+            <h2>The Problem: Model Weights Fit, But KV Cache Doesn&#x27;t</h2>
+            <p>Alex demonstrates the problem using a Mac Mini with 16GB of memory. He wants to run Qwen 3.5, a popular model family with high download numbers. The 9 billion parameter version in full BF16 (unquantized) is 19.3GB — it simply won&#x27;t fit. Even quantized versions that appear small enough on disk consume far more memory at runtime due to the KV cache.</p>
+<p>He shows this on his 128GB M5 Max MacBook Pro: loading a Q4 (4-bit) version of the model — which is only about 6GB on disk — takes memory from 77GB to 84GB. That&#x27;s more than the 6GB model size because memory must also be reserved for context and cache. At 4,000 context length, usage sits at 84GB. Cranking context to the model&#x27;s full supported length pushes it to 92GB — before even running a single prompt.</p>
+<p>When he sends a long prompt (~17,000 tokens), memory spikes further. Each subsequent message resends the entire conversation for processing, and the KV cache grows with every generated token. The KV cache stores key-value pairs — mathematical summaries of every token the model has already seen — acting as short-term memory. It lives in RAM alongside the model weights.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Quantization vs. TurboQuant: Two Different Compression Targets</h2>
+            <p>Traditional quantization compresses model weights. BF16 stores weights as 16-bit floating point numbers. Going to Q8 (8-bit) shrinks the 9B parameter Qwen model from 19.3GB to about 10GB. Q4 (4-bit) gets it down to 5.98GB. Alex notes that going below Q4 — such as Q3 or Q2 — usually produces poor results, with the LLM sometimes getting into loops and generating garbage output. He references Bowski&#x27;s quantizations on Hugging Face as an example of these aggressive options.</p>
+<p>TurboQuant takes a fundamentally different approach: instead of compressing model weights, it compresses the KV cache. This is particularly valuable on memory-constrained systems where the KV cache — not the model weights — is what blows past your RAM budget at longer context lengths. Alex references the official Google research paper for TurboQuant.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Running TurboQuant: The Llama CPP Fork</h2>
+            <p>As of the video, Llama CPP (the popular project for running LLMs locally) has not yet rolled in TurboQuant support. It remains a community effort. Alex points to a popular GitHub fork called TurboQuant Plus by Tom (referred to as Tom Turney). This fork implements TurboQuant on top of Llama CPP.</p>
+<p>There are three variants of TurboQuant:</p>
+<p>- **Turbo 2**: Most aggressive, compresses KV cache roughly 4x</p>
+<p>- **Turbo 3**: Compresses roughly 2.5x</p>
+<p>- **Turbo 4**: Compresses roughly 1.9x</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Symmetric vs. Asymmetric: The Key Discovery</h2>
+            <p>Alex&#x27;s initial tests were disappointing. He applied TurboQuant symmetrically — the same turbo level to both K and V parts of the KV cache. On the M5 Max and M4 Mac Mini, the KV cache space savings were present, but both prefill speed and decode speed suffered significantly. Results were also model-dependent: he tested Qwen 2.5 (older model), Qwen 3 8B, and Qwen 3.5 35B (a mixture-of-experts model, 34GB, which only fit on the larger machine).</p>
+<p>Tom suggested an asymmetric approach: use Q8 for the K part and apply TurboQuant only to the V part. For a more aggressive configuration, keep Q8 for K and use Turbo 3 for V. This turned out to be the correct approach and resolved both quality and speed issues.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Memory Savings: 2x More Usable Context on 16GB</h2>
+            <p>On the Mac Mini with 16GB, loading the Q8 version of the model with a 131,000 token context window simply crashes. With asymmetric Turbo 3, the same model runs at 131K context comfortably with 3.6GB of memory to spare. Same model, same machine — TurboQuant gives you 2x more usable context.</p>
+<p>Alex tested at multiple context lengths (32K, 65K, 131K). At each level, there was a significant difference in memory consumed. He showed a breakdown chart: model weights stayed identical between turbo and Q8 runs, but the KV cache — which grows dramatically under Q8 — was much smaller under Turbo 3, leaving extra headroom.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Quality Test: Needle in a Haystack</h2>
+            <p>To verify that TurboQuant doesn&#x27;t destroy output quality, Alex ran needle-in-a-haystack tests on the Mac Mini. The test hides three secrets inside varying lengths of text (1K to 32K tokens) and asks the model to find them.</p>
+<p>With symmetric TurboQuant, results were a disaster:</p>
+<p>- Q8 baseline: 3/3 across all context lengths (100%)</p>
+<p>- Turbo/Turbo symmetric: 3/3 (100%)</p>
+<p>- Turbo 3 symmetric: 1/3 at short context, 0/3 at 8K and 16K</p>
+<p>- Turbo 2 symmetric: 1/3 at short context, 0/3 at 8K and 16K</p>
+<p>After switching to asymmetric (Q8 for K, Turbo for V), every configuration scored 3/3 across all context lengths — perfect retrieval. This confirmed that asymmetric TurboQuant preserves output quality.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>Speed Benchmarks: A Surprise on M5 Max</h2>
+            <p>On the M4 Mac Mini, TurboQuant showed a 1-4% slowdown in decode speed at short context lengths compared to Q8 baseline. Not great, but not terrible.</p>
+<p>On the M5 Max, there was a dramatic difference in TurboQuant&#x27;s favor. Q8 baseline decode speed dropped from ~54 tokens/second at depth 0 to ~37 tokens/second at 8K context depth, then partially recovered to ~44 at 32K. TurboQuant stayed relatively flat across all context depths. Alex confirmed this wasn&#x27;t a glitch — these were averaged across multiple runs.</p>
+<p>The reason for the difference: on the Mac Mini, the system was compute-bound — the bottleneck was matrix multiplications, not KV cache reads. On the M5 Max, KV cache access was the bottleneck, so compressing it yielded direct speed benefits. Alex speculates that future M5-based Mac Minis (even with only 16GB) would benefit more from TurboQuant thanks to the faster compute.</p>
+            
+        </section>
+        <section class="post-section">
+            <h2>How to Try It Yourself</h2>
+            <p>Alex suggests two paths: grab Tom&#x27;s TurboQuant Plus fork from GitHub and build it yourself now, or wait until TurboQuant is merged into mainline Llama CPP. He mentions that VLLM is also reportedly working on TurboQuant support, and once Llama CPP gets it, tools like LM Studio will inherit the feature.</p>
+<p>He recommends using the asymmetric approach (Q8 for K, Turbo 3 or Turbo 4 for V) based on his testing, and notes that the latest Qwen 3.5 models respond particularly well to TurboQuant on Apple hardware.</p>
+            
+        </section>
+            
+        <section class="card takeaways-box">
+            <h2>Key Takeaways</h2>
+            <ul><li>TurboQuant compresses the KV cache (not model weights), which is the real memory bottleneck at long context lengths — use it alongside traditional quantization, not instead of it</li>
+<li>Always use asymmetric TurboQuant: Q8 for K, Turbo 3 (or Turbo 4) for V — symmetric mode destroys quality in needle-in-a-haystack tests</li>
+<li>On a 16GB Mac Mini, TurboQuant enables 131K context where Q8 alone crashes — effectively 2x more usable context on the same hardware</li>
+<li>Speed benefits are hardware-dependent: M5 Max saw flat decode speed across context depths (vs. Q8&#x27;s significant degradation), while M4 Mac Mini was compute-bound and saw 1-4% slowdowns</li>
+<li>Don&#x27;t quantize model weights below Q4 (4-bit) — lower quantizations often produce garbage output with looping</li>
+<li>Qwen 3.5 models respond particularly well to TurboQuant on Apple Silicon — results vary by model</li></ul>
+        </section>
+            
+        <section class="card">
+            <h2>Tools Mentioned</h2>
+            <div class="tool-row"><strong>Llama CPP</strong> &mdash; Popular project for running LLMs locally; TurboQuant not yet merged into mainline, available via community fork</div>
+<div class="tool-row"><strong>TurboQuant Plus (by Tom)</strong> &mdash; GitHub fork of Llama CPP that implements TurboQuant; used for all benchmarks in the video</div>
+<div class="tool-row"><strong>LM Studio</strong> &mdash; Mentioned as a tool that will get TurboQuant support once Llama CPP merges it</div>
+<div class="tool-row"><strong>VLLM</strong> &mdash; Mentioned as also working on TurboQuant support</div>
+<div class="tool-row"><strong>Qwen 3.5 (9B and 35B)</strong> &mdash; Primary models tested; the 9B model was the main benchmark target, 35B mixture-of-experts model tested on the M5 Max</div>
+<div class="tool-row"><strong>Qwen 2.5</strong> &mdash; Older model tested during initial symmetric TurboQuant experiments</div>
+<div class="tool-row"><strong>Qwen 3 8B</strong> &mdash; Tested during initial symmetric TurboQuant experiments</div>
+        </section>
+        </article>
+
+        <footer>
+            <p class="muted">From Morning Brief &mdash; 2026-04-10 &middot; <a href="../index.html">Back to Brief</a></p>
+        </footer>
+    </div>
+</body>
+</html>
