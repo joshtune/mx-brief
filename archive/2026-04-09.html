@@ -158,6 +158,17 @@
         gap: 0.75rem;
         margin-bottom: 0.5rem;
     }
+    .channel-name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .channel-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
     .channel-header h2 {
         margin-bottom: 0;
         font-size: 1rem;
@@ -205,6 +216,18 @@
     .sentiment-neu { background: var(--accent); color: var(--foreground); }
 
 
+    /* === CHANNEL VIDEOS COLLAPSED === */
+    .channel-videos > summary {
+        font-size: 0.75rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .channel-videos > summary:hover { color: oklch(0.85 0.15 250); }
+    .channel-videos > .video-list { margin-top: 0.5rem; }
+
     /* === SEEN SECTION === */
     .seen-section {
         margin-top: 0.75rem;
@@ -220,6 +243,59 @@
     }
     .seen-section > summary:hover { color: var(--foreground); }
     .seen-section > .video-list { margin-top: 0.5rem; opacity: 0.75; }
+
+    /* === SECTION TITLES === */
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--border);
+    }
+    .creator-title { color: var(--accent-blue); border-color: var(--accent-blue); }
+    .shipped-title { color: var(--accent-green); border-color: var(--accent-green); }
+    .buzz-title { color: var(--accent-amber); border-color: var(--accent-amber); }
+
+    /* === BUZZING === */
+    .buzz-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .buzz-item { padding: 0.25rem 0; }
+    .buzz-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .buzz-handle {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--accent-amber);
+    }
+    .buzz-age {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        margin-left: auto;
+    }
+    .buzz-tweet {
+        font-size: 0.8125rem;
+        color: var(--card-foreground);
+        margin-top: 0.25rem;
+        line-height: 1.4;
+    }
+
+    /* === TOOL UPDATES === */
+    .tool-section-title { color: var(--accent-green) !important; }
+    .tool-link { justify-content: space-between; }
+    .tool-version {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-green);
+        background: oklch(0.2 0.08 155);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
 
     /* === VIDEO CONTEXT === */
     .video-context {
@@ -426,29 +502,44 @@
 </style>
 </head>
 <body>
+    <div id="gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--background);">
+        <div style="text-align:center;">
+            <h1 style="font-size:1.5rem;font-weight:800;text-transform:uppercase;color:var(--foreground);margin-bottom:1rem;">Morning Brief</h1>
+            <input id="pass" type="password" placeholder="passcode" autofocus
+                style="background:var(--card);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 1rem;font-size:1rem;text-align:center;outline:none;" />
+            <p id="pass-err" style="color:oklch(0.7 0.15 25);font-size:0.75rem;margin-top:0.5rem;display:none;">wrong passcode</p>
+        </div>
+    </div>
+    <div id="content" style="display:none;">
     <div class="container">
         <header class="header">
             <div>
                 <h1>Morning Brief</h1>
-                <p class="subtitle">2026-04-09 &middot; 6 channels &middot; 27 videos</p>
+                <p class="subtitle">2026-04-09 &middot; 6 sources</p>
             </div>
-            <a href="archive/index.html" class="archive-btn">Archive</a>
+            <a href="/mx-brief/archive/" class="archive-btn">Archive</a>
         </header>
 
         
         <section class="hero">
             <p class="summary">Anthropic slammed the door on third-party harnesses and the community responded by building an entire new infrastructure layer in a single week — harness engineering is now officially a discipline.</p>
         </section>
-        
-        
+
+        <h2 class="section-title creator-title">What Creators Are Saying</h2>
         
         <section class="card channel-card">
             <div class="channel-header">
-                <h2>Nate Herk | AI Automation</h2>
+                <div class="channel-name-row">
+                    
+                    <h2>Nate Herk | AI Automation</h2>
+                </div>
                 <span class="ch-count">8 new</span>
             </div>
             <p class="channel-takeaway">Nate went full send this week — threw $10K at a trading bot, exposed managed agents as underwhelming, showed how to run Claude Code for free with Ollama, and demoed Ultra Plan before most people knew it existed.</p>
-            <div class="video-list">
+            
+            <details class="channel-videos">
+                <summary>8 videos</summary>
+                <div class="video-list">
     <div class="video-row">
         <a href="https://youtube.com/watch?v=eu8UJtuIi-E" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/eu8UJtuIi-E/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -553,10 +644,8 @@
 </ul>
 <p class="detail-line"><strong>Why it matters for you:</strong> The Mythos announcement is background context for understanding why Anthropic is tightening third-party access — they&#x27;re getting serious about controlled deployment.</p></div>
         </details>
-    </div></div>
-            <details class="seen-section">
-                <summary>5 more new</summary>
-                <div class="video-list">
+    </div>
+
     <div class="video-row">
         <a href="https://youtube.com/watch?v=p9mgmKhUz_4" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/p9mgmKhUz_4/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -753,11 +842,17 @@
         </section>
         <section class="card channel-card">
             <div class="channel-header">
-                <h2>NetworkChuck</h2>
+                <div class="channel-name-row">
+                    
+                    <h2>NetworkChuck</h2>
+                </div>
                 <span class="ch-count">4 new</span>
             </div>
             <p class="channel-takeaway">Chuck had an existential crisis when Perplexity Computer did in one prompt what his 103-skill OpenClaw setup took months to build, then pivoted to local AI on phones with Gemma 4 — the man is speedrunning the build-vs-buy decision in real time.</p>
-            <div class="video-list">
+            
+            <details class="channel-videos">
+                <summary>4 videos</summary>
+                <div class="video-list">
     <div class="video-row">
         <a href="https://youtube.com/watch?v=G3jvn7n-68Y" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/G3jvn7n-68Y/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -879,10 +974,8 @@
 </ul>
 <p class="detail-line"><strong>Why it matters for you:</strong> Edge AI is getting real. A useful, multimodal AI running on a phone with zero internet is no longer a demo — it&#x27;s a product. This matters for any tool you build that might need offline or low-latency inference.</p></div>
         </details>
-    </div></div>
-            <details class="seen-section">
-                <summary>1 more new</summary>
-                <div class="video-list">
+    </div>
+
     <div class="video-row">
         <a href="https://youtube.com/watch?v=GE1c4Tb3Zsw" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/GE1c4Tb3Zsw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -931,11 +1024,17 @@
         </section>
         <section class="card channel-card">
             <div class="channel-header">
-                <h2>Cole Medin</h2>
+                <div class="channel-name-row">
+                    
+                    <h2>Cole Medin</h2>
+                </div>
                 <span class="ch-count">3 new</span>
             </div>
             <p class="channel-takeaway">Cole shipped the Archon rewrite as the first open-source harness builder and layered Karpathy&#x27;s knowledge base pattern into self-evolving Claude Code memory — if you maintain mx-workflow, this is required viewing.</p>
-            <div class="video-list">
+            
+            <details class="channel-videos">
+                <summary>3 videos</summary>
+                <div class="video-list">
     <div class="video-row">
         <a href="https://youtube.com/watch?v=qMnClynCAmM" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/qMnClynCAmM/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -1067,14 +1166,21 @@
 <p class="detail-line"><strong>Why it matters for you:</strong> mx-workflow already has a memory system (the `/memory/` directory with MEMORY.md index). Cole&#x27;s approach adds: (1) treating conversation history as first-class knowledge, (2) periodic health checks for consistency, (3) self-evolving structure that reorganizes as patterns emerge. Consider whether mx-workflow&#x27;s memory could adopt the &quot;compiler&quot; pattern — periodically processing conversation logs into structured, interlinked knowledge rather than just storing individual memory files.</p></div>
         </details>
     </div></div>
+            </details>
         </section>
         <section class="card channel-card">
             <div class="channel-header">
-                <h2>Chris Koerner on The Koerner Office Podcast</h2>
+                <div class="channel-name-row">
+                    
+                    <h2>Chris Koerner on The Koerner Office Podcast</h2>
+                </div>
                 <span class="ch-count">4 new</span>
             </div>
             <p class="channel-takeaway">Two actionable side hustles dropped: a sam.gov contract finder built in minutes with Replit Agent 4, and a former-Amish entrepreneur pulling $132K in 24 days with spray drones — both are shockingly low-barrier.</p>
-            <div class="video-list">
+            
+            <details class="channel-videos">
+                <summary>4 videos</summary>
+                <div class="video-list">
     <div class="video-row">
         <a href="https://youtube.com/watch?v=JHz6mikOPWw" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/JHz6mikOPWw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -1207,10 +1313,8 @@
 </ul>
 <p class="detail-line"><strong>Why it matters for you:</strong> If you want a side hustle with physical-world revenue and automation built in, this is one of the most compelling setups covered this week. The fully automated piloting means it&#x27;s more like deploying an agent than flying a drone.</p></div>
         </details>
-    </div></div>
-            <details class="seen-section">
-                <summary>1 more new</summary>
-                <div class="video-list">
+    </div>
+
     <div class="video-row">
         <a href="https://youtube.com/watch?v=g4-3AxelI_Y" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/g4-3AxelI_Y/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -1249,11 +1353,17 @@
         </section>
         <section class="card channel-card">
             <div class="channel-header">
-                <h2>Codie Sanchez</h2>
+                <div class="channel-name-row">
+                    
+                    <h2>Codie Sanchez</h2>
+                </div>
                 <span class="ch-count">8 new</span>
             </div>
             <p class="channel-takeaway">Codie&#x27;s in short-form mode this week — rapid-fire CEO playbook: say goals out loud, fix direction before speed, raise prices before hiring, and know your CAC/LTV or you&#x27;re just an accountant with a title.</p>
-            <div class="video-list">
+            
+            <details class="channel-videos">
+                <summary>8 videos</summary>
+                <div class="video-list">
     <div class="video-row">
         <a href="https://youtube.com/watch?v=lWTomXaVh90" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/lWTomXaVh90/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -1314,10 +1424,8 @@
 <p class="detail-line"><strong>The Buffett quote:</strong> &quot;Don&#x27;t get a dog and then do the barking.&quot;</p>
 <p class="detail-line"><strong>Why it matters for side hustles:</strong> Even at side-hustle scale, these three jobs matter. Most solo founders confuse busy with productive. Know which of the three you&#x27;re doing at any moment.</p></div>
         </details>
-    </div></div>
-            <details class="seen-section">
-                <summary>5 more new</summary>
-                <div class="video-list">
+    </div>
+
     <div class="video-row">
         <a href="https://youtube.com/watch?v=SWlkaf1MSjw" target="_blank" rel="noopener" class="video-link">
             <img src="https://i.ytimg.com/vi/SWlkaf1MSjw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
@@ -1445,11 +1553,50 @@
     </div></div>
             </details>
         </section>
+
+        
+
         
 
         <footer>
-            <p class="muted">Generated at 01:33 &middot; mx-brief</p>
+            <p class="muted">Generated at 02:34 &middot; mx-brief</p>
         </footer>
     </div>
+    </div>
+    <script>
+    (function() {
+        const HASH = '5f4c9a78e77a3b76d5f8e8a7c3d2b1e0';
+        function md5(s) {
+            // Simple hash — not cryptographic, just a gate
+            let h = 0;
+            for (let i = 0; i < s.length; i++) {
+                h = ((h << 5) - h) + s.charCodeAt(i);
+                h |= 0;
+            }
+            return h.toString(16);
+        }
+        function check(code) {
+            return code === 'eitaaio';
+        }
+        const saved = sessionStorage.getItem('mx-brief-pass');
+        if (saved && check(saved)) {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+        document.getElementById('pass').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const val = this.value;
+                if (check(val)) {
+                    sessionStorage.setItem('mx-brief-pass', val);
+                    document.getElementById('gate').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                } else {
+                    document.getElementById('pass-err').style.display = 'block';
+                    this.value = '';
+                }
+            }
+        });
+    })();
+    </script>
 </body>
 </html>
