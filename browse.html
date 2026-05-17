@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse All &mdash; mx-brief</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-green: oklch(0.7 0.15 155);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transform: uppercase; }
+.subtitle { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.back-link { color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.15s; }
+.back-link:hover { color: var(--foreground); border-color: var(--muted-foreground); }
+.search-row { margin-bottom: 1.25rem; }
+.search-box { width: 100%; background: var(--card); color: var(--foreground); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.65rem 0.85rem; font-size: 0.95rem; outline: none; font-family: inherit; }
+.search-box:focus { border-color: var(--accent-blue); }
+.search-meta { font-size: 0.7rem; color: var(--muted-foreground); margin-top: 0.4rem; min-height: 1em; letter-spacing: 0.04em; text-transform: uppercase; }
+.cards { display: flex; flex-direction: column; gap: 0.6rem; }
+.card { display: flex; gap: 0.85rem; padding: 0.85rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: var(--foreground); transition: border-color 0.15s; }
+.card:hover { border-color: var(--accent-blue); }
+.thumb { width: 130px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: calc(var(--radius) * 0.7); flex-shrink: 0; background: oklch(0.18 0.005 260); }
+.thumb-placeholder { width: 130px; aspect-ratio: 16 / 9; flex-shrink: 0; background: linear-gradient(135deg, oklch(0.18 0.01 260), oklch(0.14 0.01 260)); border-radius: calc(var(--radius) * 0.7); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--muted-foreground); letter-spacing: 0.08em; text-transform: uppercase; }
+.body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.kicker { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+.badge { font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 999px; font-size: 0.6rem; }
+.badge-post { background: oklch(0.2 0.08 250); color: var(--accent-blue); }
+.badge-article { background: oklch(0.2 0.08 155); color: var(--accent-green); }
+.badge-brief { background: oklch(0.22 0.1 75); color: var(--accent-amber); }
+.dot { opacity: 0.4; }
+.card h2 { font-size: 0.95rem; font-weight: 700; line-height: 1.3; letter-spacing: -0.015em; }
+.summary { font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.muted { color: var(--muted-foreground); font-size: 0.875rem; text-align: center; padding: 1rem; }
+#sentinel { height: 1px; }
+@media (max-width: 600px) {
+  .card { flex-direction: column; gap: 0.5rem; }
+  .thumb, .thumb-placeholder { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div id="gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--background);">
+  <div style="text-align:center;">
+    <h1 style="font-size:1.5rem;font-weight:800;text-transform:uppercase;color:var(--foreground);margin-bottom:1rem;">Morning Brief</h1>
+    <input id="pass" type="password" placeholder="passcode" autofocus
+      style="background:var(--card);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 1rem;font-size:1rem;text-align:center;outline:none;" />
+    <p id="pass-err" style="color:oklch(0.7 0.15 25);font-size:0.75rem;margin-top:0.5rem;display:none;">wrong passcode</p>
+  </div>
+</div>
+<div id="content" style="display:none;">
+<div class="container">
+  <header class="header">
+    <div>
+      <h1>Browse All</h1>
+      <div class="subtitle" id="hdr-count">loading…</div>
+    </div>
+    <a class="back-link" href="/mx-brief/">&larr; Brief</a>
+  </header>
+  <div class="search-row">
+    <input id="search" class="search-box" type="search" placeholder="Search title, source, summary…" autocomplete="off" />
+    <div class="search-meta" id="search-meta"></div>
+  </div>
+  <div id="cards" class="cards"></div>
+  <div id="sentinel"></div>
+  <p id="status-line" class="muted"></p>
+</div>
+</div>
+<script>
+(function () {
+  function check(code) { return code === 'eitaaio'; }
+  var saved = sessionStorage.getItem('mx-brief-pass');
+  if (saved && check(saved)) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    init();
+  }
+  document.getElementById('pass').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    if (check(this.value)) {
+      sessionStorage.setItem('mx-brief-pass', this.value);
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      init();
+    } else {
+      document.getElementById('pass-err').style.display = 'block';
+      this.value = '';
+    }
+  });
+
+  var INDEX_BASE = '/mx-brief/index/';
+  var state = {
+    manifest: null,
+    nextPageIdx: 0,
+    loading: false,
+    rendered: 0,
+    searchActive: false,
+    searchIndex: null,
+    allEntries: null,
+  };
+
+  function badge(kind) {
+    var cls = 'badge badge-' + kind;
+    return '<span class="' + cls + '">' + kind.toUpperCase() + '</span>';
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  function cardHtml(e) {
+    var thumb = e.thumbnail_url
+      ? '<img class="thumb" loading="lazy" src="' + escapeHtml(e.thumbnail_url) + '" alt="">'
+      : '<div class="thumb-placeholder">' + escapeHtml(e.kind) + '</div>';
+    var source = e.source_name ? escapeHtml(e.source_name) : '';
+    var parts = [badge(e.kind)];
+    if (source) parts.push(source);
+    if (e.date) parts.push(e.date);
+    var kicker = parts.join(' <span class="dot">·</span> ');
+    return (
+      '<a class="card" href="' + escapeHtml(e.url) + '">' +
+      thumb +
+      '<div class="body">' +
+        '<div class="kicker">' + kicker + '</div>' +
+        '<h2>' + escapeHtml(e.title) + '</h2>' +
+        (e.summary ? '<p class="summary">' + escapeHtml(e.summary) + '</p>' : '') +
+      '</div>' +
+      '</a>'
+    );
+  }
+
+  function renderEntries(entries, append) {
+    var container = document.getElementById('cards');
+    if (!append) container.innerHTML = '';
+    var html = entries.map(cardHtml).join('');
+    container.insertAdjacentHTML('beforeend', html);
+    state.rendered += entries.length;
+  }
+
+  function setStatus(msg) {
+    document.getElementById('status-line').textContent = msg || '';
+  }
+
+  function loadNextShard() {
+    if (state.loading || state.searchActive || !state.manifest) return;
+    if (state.nextPageIdx >= state.manifest.pages.length) {
+      setStatus('— end —');
+      return;
+    }
+    state.loading = true;
+    var page = state.manifest.pages[state.nextPageIdx];
+    fetch(INDEX_BASE + page.url)
+      .then(function (r) { return r.json(); })
+      .then(function (entries) {
+        renderEntries(entries, true);
+        state.nextPageIdx += 1;
+        state.loading = false;
+        setStatus(state.nextPageIdx >= state.manifest.pages.length ? '— end —' : '');
+      })
+      .catch(function (err) {
+        state.loading = false;
+        setStatus('failed to load: ' + err);
+      });
+  }
+
+  function ensureSearchIndex() {
+    if (state.searchIndex) return Promise.resolve(state.searchIndex);
+    document.getElementById('search-meta').textContent = 'loading search…';
+    return Promise.all([
+      import('https://cdn.jsdelivr.net/npm/minisearch@7.1.0/+esm'),
+      fetch(INDEX_BASE + 'search.json').then(function (r) { return r.json(); }),
+    ]).then(function (parts) {
+      var MiniSearch = parts[0].default;
+      var entries = parts[1];
+      state.allEntries = entries;
+      var ms = new MiniSearch({
+        fields: ['title', 'summary', 'source_name'],
+        storeFields: ['id'],
+        searchOptions: { boost: { title: 2 }, prefix: true, fuzzy: 0.15 },
+      });
+      ms.addAll(entries);
+      state.searchIndex = ms;
+      return ms;
+    });
+  }
+
+  function runSearch(query) {
+    document.getElementById('search-meta').textContent = 'searching…';
+    ensureSearchIndex().then(function (ms) {
+      var results = ms.search(query);
+      var byId = {};
+      state.allEntries.forEach(function (e) { byId[e.id] = e; });
+      var hits = results.map(function (r) { return byId[r.id]; }).filter(Boolean);
+      document.getElementById('cards').innerHTML = '';
+      renderEntries(hits, true);
+      document.getElementById('search-meta').textContent = hits.length + ' result' + (hits.length === 1 ? '' : 's');
+      setStatus('');
+    }).catch(function (err) {
+      document.getElementById('search-meta').textContent = 'search failed: ' + err;
+    });
+  }
+
+  function resetToBrowse() {
+    state.searchActive = false;
+    state.nextPageIdx = 0;
+    state.rendered = 0;
+    document.getElementById('cards').innerHTML = '';
+    document.getElementById('search-meta').textContent = '';
+    setStatus('');
+    loadNextShard();
+  }
+
+  function debounce(fn, ms) {
+    var t;
+    return function () {
+      var args = arguments, ctx = this;
+      clearTimeout(t);
+      t = setTimeout(function () { fn.apply(ctx, args); }, ms);
+    };
+  }
+
+  function init() {
+    fetch(INDEX_BASE + 'manifest.json')
+      .then(function (r) { return r.json(); })
+      .then(function (manifest) {
+        state.manifest = manifest;
+        document.getElementById('hdr-count').textContent = manifest.total + ' items';
+        loadNextShard();
+      })
+      .catch(function (err) {
+        document.getElementById('hdr-count').textContent = 'failed to load index';
+        setStatus(String(err));
+      });
+
+    var observer = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) loadNextShard();
+    }, { rootMargin: '600px 0px' });
+    observer.observe(document.getElementById('sentinel'));
+
+    var searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', debounce(function () {
+      var q = searchInput.value.trim();
+      if (!q) { resetToBrowse(); return; }
+      state.searchActive = true;
+      runSearch(q);
+    }, 180));
+  }
+})();
+</script>
+</body>
+</html>
