@@ -40,6 +40,14 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
 .badge-post { background: oklch(0.2 0.08 250); color: var(--accent-blue); }
 .badge-article { background: oklch(0.2 0.08 155); color: var(--accent-green); }
 .badge-brief { background: oklch(0.22 0.1 75); color: var(--accent-amber); }
+.badge-video { background: oklch(0.2 0.08 300); color: oklch(0.78 0.13 300); }
+.badge-tweet { background: oklch(0.2 0.08 25); color: oklch(0.78 0.13 25); }
+.badge-tool { background: oklch(0.2 0.08 200); color: oklch(0.78 0.13 200); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+.chip { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--muted-foreground); cursor: pointer; transition: all 0.15s; user-select: none; }
+.chip:hover { color: var(--foreground); border-color: var(--muted-foreground); }
+.chip.active { color: var(--foreground); border-color: var(--accent-blue); background: oklch(0.2 0.05 250); }
+.chip-count { opacity: 0.55; margin-left: 0.35rem; font-weight: 500; }
 .dot { opacity: 0.4; }
 .card h2 { font-size: 0.95rem; font-weight: 700; line-height: 1.3; letter-spacing: -0.015em; }
 .summary { font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -73,6 +81,7 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
     <input id="search" class="search-box" type="search" placeholder="Search title, source, summary…" autocomplete="off" />
     <div class="search-meta" id="search-meta"></div>
   </div>
+  <div class="chips" id="chips"></div>
   <div id="cards" class="cards"></div>
   <div id="sentinel"></div>
   <p id="status-line" class="muted"></p>
@@ -81,12 +90,22 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
 <script>
 (function () {
   var INDEX_BASE = '/mx-brief/index/';
+  var KINDS = [
+    { key: 'all',     label: 'All' },
+    { key: 'post',    label: 'Posts' },
+    { key: 'article', label: 'Articles' },
+    { key: 'brief',   label: 'Briefs' },
+    { key: 'video',   label: 'Videos' },
+    { key: 'tweet',   label: 'Tweets' },
+    { key: 'tool',    label: 'Tools' },
+  ];
   var state = {
     manifest: null,
     nextPageIdx: 0,
     loading: false,
     rendered: 0,
-    searchActive: false,
+    activeKind: 'all',
+    searchQuery: '',
     searchIndex: null,
     allEntries: null,
   };
@@ -168,8 +187,12 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
     return fetchJSON(INDEX_BASE + 'manifest.json', { cache: 'no-cache' });
   }
 
+  function isFilterMode() {
+    return state.activeKind !== 'all' || state.searchQuery !== '';
+  }
+
   function loadNextShard(retried) {
-    if (state.loading || state.searchActive || !state.manifest) return;
+    if (state.loading || isFilterMode() || !state.manifest) return;
     if (state.nextPageIdx >= state.manifest.pages.length) {
       setStatus('— end —');
       return;
@@ -202,51 +225,86 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
       });
   }
 
+  function ensureAllEntries() {
+    if (state.allEntries) return Promise.resolve(state.allEntries);
+    document.getElementById('search-meta').textContent = 'loading…';
+    return fetchJSON(INDEX_BASE + 'search.json').then(function (entries) {
+      state.allEntries = entries;
+      renderChips();
+      return entries;
+    });
+  }
+
   function ensureSearchIndex() {
     if (state.searchIndex) return Promise.resolve(state.searchIndex);
-    document.getElementById('search-meta').textContent = 'loading search…';
     return Promise.all([
       import('https://cdn.jsdelivr.net/npm/minisearch@7.1.0/+esm'),
-      fetch(INDEX_BASE + 'search.json').then(function (r) { return r.json(); }),
+      ensureAllEntries(),
     ]).then(function (parts) {
       var MiniSearch = parts[0].default;
-      var entries = parts[1];
-      state.allEntries = entries;
       var ms = new MiniSearch({
         fields: ['title', 'summary', 'source_name'],
         storeFields: ['id'],
         searchOptions: { boost: { title: 2 }, prefix: true, fuzzy: 0.15 },
       });
-      ms.addAll(entries);
+      ms.addAll(state.allEntries);
       state.searchIndex = ms;
       return ms;
     });
   }
 
-  function runSearch(query) {
-    document.getElementById('search-meta').textContent = 'searching…';
-    ensureSearchIndex().then(function (ms) {
-      var results = ms.search(query);
+  function applyFilter() {
+    var kind = state.activeKind;
+    var query = state.searchQuery;
+    var meta = document.getElementById('search-meta');
+    meta.textContent = 'filtering…';
+    var entriesPromise = query ? ensureSearchIndex().then(function (ms) {
       var byId = {};
       state.allEntries.forEach(function (e) { byId[e.id] = e; });
-      var hits = results.map(function (r) { return byId[r.id]; }).filter(Boolean);
+      return ms.search(query).map(function (r) { return byId[r.id]; }).filter(Boolean);
+    }) : ensureAllEntries().then(function (entries) { return entries.slice(); });
+
+    return entriesPromise.then(function (entries) {
+      if (kind !== 'all') {
+        entries = entries.filter(function (e) { return e.kind === kind; });
+      }
       document.getElementById('cards').innerHTML = '';
-      renderEntries(hits, true);
-      document.getElementById('search-meta').textContent = hits.length + ' result' + (hits.length === 1 ? '' : 's');
+      state.rendered = 0;
+      renderEntries(entries, true);
+      var bits = [entries.length + ' result' + (entries.length === 1 ? '' : 's')];
+      if (kind !== 'all') bits.push(kind);
+      if (query) bits.push('matching "' + query + '"');
+      meta.textContent = bits.join(' · ');
       setStatus('');
     }).catch(function (err) {
-      document.getElementById('search-meta').textContent = 'search failed: ' + err;
+      meta.textContent = 'filter failed: ' + err;
     });
   }
 
   function resetToBrowse() {
-    state.searchActive = false;
     state.nextPageIdx = 0;
     state.rendered = 0;
     document.getElementById('cards').innerHTML = '';
     document.getElementById('search-meta').textContent = '';
     setStatus('');
     loadNextShard();
+  }
+
+  function renderChips() {
+    var counts = { all: state.manifest ? state.manifest.total : 0 };
+    if (state.allEntries) {
+      counts.all = state.allEntries.length;
+      state.allEntries.forEach(function (e) {
+        counts[e.kind] = (counts[e.kind] || 0) + 1;
+      });
+    }
+    var html = KINDS.map(function (k) {
+      var c = counts[k.key];
+      var active = state.activeKind === k.key ? ' active' : '';
+      var count = (c == null) ? '' : '<span class="chip-count">' + c + '</span>';
+      return '<button class="chip' + active + '" data-kind="' + k.key + '">' + k.label + count + '</button>';
+    }).join('');
+    document.getElementById('chips').innerHTML = html;
   }
 
   function debounce(fn, ms) {
@@ -259,10 +317,12 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
   }
 
   function init() {
+    renderChips();
     fetchManifest()
       .then(function (manifest) {
         state.manifest = manifest;
         document.getElementById('hdr-count').textContent = manifest.total + ' items';
+        renderChips();
         loadNextShard();
       })
       .catch(function (err) {
@@ -275,12 +335,18 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
     }, { rootMargin: '600px 0px' });
     observer.observe(document.getElementById('sentinel'));
 
+    document.getElementById('chips').addEventListener('click', function (e) {
+      var target = e.target.closest('.chip');
+      if (!target) return;
+      state.activeKind = target.dataset.kind;
+      renderChips();
+      if (isFilterMode()) applyFilter(); else resetToBrowse();
+    });
+
     var searchInput = document.getElementById('search');
     searchInput.addEventListener('input', debounce(function () {
-      var q = searchInput.value.trim();
-      if (!q) { resetToBrowse(); return; }
-      state.searchActive = true;
-      runSearch(q);
+      state.searchQuery = searchInput.value.trim();
+      if (isFilterMode()) applyFilter(); else resetToBrowse();
     }, 180));
   }
 })();
