@@ -155,7 +155,20 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
     document.getElementById('status-line').textContent = msg || '';
   }
 
-  function loadNextShard() {
+  function fetchJSON(url, opts) {
+    return fetch(url, opts).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + url);
+      return r.json();
+    });
+  }
+
+  function fetchManifest() {
+    // Validate with origin every load — defends against stale manifests
+    // pointing at content-hashed shards that have been wiped on republish.
+    return fetchJSON(INDEX_BASE + 'manifest.json', { cache: 'no-cache' });
+  }
+
+  function loadNextShard(retried) {
     if (state.loading || state.searchActive || !state.manifest) return;
     if (state.nextPageIdx >= state.manifest.pages.length) {
       setStatus('— end —');
@@ -163,8 +176,7 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
     }
     state.loading = true;
     var page = state.manifest.pages[state.nextPageIdx];
-    fetch(INDEX_BASE + page.url)
-      .then(function (r) { return r.json(); })
+    fetchJSON(INDEX_BASE + page.url)
       .then(function (entries) {
         renderEntries(entries, true);
         state.nextPageIdx += 1;
@@ -173,6 +185,19 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
       })
       .catch(function (err) {
         state.loading = false;
+        // Shard 404 likely means stale manifest from a prior publish — refresh it once.
+        if (!retried && String(err).indexOf('HTTP 404') !== -1) {
+          fetchManifest().then(function (m) {
+            state.manifest = m;
+            state.nextPageIdx = 0;
+            document.getElementById('cards').innerHTML = '';
+            state.rendered = 0;
+            loadNextShard(true);
+          }).catch(function (e2) {
+            setStatus('failed to refresh manifest: ' + e2);
+          });
+          return;
+        }
         setStatus('failed to load: ' + err);
       });
   }
@@ -234,8 +259,7 @@ h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; text-transfor
   }
 
   function init() {
-    fetch(INDEX_BASE + 'manifest.json')
-      .then(function (r) { return r.json(); })
+    fetchManifest()
       .then(function (manifest) {
         state.manifest = manifest;
         document.getElementById('hdr-count').textContent = manifest.total + ' items';
