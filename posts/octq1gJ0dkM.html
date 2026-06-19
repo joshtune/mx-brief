@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This Is What Happens When You CRUSH An AI Video Model — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>This Is What Happens When You CRUSH An AI Video Model</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-06-18 · 42,239 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=octq1gJ0dkM" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/octq1gJ0dkM/mqdefault.jpg" alt="">
+  <div class="tldr">Quantizing local AI video models from 16-bit down to 2-bit.</div>
+  <p class="why">He runs it all on a custom RTX Pro 6000 Linux box — not a Mac — so this is the rare Alex build that tells you exactly what hardware (and price tier) you&#x27;d need to do local AI video at home.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A quantization stress-test of two local text-to-video models, stepped down an 8-level ladder from full precision (FP16) to 2-bit to see what breaks first.</p>
+<p class="detail-line"><strong>The hardware (your actual interest):</strong></p>
+<ul class="detail-list">
+<li>Custom <strong>Linux box</strong>, not a Mac — built around an <strong>RTX Pro 6000 Blackwell</strong> GPU</li>
+<li><strong>96 GB</strong> of VRAM, enough to hold every full-precision model at once</li>
+<li>FP8 is *natively* supported on this GPU, so 8-bit is essentially free performance</li>
+<li>Cost context: an RTX Pro 6000 Blackwell runs roughly <strong>$8,000–$10,000 for the card alone</strong> — i.e. multiples of a maxed Mac mini (~$2k) and in a different league entirely from the M-series machines Alex usually tests. This is a workstation, not a desktop.</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Same prompt, same seed, same settings every run — only the quantization changes</li>
+<li>Models tested: <strong>WAN 2.2</strong> (14B params, text-to-video, FP16 weighs 27 GB on disk) and <strong>LTX 2.3</strong> (22B params, generates video *and* audio together, so picture and sound can degrade separately)</li>
+<li>Ran via <strong>ComfyUI</strong> using <strong>GGUF</strong> quantized versions (Q4 is the default most people never move off of)</li>
+<li>Scored with SSIM, LPIPS, and prompt-alignment benchmarks, plus eyeball/ear checks</li>
+<li>Finding tease: two totally different architectures collapse in the *same* way as bits drop; FP8 (14 GB) is the obvious sweet spot on this GPU</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/comfyanonymous/ComfyUI" target="_blank" rel="noopener" class="detail-link">ComfyUI</a> — node-based local AI video/image generation</li>
+<li>WAN 2.2 &amp; LTX 2.3 — the two video models benchmarked (GGUF quantized builds)</li>
+<li>Sponsor: Plaude NotePin S meeting recorder (code ALEX15OFF / ALEX15AMZ for 15% off — skippable)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> This is the answer to your usual question — to run local AI *video* generation you&#x27;re not buying a Mac mini, you&#x27;re buying a ~$8k+ RTX Pro 6000 workstation; the Mac-vs-PC cost gap here is enormous and the GPU does the heavy lifting, not Apple silicon.</p></section>
+</div>
+</body>
+</html>
