@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your OS Changes Everything for Local AI — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>Your OS Changes Everything for Local AI</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-06-30 · 54,727 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=QeAHC1jGxck" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/QeAHC1jGxck/mqdefault.jpg" alt="">
+  <div class="tldr">Testing Windows vs WSL vs Linux for local LLMs on one mini PC.</div>
+  <p class="why">The machine in question is the GEEKOM A9 Max — a ~$800-class AMD mini PC positioned as a cheaper local-AI box than a comparably-specced Mac mini.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A local-AI benchmark shootout across three OSes (Windows, WSL, bare-metal Linux) on a single AMD mini PC.</p>
+<p class="detail-line"><strong>The machine (what you actually care about):</strong></p>
+<ul class="detail-list">
+<li><strong>GEEKOM A9 Max, 2026 Edition</strong> — model HX470</li>
+<li><strong>Chip:</strong> AMD Ryzen AI 9 HX 470 (Strix Point APU) — 12 Zen 5 cores, Radeon 890M iGPU, 50 TOPS NPU</li>
+<li><strong>Memory:</strong> 32GB DDR5-5600</li>
+<li><strong>Storage:</strong> 2TB SSD</li>
+<li><strong>Ports:</strong> dual USB4, dual HDMI 2.1, dual 2.5GbE, 5× USB-A, audio jack, SD reader</li>
+<li>Same chip as the Beelink Certan Alex tested weeks earlier; he benchmarks it against the Apple <strong>M4 Pro</strong> as the reference point</li>
+</ul>
+<p class="detail-line"><strong>Price vs Mac mini:</strong></p>
+<ul class="detail-list">
+<li>Transcript doesn&#x27;t state a dollar figure, but there&#x27;s an <strong>18% coupon: `AZKA9MAX`</strong> (official stores) — these A9 Max units land roughly in the <strong>~$700–900</strong> range, undercutting an M4 Pro Mac mini with equivalent RAM/SSD (which climbs well past $1,300 once you spec 32GB/2TB).</li>
+<li>Verdict framing: cheaper box, but AMD&#x27;s local-AI software stack is rougher than Apple&#x27;s.</li>
+</ul>
+<p class="detail-line"><strong>How it works (the OS/inference findings):</strong></p>
+<ul class="detail-list">
+<li><strong>Windows + Ollama</strong> defaults to 100% CPU — it silently ignores the AMD GPU even with Vulkan enabled</li>
+<li>Switch to <strong>llama.cpp + Vulkan</strong> to actually hit the iGPU (~100% GPU util) — only ~10–14% faster than Ollama CPU, and the gain shrinks as models grow (14% at 1.5B → 10% at 14B)</li>
+<li><strong>AMD Lemonade server</strong> offers hybrid recipes: NPU for prefill, GPU for decode; decode ties llama.cpp Vulkan, NPU shines on long-context prompts</li>
+<li>Some benchmark numbers came in at ~half of the chip&#x27;s spec — flagged as unresolved</li>
+<li>Test model referenced: Gemma-class 12B</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener" class="detail-link">llama.cpp</a> — direct Vulkan GPU inference</li>
+<li><a href="https://github.com/lemonade-sdk/lemonade" target="_blank" rel="noopener" class="detail-link">AMD Lemonade Server</a> — NPU+GPU hybrid inference</li>
+<li><a href="https://ollama.com" target="_blank" rel="noopener" class="detail-link">Ollama</a> — easy but CPU-only on AMD by default</li>
+<li><a href="https://www.geekompc.com" target="_blank" rel="noopener" class="detail-link">GEEKOM A9 Max</a> — coupon `AZKA9MAX`</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> This is the AMD mini PC to weigh against a Mac mini for local AI — cheaper hardware with the coupon, but expect to fight the software stack (llama.cpp/Lemonade) to get real GPU/NPU performance out of it.</p></section>
+</div>
+</body>
+</html>
