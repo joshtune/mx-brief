@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Love the Karpathy LLM Wiki but it Doesn&#x27;t Scale. Here&#x27;s What Does. — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>I Love the Karpathy LLM Wiki but it Doesn&#x27;t Scale. Here&#x27;s What Does.</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-07-09 · 8,511 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=R-5_2nsF_ZM" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/R-5_2nsF_ZM/mqdefault.jpg" alt="">
+  <div class="tldr">Why personal markdown agents break in production, and what replaces them.</div>
+  <p class="why">If mx-workflow is ever meant to ship beyond your own machine, this maps exactly where a markdown/git second-brain stops working and what production memory + retrieval architecture you need instead.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A thought-leadership piece drawing the line between *personal* agents (markdown/Obsidian/Karpathy LLM wiki, git-backed, coding-agent-driven) and *production* agents shipped to many users — and arguing they must be architected completely differently.</p>
+<p class="detail-line"><strong>The core split:</strong></p>
+<ul class="detail-list">
+<li><strong>Personal agent</strong> — a coding agent (Claude Code, Codex, Hermes, Open Claw) manages an interconnected markdown knowledge base: index docs, tagging, categorization, entities, built up over time. Simple, flexible, fast, *yours*, all in git. Cole runs one daily.</li>
+<li><strong>Production agent</strong> — the moment you ship to other people, markdown collapses. You now need access control, governance, traceability/auditability, retrieval at scale, and live/multi-user data.</li>
+</ul>
+<p class="detail-line"><strong>Why markdown doesn&#x27;t scale (his argument):</strong></p>
+<ul class="detail-list">
+<li>Organization + search over a growing pile of files never scales — &quot;there&#x27;s a reason we have databases.&quot;</li>
+<li><strong>Cost:</strong> personal setups ride your Claude/Codex *subscription*, which is personal-use only — you can&#x27;t run that in production. API-metered agents reading whole markdown docs are far too expensive at scale.</li>
+<li>Retrieval over full-document reads can&#x27;t be optimized enough to compete with proper indexed retrieval.</li>
+</ul>
+<p class="detail-line"><strong>The production architecture he proposes:</strong></p>
+<ul class="detail-list">
+<li>A <strong>database</strong> as the scaling substrate, wrapped as a <strong>context layer</strong> for the agent (a wrapper over the DB).</li>
+<li>Two responsibilities the DB/context layer must own:</li>
+<li><strong>Context retriever</strong> — scalable, cost-optimized retrieval (vs. dumping whole markdown files into context).</li>
+<li><strong>Agent memory</strong> — user memories + organized info the agent can retrieve well, preserving second-brain benefits.</li>
+<li>Demoed on <strong>Redis</strong> as the platform, but he stresses the ideas apply to any production data store.</li>
+<li>(Transcript cuts off mid-build — the concrete Redis implementation is the back half of the video, not captured here.)</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links (mentioned in transcript):</strong></p>
+<ul class="detail-list">
+<li>Karpathy LLM Wiki — the personal markdown knowledge-base pattern (index docs, tags, entities)</li>
+<li>Claude Code / Codex — coding-agent SDKs powering personal second brains</li>
+<li>Hermes, Open Claw — off-the-shelf personal-agent setups</li>
+<li>Redis — his chosen platform for the production context layer + memory</li>
+<li>(No repo links were surfaced in the transcript snippet)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> mx-workflow is a git-backed, markdown-driven pipeline — exactly the *personal-agent* pattern Cole says is unbeatable for solo use but fatal to ship. If you ever multi-tenant it, steal his split: keep markdown/git for your own authoring, but add a DB-backed context-retriever + agent-memory layer (Redis or otherwise) and get off subscription-metered coding-agent calls before real users touch it.</p></section>
+</div>
+</body>
+</html>
