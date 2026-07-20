@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Non-NVIDIA AI Card Everyone’s Ignoring — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>The Non-NVIDIA AI Card Everyone’s Ignoring</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-07-19 · 62,209 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=NtYoTt-RB1s" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/NtYoTt-RB1s/mqdefault.jpg" alt="">
+  <div class="tldr">Testing Tenstorrent&#x27;s Wormhole N300 AI card for local LLMs.</div>
+  <p class="why">A $1,400 non-NVIDIA card runs Llama 3.1 8B locally at 30 tok/s — a concrete price/performance data point versus buying a Mac or NVIDIA rig.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A hands-on review of the Tenstorrent Wormhole N300 — a $1,400 AI accelerator that isn&#x27;t a GPU, isn&#x27;t NVIDIA, and has no video output.</p>
+<p class="detail-line"><strong>The hardware &amp; cost:</strong></p>
+<ul class="detail-list">
+<li><strong>Card:</strong> Tenstorrent Wormhole N300 — two chips on one board, 24 GB memory, ~<strong>$1,400</strong></li>
+<li><strong>Not a GPU:</strong> can&#x27;t draw a single pixel, no video outputs, no CUDA, no one-click Ollama</li>
+<li>Two ports on the back (for chaining/scaling multiple cards)</li>
+</ul>
+<p class="detail-line"><strong>Performance numbers:</strong></p>
+<ul class="detail-list">
+<li>Single stream: <strong>30–31 tokens/sec</strong> on Llama 3.1 8B (after a one-time warm-up; first request was a misleading 3.6 tok/s)</li>
+<li>Concurrency: 8 simultaneous requests → <strong>164 tokens/sec total</strong> (~5x throughput) — shines as an inference server, not a single-user chatbot</li>
+<li>Prompt processing: <strong>3,700–4,000 tokens/sec</strong></li>
+</ul>
+<p class="detail-line"><strong>How it works (the weird part):</strong></p>
+<ul class="detail-list">
+<li>Not a sea of tiny lockstep cores like CUDA — it&#x27;s a grid of <strong>106 bigger cores</strong> wired by an on-chip network</li>
+<li>Each core packs <strong>5 RISC-V CPUs</strong> (the open-source ISA); CPUs orchestrate, dedicated units do the math</li>
+</ul>
+<p class="detail-line"><strong>The catch:</strong></p>
+<ul class="detail-list">
+<li>Not plug-and-play yet — card came up dead after sitting idle, needed a risky forced firmware reflash + fighting version mismatches</li>
+<li>Software stack is immature but improving</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://tenstorrent.com/" target="_blank" rel="noopener" class="detail-link">Tenstorrent Wormhole N300</a> — the AI accelerator under test</li>
+<li>Llama.cpp-style project &quot;Llama Beni&quot; on GitHub (Alex is now a contributor) — the inference runner used</li>
+<li>vLLM server — ran Llama 3.1 8B</li>
+<li><a href="http://chatllm.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">ChatLLM by Abacus AI</a> — sponsor, multi-model chat at $10/mo</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The bottom line you want — a non-NVIDIA local-AI box at <strong>$1,400 for 24 GB</strong> doing 30 tok/s solo and 164 tok/s under load — a clean price/performance yardstick to hold against a Mac mini, though it&#x27;s an inference-server play, not a plug-and-play desktop yet.</p></section>
+</div>
+</body>
+</html>
