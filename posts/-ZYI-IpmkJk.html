@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building the World’s Smallest AI Workstation — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>Building the World’s Smallest AI Workstation</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-07-25 · 16,959 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=-ZYI-IpmkJk" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/-ZYI-IpmkJk/mqdefault.jpg" alt="">
+  <div class="tldr">Backpack-sized RTX 4000 box races the M3 Ultra.</div>
+  <p class="why">It&#x27;s the head-to-head you actually want: a tiny x86 + RTX 4000 build vs. Mac Studio M3 Ultra vs. a 16GB Mac mini, with real tokens/sec on each.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex and Dan from Micro Center cram a full local-AI rig into a Velka case — roughly Mac Studio footprint — then benchmark it against an M3 Ultra Mac Studio and a base Mac mini.</p>
+<p class="detail-line"><strong>The machines:</strong></p>
+<ul class="detail-list">
+<li><strong>Velka mini-ITX build</strong> — NVIDIA RTX 4000 (Ada, workstation card), assembled at Micro Center. Fits in a backpack.</li>
+<li><strong>Mac Studio M3 Ultra</strong> — the incumbent to beat.</li>
+<li><strong>Mac mini, 16GB</strong> — the budget baseline, memory-capped to smaller models.</li>
+</ul>
+<p class="detail-line"><strong>The numbers that matter:</strong></p>
+<ul class="detail-list">
+<li>Qwen 34B: <strong>103 tok/s</strong> on the Velka build vs. <strong>~30 tok/s</strong> on the 16GB Mac mini — roughly 3.4×.</li>
+<li>Gemma 4 12B decode: M3 Ultra <strong>45.4 tok/s</strong> vs. Velka <strong>39.6 tok/s</strong> — the Mac wins generation, barely.</li>
+<li>Gemma 4 12B prompt processing: Velka <strong>1,505 tok/s</strong> vs. M3 Ultra <strong>650 tok/s</strong> — the NVIDIA box is <strong>2.3× faster</strong> at ingest.</li>
+</ul>
+<p class="detail-line"><strong>The actual tradeoff:</strong></p>
+<ul class="detail-list">
+<li>Apple silicon wins <strong>token generation</strong> (unified memory bandwidth, huge model capacity).</li>
+<li>NVIDIA wins <strong>prompt processing</strong> by a wide margin — matters enormously for long-context, RAG, and code-repo workloads where you&#x27;re feeding in thousands of tokens before the first output token.</li>
+<li>The Mac mini isn&#x27;t in the conversation at 16GB; memory is the ceiling, not compute.</li>
+</ul>
+<p class="detail-line"><strong>Cost reality check:</strong> Alex doesn&#x27;t state prices in the transcript. Rough street context — Mac mini M4 16GB starts ~$599, Mac Studio M3 Ultra starts ~$3,999, and an RTX 4000 Ada alone runs ~$1,200–1,500 before case, CPU, RAM, and PSU. The Velka build lands in Mac Studio territory, not Mac mini territory.</p>
+<p class="detail-line"><strong>Related videos referenced:</strong></p>
+<ul class="detail-list">
+<li><a href="https://youtu.be/d8yS-2OyJhw" target="_blank" rel="noopener" class="detail-link">Mac Studio CLUSTER vs M3 Ultra</a></li>
+<li><a href="https://youtu.be/4RYmsrarOSw" target="_blank" rel="noopener" class="detail-link">Mini PC portable setup</a></li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If your local-AI work is long-prompt heavy, the NVIDIA box buys you 2.3× on ingest for roughly M3 Ultra money — but if you just want the cheapest machine that runs a decent model, neither of these is a Mac mini, and a 16GB mini caps you at small models regardless.</p></section>
+</div>
+</body>
+</html>
