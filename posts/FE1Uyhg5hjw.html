@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMD Says 2 Ryzen AI Halos Can Run a 400B Model... I Tested It — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>AMD Says 2 Ryzen AI Halos Can Run a 400B Model... I Tested It</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-07-26 · 115,375 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=FE1Uyhg5hjw" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/FE1Uyhg5hjw/mqdefault.jpg" alt="">
+  <div class="tldr">Clustering two AMD Ryzen AI Halo boxes over Ethernet.</div>
+  <p class="why">It&#x27;s the closest head-to-head you&#x27;ll get on whether stacking two 128GB AMD mini-boxes beats buying one big-memory Mac for local LLM work — and the transcript excerpt cuts off before the actual verdict.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex takes two AMD Ryzen AI Halo mini-PCs (Strix Halo APU, 128GB unified memory each) and clusters them over 10GbE to test AMD&#x27;s claim that the pair can run ~400B-parameter models.</p>
+<p class="detail-line"><strong>The hardware in play:</strong></p>
+<ul class="detail-list">
+<li><strong>AMD Ryzen AI Halo mini-PC</strong> — APU (CPU + GPU on one die) with <strong>128GB shared memory</strong>; AMD claims up to ~200B params on a single box</li>
+<li><strong>Two clustered</strong> = <strong>256GB pooled</strong> (minus OS overhead, so realistically less)</li>
+<li>Sold exclusively through <strong>Micro Center</strong> — Alex doesn&#x27;t state a price in this excerpt</li>
+<li>Compared in his *previous* video against the <strong>NVIDIA DGX Spark</strong> — that&#x27;s the video to watch for the raw benchmark numbers</li>
+</ul>
+<p class="detail-line"><strong>The catch nobody mentions:</strong></p>
+<ul class="detail-list">
+<li>Two machines don&#x27;t become one machine — the model must be <strong>split across both</strong>, and the GPUs exchange data continuously during generation</li>
+<li>The only interconnect is a single <strong>10-gigabit Ethernet port</strong> per box</li>
+<li>You <strong>cannot</strong> just run a cable between the two. AMD&#x27;s own playbooks require a <strong>10GbE switch</strong> in the middle</li>
+<li>So the real bill of materials is: 2× Halo boxes <strong>+ a 10GbE switch</strong></li>
+</ul>
+<p class="detail-line"><strong>Two clustering methods (both from AMD&#x27;s playbooks):</strong></p>
+<ul class="detail-list">
+<li><strong>llama.cpp + RPC</strong> — remote procedure call, built into llama.cpp. This is the same engine under Ollama and LM Studio, so it&#x27;s the low-friction path</li>
+<li><strong>RCCL (&quot;rickel&quot;) + vLLM + Ray</strong> — AMD&#x27;s answer to NVIDIA&#x27;s NCCL; does proper <strong>tensor parallelism</strong> to split the model across GPUs. Heavier setup, better theoretical throughput</li>
+</ul>
+<p class="detail-line"><strong>The switch he used:</strong></p>
+<ul class="detail-list">
+<li><strong>UniFi Flex XG</strong> — 4× 10GbE ports + 1× 1GbE uplink. The four 10G ports handle up to a 4-node cluster; the 1G port is your management/network link</li>
+<li><strong>Fanless</strong> — completely silent, which matters if this lives on your desk</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener" class="detail-link">llama.cpp</a> — the inference engine (RPC mode enables cluster splitting)</li>
+<li><a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener" class="detail-link">vLLM</a> — high-throughput serving with tensor parallelism</li>
+<li><a href="https://github.com/ray-project/ray" target="_blank" rel="noopener" class="detail-link">Ray</a> — distributed orchestration layer vLLM uses for multi-node</li>
+<li><a href="https://github.com/ROCm/rccl" target="_blank" rel="noopener" class="detail-link">RCCL</a> — AMD&#x27;s collective comms library (NCCL equivalent)</li>
+<li>Micro Center affiliate link: https://micro.center/ef6aec</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re weighing a Mac mini/Studio against local-AI hardware, the honest cost of the AMD route is *two* boxes plus a 10GbE switch — and the open question is whether Ethernet-speed interconnect kills the throughput advantage of that 256GB pool versus a single Mac with unified memory and no network hop.</p></section>
+</div>
+</body>
+</html>
