@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This was a data center a year ago… Now it&#x27;s on my desk — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>This was a data center a year ago… Now it&#x27;s on my desk</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-07-30 · 104,428 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=qV_K0nTF6gY" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/qV_K0nTF6gY/mqdefault.jpg" alt="">
+  <div class="tldr">Nvidia DGX Station desktop supercomputer tested on huge LLMs</div>
+  <p class="why">This is the machine that actually beats a maxed Mac Studio at running 400GB+ models locally — but it needs a 240V outlet and pulls 1,400W, so it&#x27;s a very different animal than a Mac mini.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> The ASUS ExpertCenter Pro ET900N G3 — an Nvidia DGX Station with a GB300 Grace Blackwell superchip, 748GB of unified memory, sitting on a desk instead of in a rack.</p>
+<p class="detail-line"><strong>The hardware:</strong></p>
+<ul class="detail-list">
+<li><strong>Chip:</strong> Nvidia GB300 &quot;desktop superchip&quot; — the same silicon that&#x27;s been in HGX data center service since last year, repackaged for a desk</li>
+<li><strong>Memory:</strong> 748GB total, but it&#x27;s two fused pools, not one — 256GB ultra-fast HBM (7–8 TB/s) + ~500GB Grace LPDDR5X (500 GB/s). Nvidia calls the combo &quot;coherent memory&quot;</li>
+<li><strong>Networking:</strong> 2× 400Gb ConnectX-8 &quot;SuperNICs&quot; — data-center-grade, lets you cluster multiple boxes. (DGX Sparks ship with ConnectX-7; same idea, half the pipe)</li>
+<li><strong>Expansion:</strong> 3× PCIe slots. Review unit shipped with an RTX Pro 4000; an RTX Pro 6000 also fits</li>
+<li><strong>Power:</strong> ~360W idle, ~1,400W flat out for the chip alone — whole machine at the wall is more. Alex ran it on a 240V/20A outlet rather than a standard US 115V/15A circuit</li>
+</ul>
+<p class="detail-line"><strong>The memory trick (this is the actual story):</strong></p>
+<ul class="detail-list">
+<li>Blackwell runs <strong>NVFP4</strong> natively — Nvidia&#x27;s own 4-bit float format. Shrinks a 16-bit model ~4× and runs faster</li>
+<li>GLM 5.2 goes from ~2TB to 465GB on disk in NVFP4</li>
+<li>465GB still doesn&#x27;t fit in the 256GB fast HBM pool, so it spills into the slower Grace memory</li>
+<li>It doesn&#x27;t crawl, because GLM is a <strong>mixture-of-experts</strong> model — only the offloaded experts each token actually reads hit the slow lane</li>
+<li>Result: <strong>~24 tokens/sec</strong> on a 400GB+ frontier model, on a desk</li>
+</ul>
+<p class="detail-line"><strong>Models tested:</strong></p>
+<ul class="detail-list">
+<li>Nemotron 3 Super (120B, NVFP4)</li>
+<li>DeepSeek V4 Flash</li>
+<li>Qwen 3 235B (NVFP4)</li>
+<li>GLM 5.2 (465GB NVFP4 — the headliner)</li>
+</ul>
+<p class="detail-line"><strong>Mac comparison:</strong> Alex explicitly frames the spill-to-slow-memory behavior as &quot;the same trick as running a giant model on a maxed out Mac Studio.&quot; Same architectural idea (unified memory, MoE offload), but the DGX Station has a 7–8 TB/s fast tier a Mac Studio simply doesn&#x27;t have — and a wall-outlet requirement a Mac mini simply doesn&#x27;t have.</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="http://chatllm.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">ChatLLM by Abacus AI</a> — sponsor</li>
+<li><a href="http://deepagent.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">Abacus AI DeepAgent</a> — sponsor</li>
+<li>Gear links are in the video description (the transcript snippet doesn&#x27;t include pricing)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you want the price-vs-Mac-mini answer, note that this class of machine is data-center pricing (tens of thousands, plus an electrician), so the honest comparison is: Mac mini for cheap local inference on small models, maxed Mac Studio for big-MoE-on-a-budget, DGX Station only when 24 tok/s on a 465GB model is worth a dedicated 240V circuit.</p></section>
+</div>
+</body>
+</html>
