@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Brief &mdash; 2026-08-04</title>
+    <style>
+    :root {
+        --background: oklch(0.12 0 0);
+        --foreground: oklch(0.93 0 0);
+        --card: oklch(0.17 0.005 260);
+        --card-foreground: oklch(0.93 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.6 0 0);
+        --border: oklch(1 0 0 / 8%);
+        --accent-blue: oklch(0.7 0.15 250);
+        --accent-green: oklch(0.7 0.15 155);
+        --accent-amber: oklch(0.75 0.15 75);
+        --accent-purple: oklch(0.7 0.12 300);
+        --radius: 0.5rem;
+        --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        background: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* === HEADER === */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+    }
+
+    .subtitle { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .archive-btn, .back-link {
+        color: var(--muted-foreground);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all 0.15s;
+    }
+    .archive-btn:hover, .back-link:hover {
+        color: var(--foreground);
+        border-color: var(--muted-foreground);
+    }
+
+    /* === CARDS === */
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        letter-spacing: -0.015em;
+    }
+
+    .card p { color: var(--card-foreground); }
+
+    .muted { color: var(--muted-foreground); font-size: 0.875rem; }
+    .muted-sm { color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; }
+
+    /* === HERO SUMMARY === */
+    .hero {
+        margin-bottom: 1.5rem;
+    }
+    .summary {
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, oklch(0.95 0 0), var(--accent-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .badge-sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+
+    /* === CROSSOVERS === */
+    .crossovers-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .crossover-item {
+        padding: 0.5rem 0;
+    }
+    .crossover-item h3 {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-purple);
+        margin-bottom: 0.375rem;
+    }
+    .perspectives { display: flex; flex-direction: column; gap: 0.125rem; }
+    .perspective {
+        padding: 0.125rem 0;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+    }
+    .perspective-channel {
+        font-weight: 700;
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        display: inline;
+        margin-right: 0.375rem;
+    }
+    .perspective p { color: var(--card-foreground); display: inline; }
+    .so-what {
+        margin-top: 0.5rem;
+        padding-top: 0.375rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--accent-amber);
+    }
+
+    /* === CHANNEL SECTIONS === */
+    .channel-card { }
+    .channel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .channel-name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .channel-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .channel-header h2 {
+        margin-bottom: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: var(--accent-blue);
+    }
+    .ch-count {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .channel-takeaway {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: var(--foreground);
+        margin-bottom: 0.75rem;
+        font-style: italic;
+    }
+
+    /* === TOOLS & TECH === */
+    .tools-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .tool-row {
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+    }
+    .tool-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .tool-context {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+    }
+
+    .sentiment-pos { background: oklch(0.35 0.15 145); color: oklch(0.85 0.15 145); }
+    .sentiment-neg { background: oklch(0.35 0.15 25); color: oklch(0.85 0.15 25); }
+    .sentiment-mix { background: oklch(0.35 0.12 80); color: oklch(0.85 0.12 80); }
+    .sentiment-neu { background: var(--accent); color: var(--foreground); }
+
+
+    /* === CHANNEL VIDEOS COLLAPSED === */
+    .channel-videos > summary {
+        font-size: 0.75rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .channel-videos > summary:hover { color: oklch(0.85 0.15 250); }
+    .channel-videos > .video-list { margin-top: 0.5rem; }
+
+    /* === SEEN SECTION === */
+    .seen-section {
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+    }
+    .seen-section > summary {
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+    }
+    .seen-section > summary:hover { color: var(--foreground); }
+    .seen-section > .video-list { margin-top: 0.5rem; opacity: 0.75; }
+
+    /* === SECTION TITLES === */
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--border);
+    }
+    .creator-title { color: var(--accent-blue); border-color: var(--accent-blue); }
+    .shipped-title { color: var(--accent-green); border-color: var(--accent-green); }
+    .buzz-title { color: var(--accent-amber); border-color: var(--accent-amber); }
+
+    /* === BUZZING === */
+    .buzz-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .buzz-item { padding: 0.25rem 0; }
+    .buzz-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .buzz-handle {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--accent-amber);
+    }
+    .buzz-age {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        margin-left: auto;
+    }
+    .buzz-tweet {
+        font-size: 0.8125rem;
+        color: var(--card-foreground);
+        margin-top: 0.25rem;
+        line-height: 1.4;
+    }
+
+    /* === TOOL UPDATES === */
+    .tool-section-title { color: var(--accent-green) !important; }
+    .tool-link { justify-content: space-between; }
+    .tool-version {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-green);
+        background: oklch(0.2 0.08 155);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    /* === VIDEO CONTEXT === */
+    .video-context {
+        padding: 0.125rem 0.75rem 0.25rem;
+    }
+    .video-about {
+        font-size: 0.75rem;
+        color: var(--card-foreground);
+        line-height: 1.3;
+    }
+    .video-why {
+        font-size: 0.6875rem;
+        color: var(--accent-green);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+        font-style: italic;
+    }
+
+    /* === EXPANDABLE DETAILS === */
+    .video-details {
+        padding: 0 0.75rem 0.5rem;
+    }
+    .video-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        padding: 0.25rem 0;
+        user-select: none;
+        letter-spacing: 0.03em;
+    }
+    .video-details summary:hover { color: oklch(0.85 0.15 250); }
+    .detail-body {
+        padding: 0.5rem 0;
+    }
+    .detail-hook {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 0.375rem;
+    }
+    .detail-line {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.25rem;
+    }
+    .detail-line strong {
+        color: var(--foreground);
+    }
+    .detail-list {
+        padding-left: 1.25rem;
+        margin: 0.25rem 0 0.5rem;
+    }
+    .detail-list li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--card-foreground);
+        margin-bottom: 0.125rem;
+    }
+    .detail-list li strong {
+        color: var(--foreground);
+    }
+    .detail-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        border-bottom: 1px solid oklch(0.7 0.15 250 / 30%);
+    }
+    .detail-link:hover {
+        color: oklch(0.85 0.15 250);
+        border-bottom-color: oklch(0.85 0.15 250);
+    }
+
+    /* === CROSSOVER DETAILS === */
+    .crossover-head { }
+    .crossover-details summary {
+        font-size: 0.6875rem;
+        color: var(--accent-blue);
+        cursor: pointer;
+        margin-top: 0.25rem;
+        letter-spacing: 0.03em;
+    }
+    .crossover-details summary:hover { color: oklch(0.85 0.15 250); }
+    .crossover-details .perspectives { margin-top: 0.375rem; }
+
+    /* === VIDEO LIST === */
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .video-row {
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 0.8);
+        overflow: hidden;
+        transition: border-color 0.15s;
+    }
+    .video-row:hover { border-color: var(--muted-foreground); }
+
+    .video-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .thumbnail {
+        width: 120px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: calc(var(--radius) * 0.6);
+        flex-shrink: 0;
+    }
+
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .one-liner {
+        font-size: 0.6875rem;
+        color: var(--muted-foreground);
+        line-height: 1.3;
+        margin-top: 0.125rem;
+    }
+    .video-meta { font-size: 0.625rem; color: var(--muted-foreground); margin-top: 0.125rem; }
+
+    .video-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        white-space: nowrap;
+    }
+
+    .video-row-actions {
+        padding: 0 0.75rem 0.5rem;
+    }
+
+    .read-more {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: oklch(0.7 0.15 250);
+        text-decoration: none;
+        padding: 0.125rem 0.625rem;
+        border: 1px solid oklch(0.7 0.15 250 / 30%);
+        border-radius: 999px;
+        transition: all 0.15s;
+    }
+    .read-more:hover {
+        background: oklch(0.7 0.15 250 / 10%);
+        border-color: oklch(0.7 0.15 250);
+    }
+
+    .badge-green {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.625rem;
+        font-weight: 700;
+        border-radius: 999px;
+        background: oklch(0.25 0.12 155);
+        color: var(--accent-green);
+        letter-spacing: 0.02em;
+    }
+
+    /* === ARCHIVE === */
+    .archive-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .archive-link {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
+    }
+    .archive-link:hover { border-color: var(--muted-foreground); }
+
+    /* === FOOTER === */
+    footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 640px) {
+        .container { padding: 1rem; }
+        .thumbnail { width: 80px; height: 45px; }
+        .video-link { gap: 0.75rem; padding: 0.5rem; }
+        .header { flex-direction: column; gap: 0.75rem; }
+    }
+</style>
+</head>
+<body>
+    <div id="gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--background);">
+        <div style="text-align:center;">
+            <h1 style="font-size:1.5rem;font-weight:800;text-transform:uppercase;color:var(--foreground);margin-bottom:1rem;">Morning Brief</h1>
+            <input id="pass" type="password" placeholder="passcode" autofocus
+                style="background:var(--card);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 1rem;font-size:1rem;text-align:center;outline:none;" />
+            <p id="pass-err" style="color:oklch(0.7 0.15 25);font-size:0.75rem;margin-top:0.5rem;display:none;">wrong passcode</p>
+        </div>
+    </div>
+    <div id="content" style="display:none;">
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Morning Brief</h1>
+                <p class="subtitle">2026-08-04 &middot; 19 sources</p>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <a href="/mx-brief/browse.html" class="archive-btn">Browse</a>
+                <a href="/mx-brief/articles/" class="archive-btn">Articles</a>
+                <a href="/mx-brief/archive/" class="archive-btn">Archive</a>
+            </div>
+        </header>
+
+        
+        <section class="hero">
+            <p class="summary">Thin day with a fat theme: three separate voices all landed on the same uncomfortable truth — the people who win aren&#x27;t the smartest analysts, they&#x27;re the ones who move, play the room, and skip the spreadsheet.</p>
+        </section>
+
+        <h2 class="section-title creator-title">What Creators Are Saying</h2>
+        
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/rjiskq1h4EjTgsqvP_BOsnpwCdHUHKvSo00RmUraoWqDuHQN6RAUMdo1ircHs0ZcKQrrWNvukEs=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Nate Herk | AI Automation</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            <p class="channel-takeaway">Nothing new.</p>
+            
+            <details class="seen-section">
+                <summary>1 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Lg5TYWPSg6M" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Lg5TYWPSg6M/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">18 Months of Pricing AI Automations in 21 Mins</p>
+            </div>
+            <div class="video-stats">
+                <span>18.4K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">How to price AI automation builds using client math</p><p class="video-why">Zero build content — this is the number-by-number breakdown of a real $5,500 appointment-setter deal, so you can defend a price instead of guessing at one.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Nate&#x27;s pricing playbook after selling 100+ AI automation systems, walked through one real appointment-setting agent deal with every number exposed.</p>
+<p class="detail-line"><strong>The worked example (appointment setting agent):</strong></p>
+<ul class="detail-list">
+<li>Baseline: 20 leads/week, ~1 hour of human time each = 20 hours/week</li>
+<li>Fully-loaded employee cost: $40/hour → $800/week</li>
+<li>Annualized: $800 × 52 = <strong>$41,600/year</strong> of recoverable labor cost</li>
+<li>Build price: ~<strong>13% of the annual number</strong> = <strong>$5,500</strong></li>
+<li>Client return: $41,600 on a $5,500 investment ≈ <strong>7.5x</strong></li>
+</ul>
+<p class="detail-line"><strong>The pricing formula:</strong></p>
+<ul class="detail-list">
+<li>Find the annual cost of the manual process (headcount hours × loaded hourly rate × 52)</li>
+<li>Price the build at roughly 13% of that annual number</li>
+<li><strong>Golden rule: show a 10x return over 12 months</strong> — that math makes it hard to say no</li>
+<li>Close the gap between 7.5x and 10x with *baseline growth*: as the system frees up time, leads/week climb from 20 → 21 → 23 → 27, compounding the return (a flywheel: more usage → more growth → more usage)</li>
+<li>Frame growth as a <strong>projection, never a guarantee</strong> — do not tie your fee to specific revenue outcomes</li>
+</ul>
+<p class="detail-line"><strong>Sequencing the conversation:</strong></p>
+<ul class="detail-list">
+<li>Never quote before discovery. Walk the client through the full solution first — how the agent works, what testing looks like, impact on speed-to-lead and lead quality</li>
+<li>Standard deflection when a client pushes for a number early: *&quot;to give you an accurate ballpark I need to understand the complexity of the system and how it integrates into your actual business processes&quot;*</li>
+<li>The client&#x27;s own numbers become your price — that&#x27;s what makes it defensible when they ask &quot;where&#x27;d you get that number?&quot;</li>
+</ul>
+<p class="detail-line"><strong>Maintenance retainers:</strong></p>
+<ul class="detail-list">
+<li>$400/month flat, standardized across all projects — keep it simple, don&#x27;t bespoke it</li>
+<li><strong>What it covers:</strong> keeping the build doing what was scoped — breakages, API changes, new model releases, edge-case tweaks</li>
+<li><strong>What it does NOT cover:</strong> new functionality. That&#x27;s a separate scope and a separate conversation</li>
+<li>Sanity check: if servicing a $30k system actually costs your team more than $400/month, you&#x27;re losing money — don&#x27;t anchor on the standard number</li>
+</ul>
+<p class="detail-line"><strong>Cash flow:</strong></p>
+<ul class="detail-list">
+<li>Get paid in <strong>stages</strong>, so you&#x27;re never carrying more than ~30 days of unpaid work</li>
+</ul>
+<p class="detail-line"><strong>Credibility context:</strong></p>
+<ul class="detail-list">
+<li>100+ AI automation systems sold; agency scaled past $100k/month with a <strong>$20k/month minimum retainer</strong>, then sold</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.skool.com/ai-automation-society/about" target="_blank" rel="noopener" class="detail-link">AI Automation Society (free Skool community)</a> — Nate&#x27;s free resource hub</li>
+<li><a href="https://app.aiautomationsociety.ai/opaa-ads-optin" target="_blank" rel="noopener" class="detail-link">$1M agency playbook</a> — paid/lead-magnet funnel for the agency growth material</li>
+<li><a href="https://get.glaido.com/nate" target="_blank" rel="noopener" class="detail-link">Glaido</a> — voice-to-text tool, free month via affiliate link</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> No repos or workflow JSON in this one — it&#x27;s the commercial layer that sits on top of the builds Nate normally demos, and the 13%-of-annual-cost / 10x-return / $400-maintenance triad is directly reusable as a quoting template.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/ytc/AIdro_k01-_GpvVZW8w4ULtaQaa55ls8aMf2a5dXhIe56pjMvG0=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>NetworkChuck</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            <p class="channel-takeaway">Nothing new.</p>
+            
+            <details class="seen-section">
+                <summary>1 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=HUXUnMbeOyo" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/HUXUnMbeOyo/mqdefault_live.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">OSPF From Zero: Let&#x27;s Build the Internet (Well...Almost) | Summer of CCNA</p>
+            </div>
+            <div class="video-stats">
+                <span>0</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Live 90-minute OSPF walkthrough for CCNA students.</p><p class="video-why">Almost nothing here for you — it&#x27;s a live CCNA cert stream on OSPF fundamentals, with zero home lab tinkering or AI workflow content.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A live 90-minute Summer of CCNA session teaching OSPF (Open Shortest Path First) from scratch — the link-state routing protocol that underpins how routers discover paths across a network.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Part of NetworkChuck&#x27;s recurring &quot;Summer of CCNA&quot; live series, gated behind his academy course</li>
+<li>Streamed at 5PM ET the day of publish; description is a signup pitch, not a content outline</li>
+<li>No transcript available at analysis time — 36 likes, 0 views recorded, so this is a pre-stream or freshly-posted placeholder</li>
+<li>Topic scope is exam-track fundamentals: neighbor adjacencies, LSAs, cost metrics, area design — standard CCNA OSPF territory</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://academy.networkchuck.com/course/premium-summer-of-ccna" target="_blank" rel="noopener" class="detail-link">Summer of CCNA (NetworkChuck Academy)</a> — the paid course this session belongs to</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> Zero home lab reveals and zero AI-in-the-workflow content — this is cert curriculum delivery, not Chuck showing off his rack or automating his own work. Skip unless you&#x27;re actively studying for the CCNA.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/hypu_gAVvu_zrtDWjVw833AeSwI2OwJSJ5ZSy1QAhgbIPs1qmNnKreOnHMhaU55bBRLMA47E=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Cole Medin</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            <p class="channel-takeaway">Nothing new.</p>
+            
+            <details class="seen-section">
+                <summary>2 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=E5qThSVlFzY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/E5qThSVlFzY/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Complete Local AI System with A Single NPM Install!</p>
+            </div>
+            <div class="video-stats">
+                <span>5.9K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">One npm install for four local AI models.</p><p class="video-why">If you want a fully local, zero-API-key model layer under your agent tooling, this collapses four runtimes into one SDK import — but be clear that it&#x27;s a sponsored spot, not a harness lesson.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A sponsored demo of QVAC, Tether&#x27;s open-source local AI SDK, running speech-to-text, embeddings, an LLM, and text-to-speech from a single npm package.</p>
+<p class="detail-line"><strong>What Cole is doing different here:</strong></p>
+<ul class="detail-list">
+<li>Normally a local stack means four separate runtimes and configs — Whisper for STT, Ollama for the LLM, something else for embeddings, something else for TTS. He replaces all of it with one import surface.</li>
+<li>Models are pulled and run automatically on import — no per-service setup, no daemon babysitting.</li>
+<li>His framing: models as *files on your machine* means no rate limits, no re-pricing, no deprecation out from under you. That&#x27;s the argument, and it&#x27;s the useful part.</li>
+<li>Same API across every OS, so the stack is portable rather than machine-specific.</li>
+</ul>
+<p class="detail-line"><strong>The demo pipeline (voice RAG assistant):</strong></p>
+<ul class="detail-list">
+<li><strong>Whisper</strong> — transcribes the spoken question to text</li>
+<li><strong>Gemma</strong> — embedding model, retrieves matching notes (RAG step)</li>
+<li><strong>Qwen 3</strong> — generates the answer</li>
+<li><strong>Supersonic</strong> — text-to-speech, reads the answer back</li>
+<li>Question asked: &quot;what is the database we ended up going with?&quot; → answer: &quot;We chose Postgres for reporting queries.&quot;</li>
+<li>He explicitly says this is *not* optimized for latency — it&#x27;s a breadth demo, not a production voice agent.</li>
+</ul>
+<p class="detail-line"><strong>Claimed capability surface:</strong> LLMs, fine-tuning, RAG, image generation, video generation, transcription, STT, TTS — a dozen-plus capabilities out of the box.</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/tetherto" target="_blank" rel="noopener" class="detail-link">QVAC by Tether</a> — the single-install local AI SDK; exact repo link was in the video description, not stated in the transcript</li>
+<li><a href="https://github.com/openai/whisper" target="_blank" rel="noopener" class="detail-link">Whisper (OpenAI)</a> — speech-to-text</li>
+<li><a href="https://huggingface.co/google/gemma-2b" target="_blank" rel="noopener" class="detail-link">Gemma</a> — embeddings in this demo</li>
+<li><a href="https://github.com/QwenLM/Qwen3" target="_blank" rel="noopener" class="detail-link">Qwen 3</a> — the answering LLM</li>
+<li>Supersonic — text-to-speech model used for playback</li>
+</ul>
+<p class="detail-line"><strong>Honest caveat:</strong> This is a paid placement — he says so on camera and asks for GitHub stars. There&#x27;s no harness engineering, no Archon, no agent-orchestration content here. Treat it as a tool signal, not a technique lesson.</p>
+<p class="detail-line"><strong>Why it matters for you:</strong> For <a href="https://github.com/joshtune/mx-workflow" target="_blank" rel="noopener" class="detail-link">mx-workflow</a>, the transferable idea is a single local-model dependency for the offline pieces — transcription, embedding-based retrieval over your own context files, and cheap local classification — so review/audit agents can run without burning API calls or leaking private repo content to a cloud endpoint; the QVAC-specific claims are worth verifying against the actual repo before you commit to it.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=8JWhwhxWtJw" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/8JWhwhxWtJw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Ultimate Knowledge Base: Bring YouTube Into Your AI Second Brain</p>
+            </div>
+            <div class="video-stats">
+                <span>9.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Turning a whole YouTube channel into an OKF knowledge base</p><p class="video-why">Cole ships a repeatable skill-driven pipeline that converts any channel&#x27;s 200+ videos into a citable markdown knowledge base your agent can query — exactly the ingestion layer mx-workflow is missing.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Cole packaged his entire 200-video YouTube channel as an OKF (Open Knowledge Format) knowledge base / bundle you install into your second brain with a single copy-paste prompt, plus the Claude skills to do it for any channel.</p>
+<p class="detail-line"><strong>What&#x27;s different this time:</strong></p>
+<ul class="detail-list">
+<li>Previous videos covered OKF as a *spec*; this one is the proof-of-concept — a knowledge base useful enough that you install it before you understand it.</li>
+<li>He frames OKF as the third standard in the stack: MCP = agent↔tool, A2A = agent↔agent, <strong>OKF = agent↔knowledge base</strong>. Portable, shareable knowledge — not just private notes.</li>
+<li>Distribution is a *prompt*, not a setup guide. The prompt teaches the agent OKF if it doesn&#x27;t know it, clones the repo, and is query-ready. No install script, no MCP server, no config.</li>
+<li>Knowledge base is agent-agnostic — works with Claude Code, Hermes, open-claude, whatever your second brain runs on.</li>
+</ul>
+<p class="detail-line"><strong>How the knowledge base is structured:</strong></p>
+<ul class="detail-list">
+<li>`README.md` — human-facing, holds the one-shot install prompt.</li>
+<li>`index.md` — the agent&#x27;s entry point (standard LLM Wiki / Karpathy-style pattern). Agent always reads this first.</li>
+<li><strong>Themes section in the index</strong> — Cole calls this the most important part: a high-level map of what questions this KB can actually answer, so the agent orients before it searches.</li>
+<li><strong>Concepts</strong> and <strong>entities</strong> files — the drill-down layer the agent routes to based on the question.</li>
+<li>Everything is plain markdown. Videos → markdown transcripts → concept/entity notes. No vector DB, no embeddings.</li>
+</ul>
+<p class="detail-line"><strong>What it looks like in use:</strong></p>
+<ul class="detail-list">
+<li>Demo query: *&quot;What is my entire end-to-end process for building a new feature with AI coding agents?&quot;* — a multi-video answer. Agent digs through the wiki and returns a synthesized walkthrough <strong>citing specific videos with timestamps</strong>.</li>
+<li>Other demos: &quot;When is RAG dead and when is it still essential?&quot;, &quot;How does my second brain work under the hood and which videos explain each part?&quot;</li>
+<li>The real unlock: it&#x27;s a <strong>navigation layer</strong> for channels too big to keep up with — high-level answer first, click into the source video only if you want depth.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/karpathy" target="_blank" rel="noopener" class="detail-link">Karpathy LLM Wiki pattern</a> — the markdown-index-first knowledge base convention OKF standardizes</li>
+<li>Google&#x27;s Open Knowledge Format (OKF) — the agent↔knowledge-base spec underpinning the whole build</li>
+<li>Cole&#x27;s channel OKF knowledge base repo — linked in the video description (200 videos, install-by-prompt)</li>
+<li>Claude skills for building your own channel KB — shipped alongside the repo</li>
+<li><a href="https://serpapi.com/" target="_blank" rel="noopener" class="detail-link">SerpApi</a> — sponsor, 250 free credits; search API used in the ingestion path</li>
+<li><a href="https://github.com/coleam00/Archon" target="_blank" rel="noopener" class="detail-link">Archon</a> — Cole&#x27;s agent orchestration / harness engineering project (channel context)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> <a href="https://github.com/joshtune/mx-workflow" target="_blank" rel="noopener" class="detail-link">mx-workflow</a> already has the review/build agent fleet — the gap is durable knowledge, and OKF gives you a copyable pattern: an `index.md` with a <strong>themes</strong> map plus concept files, so your agents route by theme instead of grepping, and every answer they give cites its source. Steal the &quot;distribute via one prompt&quot; trick for mx-workflow skills too — installation as a paste-able prompt beats a README any day.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/K4uqeMvQ1FrKn6nEXuBoU9EW3OapL0dD12rgr7Q2-bR8gwQVUcLoNN6hGYH6t6c3NCa7pc4yYQ=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Chris Koerner on The Koerner Office Podcast</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            <p class="channel-takeaway">Nothing new.</p>
+            
+            <details class="seen-section">
+                <summary>3 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=lG5U30gKCaY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/lG5U30gKCaY/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How a Mom of 3 Makes $50K a Month With AI (No Experience)</p>
+            </div>
+            <div class="video-stats">
+                <span>33.1K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Upwork gigs sold with zero skills, delivered by ChatGPT</p><p class="video-why">It&#x27;s the cleanest proof that the side-hustle bottleneck is now sales and nerve, not capability — she landed a $3K/mo SEO retainer knowing nothing about SEO, in 1–2 hours a day around a full-time job and three kids.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Case-study interview with Sandy Lee, who went $0 → $52K/month in 9 months by winning freelance client work in skills she didn&#x27;t have and delivering with ChatGPT.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>Start on Upwork, not with a product.</strong> She applied to random odd jobs with no experience, no testimonials, no portfolio. Seventh application landed a <strong>$3,000/mo SEO retainer</strong>.</li>
+<li><strong>Sell the outcome, let AI supply the skill.</strong> She knew nothing about SEO. The stack was a $20/mo ChatGPT sub. Chris&#x27;s framing: &quot;everyone is now a PhD in everything — we just need to connect the dots.&quot;</li>
+<li><strong>Constraint-first design.</strong> Full-time 9-to-5, three kids under eight → the whole thing had to run in 1–2 hours/day, with client delivery capped at ~1 hour/day. Anything requiring more got cut.</li>
+<li><strong>Application volume is the real skill.</strong> 7 applications → 1 retainer. The funnel is the product; the deliverable is downstream.</li>
+<li><strong>The mindset lever Chris hammers:</strong> irrational confidence has never been cheaper. &quot;You either win or you learn&quot; — he cites his own stack of failed businesses as answered questions, not losses.</li>
+<li><strong>Backstory as proof of motivation, not method:</strong> raised across seven countries alone from age 11, $2/day food budget in college, evicted, slept on a Hawaii beach until police moved her along, then fired alongside her husband the same day from her first job.</li>
+</ul>
+<p class="detail-line"><strong>Caveat — read this before you copy it:</strong> the transcript covers the origin story and the first $3K retainer in detail, but the jump from $3K to $52K/mo is asserted, not broken down. Chris teases &quot;here are some secret sauce&quot; and the mechanics land later in the episode. Treat the first-client playbook as the actionable part; treat the $52K as a headline you still need to verify.</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.upwork.com" target="_blank" rel="noopener" class="detail-link">Upwork</a> — the acquisition channel; cold applications to gigs outside your skill set</li>
+<li><a href="https://chat.openai.com" target="_blank" rel="noopener" class="detail-link">ChatGPT</a> — $20/mo, the entire delivery layer for SEO work she had no training in</li>
+<li><a href="http://www.beehiiv.com/chris" target="_blank" rel="noopener" class="detail-link">beehiiv</a> — sponsor; newsletter platform Chris has run for 18+ months, 30% off first 30 days</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> As an engineer you&#x27;re already past the delivery bar she cleared with a $20 subscription — your gap is doing the unglamorous part she actually nailed, which is firing off applications for work you haven&#x27;t done yet.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=nVgFbclwmSA" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/nVgFbclwmSA/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The $0 Side Hustle Anyone Can Start</p>
+            </div>
+            <div class="video-stats">
+                <span>116.1K</span>
+                
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=g-wMJf4ckK0" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/g-wMJf4ckK0/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">He Found a Grant That Feels Like a Cheat Code ($2.4M/Year)</p>
+            </div>
+            <div class="video-stats">
+                <span>34.1K</span>
+                
+            </div>
+        </a>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/yFw8DI2FmldbPj4_RJy15oPzxI7oos16H2LLJ62Ow9EtdjwXpSgFbhrFLq5VcBWvTUWTf-ac=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Codie Sanchez</h2>
+                </div>
+                <span class="ch-count">2 new</span>
+            </div>
+            <p class="channel-takeaway">Your side hustle isn&#x27;t stuck on strategy — it&#x27;s stuck on you researching instead of shipping; Codie&#x27;s whole point is that speed IS the strategy, and the economy shifting under you is an argument for moving sooner, not waiting for clarity that never comes.</p>
+            
+            <details class="channel-videos">
+                <summary>2 videos</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=uDJHFjL9TCQ" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/uDJHFjL9TCQ/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Nobody Really Experiences You</p>
+            </div>
+            <div class="video-stats">
+                <span>5.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Speed beats analysis: move fast, fail forward.</p><p class="video-why">If your side hustle is stuck in a planning doc, this is the argument that shipping three bad versions beats perfecting one you never launch.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A sub-60-second clip built on one idea — adaptability and speed of iteration, not raw strength or intelligence, is what actually wins.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Opens with the misattributed-but-sticky Darwin line: it&#x27;s not the strongest that survives, it&#x27;s the one most adaptable to change.</li>
+<li>Codie ties it to advice from &quot;my richest mentor&quot;: *&quot;I win more for one reason. I move fast.&quot;*</li>
+<li>The punchline is the whole method: <strong>&quot;By the time most people are already done analyzing, I&#x27;ve already made three mistakes and found a better way.&quot;</strong></li>
+<li>Implied loop: ship → break → learn → re-ship. Three cheap failures generate more real signal than one expensive analysis.</li>
+<li>The framing is deliberately anti-research. Analysis paralysis is treated as the default failure mode of smart people, not as diligence.</li>
+</ul>
+<p class="detail-line"><strong>The catch (say it out loud):</strong></p>
+<ul class="detail-list">
+<li>&quot;Move fast&quot; only compounds when mistakes are *cheap and reversible*. Three bad landing pages = free tuition. Three bad LLC filings or lease signings = real money gone.</li>
+<li>This is a hook clip, not a framework. There&#x27;s no cost-of-failure test, no rollback plan, no &quot;which decisions deserve analysis.&quot; You have to supply that.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No tools, repos, books, or URLs mentioned in this clip. It&#x27;s pure motivational short-form.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> For a side hustle, your real constraint is cycles-per-month, not IQ — pick the version of your idea you can put in front of a paying human this week, and let the three mistakes teach you what the research never would.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=DHPKPkoVvcI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/DHPKPkoVvcI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Times Are Changing</p>
+            </div>
+            <div class="video-stats">
+                <span>9.8K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Untranscribed short-form clip on shifting economic conditions.</p><p class="video-why">Skip it — there&#x27;s no transcript, no description, and no extractable playbook, so there&#x27;s nothing here to apply to a side hustle.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short, title-only upload from Codie Sanchez with no description, no transcript, and no tags beyond name misspellings used for search capture.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Published 2026-08-03, ~9.8K views, 175 likes, 6 comments — engagement ratios consistent with a Shorts-style clip, not a long-form teaching video</li>
+<li>Description field is empty, so no links, no CTA, no resource stack to mine</li>
+<li>Transcript unavailable, so the actual claim behind &quot;Times Are Changing&quot; can&#x27;t be verified or summarized</li>
+<li>Tag list is pure brand/misspelling SEO (`cody sanches`, `codie samchez`) — a discovery play, not a content signal</li>
+</ul>
+<p class="detail-line"><strong>What can&#x27;t be determined:</strong></p>
+<ul class="detail-list">
+<li>Whether the &quot;change&quot; referenced is rates, AI displacement, small-business M&amp;A conditions, or labor market shifts</li>
+<li>Any specific instruction, framework, or number</li>
+<li>Any tools, deals, or businesses cited</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None available — description empty, no transcript to extract from</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> For a side-hustle operator, macro-mood clips are the lowest-yield format on this channel — the acquisition mechanics, cash-flow math, and deal-sourcing videos are where the actual instruction lives. Re-run this one if a transcript lands later; otherwise spend the ten minutes on a deal-teardown video instead.</p></div>
+        </details>
+    </div></div>
+            </details>
+            <details class="seen-section">
+                <summary>8 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=7tfwaKP7F3o" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/7tfwaKP7F3o/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How To Build Real Wealth</p>
+            </div>
+            <div class="video-stats">
+                <span>10.5K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Wealth comes from not resetting your compounding clock.</p><p class="video-why">Your side hustle&#x27;s plateau isn&#x27;t a signal to pivot — it&#x27;s the part everyone quits at, and quitting is what actually kills the return.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 90-second argument that real wealth comes from duration, not from picking the right thing — using Replit&#x27;s eight-year grind to a $9B valuation as the proof.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>The case study: Amjad Masad built Replit for ~8 years while it failed. Bad enough that he laid off half the company.</li>
+<li>Then the market moved — AI coding arrived, Replit shipped its Agent product, revenue went from near-zero to $150M+.</li>
+<li>Valuation: $3B raise, then tripled to $9B a few months later. Amjad becomes a billionaire.</li>
+<li>The trap Codie names: we only see the explosion. The eight boring years are invisible, so we calibrate our expectations against a highlight reel.</li>
+<li>The actual failure mode: you hit a plateau, read it as &quot;I picked wrong,&quot; and switch. Switching <strong>resets your compounding clock</strong> back to zero.</li>
+<li>Her definition of compounding: *the same business, the same work, for years* — not a new bet every quarter.</li>
+<li>Implicit second lesson: Replit&#x27;s payoff required a market catalyst (AI) that Amjad didn&#x27;t control. Staying in the game is what put him in position to catch it.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://replit.com" target="_blank" rel="noopener" class="detail-link">Replit</a> — browser-based coding platform; its Agent product is the thing that flipped the revenue curve</li>
+<li><a href="https://contrarianthinking.co" target="_blank" rel="noopener" class="detail-link">Contrarian Thinking</a> — Codie&#x27;s newsletter/business, where this framing lives</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re running a side hustle, the highest-leverage move most quarters is boring — keep shipping the same thing, because every restart throws away the only asset that compounds, which is time in.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Dl2skuruXFQ" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Dl2skuruXFQ/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Secret To Sales</p>
+            </div>
+            <div class="video-stats">
+                <span>20.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">The APPLE framework replaces sales talent with a system.</p><p class="video-why">If your side hustle stalls because you hate selling, this reframes sales as a repeatable process you can build once and hand off — not a personality trait you&#x27;re missing.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 5-step sales framework (APPLE) that swaps charisma and &quot;magic closing lines&quot; for a system anyone can run.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>A — Avatar:</strong> Stop trying to convince people. Go find the ones already in enough pain that they&#x27;re *thrilled* you solve it. Selection beats persuasion.</li>
+<li><strong>P — Prime:</strong> Show the gap between where they are and where they should be. You&#x27;re not selling the product — you&#x27;re selling the bridge across that gap.</li>
+<li><strong>P — Proof:</strong> Stack overwhelming, undeniable evidence until doubt looks silly. Reviews, photos, before-and-afters, and (her favorite) video testimonials.</li>
+<li><strong>L — Lock:</strong> Close the deal — but by this point the close should feel like handing someone a gift they already own. You&#x27;re just wrapping it.</li>
+<li><strong>E — Engine:</strong> Systematize it so hard that &quot;a 22-year-old with a ring light and a CRM&quot; can run it in a week. McDonald&#x27;s doesn&#x27;t hire burger geniuses; it builds teenager-proof systems.</li>
+</ul>
+<p class="detail-line"><strong>The core contrarian take:</strong></p>
+<ul class="detail-list">
+<li>Obsessing over closing lines is content bait, not revenue. It gets views; it doesn&#x27;t close business.</li>
+<li>You don&#x27;t need to be a good salesperson to make a lot of money — you need a good sales *engine*.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No specific tools, repos, or URLs mentioned in this video — CRM is referenced generically.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> A side hustle dies the moment it depends on you personally being persuasive — APPLE is the argument for building sales as a documented, delegable pipeline from day one, so the thing keeps earning when you&#x27;re not in the room.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=XlGlWcSX_1Y" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/XlGlWcSX_1Y/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Your Friends Will Ask...</p>
+            </div>
+            <div class="video-stats">
+                <span>61.2K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Short clip on skeptics reacting to your success</p><p class="video-why">Skip it — there&#x27;s no transcript or description on this one, so there&#x27;s no extractable tactic, just a motivational Short about handling doubters once your side hustle starts working.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A sub-minute Codie Sanchez Short (no description, no transcript published) riffing on what happens socially once you start building something on the side.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>No transcript is available for this video — nothing was captioned or scraped, so any &quot;instructional secret&quot; here would be invented, not reported.</li>
+<li>The description is empty. The only tags are misspellings of the channel name (`codie sanchez`, `cody sanches`, `codie samchez`) — pure search-capture SEO, zero topical signal.</li>
+<li>Metrics read like a standard Short: 32,461 views and 492 likes within ~24 hours of publish, but only 18 comments. A ~1.5% like rate with almost no discussion is the signature of passive scroll-through content, not something people argue with or save.</li>
+<li>Title pattern (&quot;Your Friends Will Ask...&quot;) is the setup half of a two-beat hook — the payoff lives entirely in the video, and it&#x27;s almost always the same beat: people who doubted you get curious once the cash flow shows up.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None mentioned — no transcript to pull repos, tools, or URLs from.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> Nothing actionable for a side hustle here — it&#x27;s an audience-retention clip, not a playbook; spend the four minutes on one of her acquisition or cash-flow breakdowns instead.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=XAZXGV5beGA" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/XAZXGV5beGA/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Why Employees Quit</p>
+            </div>
+            <div class="video-stats">
+                <span>29.2K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Oversold job interviews cause fast turnover; anti-sell instead.</p><p class="video-why">If your side hustle ever needs a first hire, the interview is where you either buy yourself a loyal operator or a 2x-salary replacement bill.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 90-second argument that employees quit because of a mismatch created in the interview, not because of pay — plus a hiring tactic Codie calls the &quot;anti-sell.&quot;</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>The diagnosis:</strong> You sold them a 5K, they showed up to an ultramarathon. Quiet quitting starts week one, not month twelve.</li>
+<li><strong>The two failure points:</strong> (1) overselling the role in the interview, (2) skipping the first 90 days of onboarding.</li>
+<li><strong>The cost:</strong> Replacing an employee runs up to <strong>2x their salary</strong> — that&#x27;s the invoice for being &quot;too nice&quot; and hiding the truth.</li>
+<li><strong>The anti-sell:</strong> In the interview, deliberately lead with the hard parts. Literal script from the transcript: &quot;Sometimes there&#x27;s going to be long hours. I think this quarter will be really rough. This unglamorous part of the job you should know about.&quot;</li>
+<li><strong>The filter:</strong> Anyone still excited *after* hearing the worst is the person who stays. The fast-quitters wanted a different job entirely and would have self-selected out if you&#x27;d been honest up front.</li>
+<li><strong>The reframe:</strong> Stop selling the 5K. Hire ultra runners who live for the distance.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://contrarianthinking.co/boardroom/" target="_blank" rel="noopener" class="detail-link">The Boardroom</a> — Codie&#x27;s paid community, pitched in the CTA as where they advise on &quot;how to hire winners&quot; (link is in the video description, not spoken)</li>
+</ul>
+<p class="detail-line"><strong>What&#x27;s missing:</strong> She names the first-90-days onboarding gap as half the problem and then never addresses it. This video only solves the interview side.</p>
+<p class="detail-line"><strong>Why it matters for you:</strong> A side hustle&#x27;s first hire is a single point of failure — you can&#x27;t absorb a 2x-salary mis-hire the way a company can, so front-loading the ugly truth is the cheapest insurance you have.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=B3QpATOqJSE" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/B3QpATOqJSE/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Why Your Brain Is Holding You Back</p>
+            </div>
+            <div class="video-stats">
+                <span>33.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Loss aversion is quietly blocking your first bet.</p><p class="video-why">It names the exact cognitive tax that keeps you researching side hustles instead of starting one — and gives three concrete levers to reprice the bet.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 90-second breakdown of Kahneman&#x27;s prospect theory and how loss aversion gets in the way of every wealth-building bet you don&#x27;t take.</p>
+<p class="detail-line"><strong>The research:</strong></p>
+<ul class="detail-list">
+<li>Daniel Kahneman&#x27;s prospect theory (the Nobel work — note: Codie says &quot;Nobel Peace Prize&quot;; it was actually the 2002 Nobel Memorial Prize in Economic Sciences)</li>
+<li>Study setup: a 50/50 gamble — 50% chance to win $100, 50% chance to lose $100</li>
+<li>Result: most people won&#x27;t take the bet until the upside is <strong>2–3x the downside</strong>. They need $200-to-win vs. $100-to-lose before they&#x27;ll play</li>
+<li>Diagnosis: losses hurt more than equivalent wins feel good. But money is made on the other side of bets, so the wiring is actively expensive</li>
+</ul>
+<p class="detail-line"><strong>How to fix it — three moves:</strong></p>
+<ul class="detail-list">
+<li><strong>Flip the fear.</strong> Stop pricing what you lose if it fails. Price what you&#x27;re already losing by staying put. Inaction has a cost line too; most people just never write it down</li>
+<li><strong>Increase the potential reward.</strong> Don&#x27;t argue with your brain&#x27;s 2–3x demand — satisfy it. Engineer the payoff so the upside genuinely is multiples of the downside, then the bet clears your own internal hurdle rate</li>
+<li><strong>Increase your odds.</strong> Turn the 50/50 into a 70/30, then a 90/10. Two accelerants: (1) surround yourself with winners, (2) take a lot of reps</li>
+</ul>
+<p class="detail-line"><strong>The engineering translation:</strong></p>
+<ul class="detail-list">
+<li>This is asymmetric bet sizing. Capped downside, uncapped upside — the same reason a weekend side project beats quitting your job cold</li>
+<li>&quot;Increase your odds&quot; = reduce variance through information and iteration. Reps are just sampling; proximity to people who&#x27;ve done it is a cheap prior</li>
+<li>The 2–3x hurdle explains why you keep passing on decent opportunities that *are* positive expected value. Your brain isn&#x27;t running EV, it&#x27;s running a loss-weighted distortion of it</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No tools, repos, or links referenced in this video</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;ve been circling a side hustle for months without launching, the blocker probably isn&#x27;t the idea — it&#x27;s a rigged internal hurdle rate, and these three levers are how you reprice the bet so it actually clears.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=kCMVWkeo6Fo" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/kCMVWkeo6Fo/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Boy or Girl...?</p>
+            </div>
+            <div class="video-stats">
+                <span>116.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Gender reveal Short. No business content whatsoever.</p><p class="video-why">You shouldn&#x27;t — there&#x27;s zero instructional content here, it&#x27;s a 15-second personal gender reveal clip riding the algorithm.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A ~15-second YouTube Short of a gender reveal (countdown, red smoke, Smash Mouth&#x27;s &quot;All Star&quot;). Personal content, not business content.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Full transcript is four lines: &quot;3 2 1 / Oh, no. / Why is it red? / Hey now, you&#x27;re an all star.&quot;</li>
+<li>No description, no links, no framing — pure personality post.</li>
+<li>64K views, 1.3K likes, 68 comments — decent engagement for a Short, which is exactly the point of posting it.</li>
+<li>The only extractable lesson is meta: personal-life filler keeps a creator channel&#x27;s upload cadence and algorithm signals alive between substantive videos. Codie&#x27;s channel treats Shorts as a top-of-funnel volume play, not a teaching surface.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None mentioned in the video.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> Nothing here about cash flow, acquisitions, or side hustles — skip it and spend the time on her long-form acquisition breakdowns instead.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=uLjUZkZ2xu0" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/uLjUZkZ2xu0/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">When You Know You Need To Make A Change</p>
+            </div>
+            <div class="video-stats">
+                <span>57.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Fear is the signal to jump, not stop.</p><p class="video-why">It&#x27;s a 15-second gut-check on the exact hesitation that keeps most side hustles permanently in the &#x27;someday&#x27; folder — but there&#x27;s no method here, just the push.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A sub-20-second Shorts clip — one line of motivational framing about acting when fear peaks. No framework, no case study, no numbers.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>The full transcript is three sentences: fear = the entry signal, inaction = staying stuck for life, and &quot;that I can&#x27;t do.&quot;</li>
+<li>The argument is inverted-instinct: most people read fear as a stop sign; Codie reads it as confirmation you&#x27;re at the edge of something that matters.</li>
+<li>No description, no links, no CTA — this is top-of-funnel brand content, not instruction.</li>
+<li>Engagement is strong for the format (20k views, ~1.2k likes, ~6% like rate) but only 20 comments — people nod and scroll, they don&#x27;t debate it.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None mentioned in the video.</li>
+</ul>
+<p class="detail-line"><strong>The actual takeaway if you want one:</strong></p>
+<ul class="detail-list">
+<li>Fear-as-signal only works when the downside is capped. The version worth applying: jump when the worst case is a bruised ego and a few thousand dollars, not when it&#x27;s your mortgage.</li>
+<li>If you&#x27;re sitting on an unlaunched side project, the constraint is almost never information — it&#x27;s that you haven&#x27;t set a date. Set one.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you already know what your side hustle is and you&#x27;re stalling, this is the nudge; if you&#x27;re still deciding what to build, skip it and go find one of Codie&#x27;s teardown videos with real numbers in it.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=1RK2if1nGKU" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/1RK2if1nGKU/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">I Lit $250k On Fire</p>
+            </div>
+            <div class="video-stats">
+                <span>17.8K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Seven rules for outsourcing without torching your budget.</p><p class="video-why">If your side hustle depends on contractors or an agency building the thing you can&#x27;t build yourself, this is the checklist that decides whether you get a product or a $250k lesson.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A post-mortem on a failed outsourced dev project — Codie burned ~$250-270k over 3-4 months on an agency and walked away with a broken product — turned into seven operating rules for hiring outside teams.</p>
+<p class="detail-line"><strong>The failure pattern:</strong></p>
+<ul class="detail-list">
+<li>She was building a tech product but wasn&#x27;t a tech company</li>
+<li>Took the standard advice: &quot;outsource what you&#x27;re not good at&quot;</li>
+<li>Result after 3-4 months: failed promises, terrible product, and &quot;hiding the ball&quot; (the agency obscuring real status)</li>
+<li>Root cause isn&#x27;t offshore vs. onshore — it&#x27;s that nobody inside the company owned the outcome</li>
+</ul>
+<p class="detail-line"><strong>The seven rules:</strong></p>
+<ul class="detail-list">
+<li><strong>Never outsource the lead.</strong> Outsource the team, but the leader is your direct report. No internal owner = no skin in the game = no accountability when it breaks.</li>
+<li><strong>Be diabolical on readouts.</strong> Daily standup, daily ship list, weekly loom. &quot;Receipts or it didn&#x27;t happen.&quot;</li>
+<li><strong>Evaluate the true cost.</strong> Offshore or onshore doesn&#x27;t matter — do the math before you sign the SOW.</li>
+<li><strong>Interrogate their clients first.</strong> Talk to a handful of the agency&#x27;s actual clients and ask the uncomfortable ones: What shipped on time and on budget? How were they managed? What did they *actually* spend vs. the quote?</li>
+<li><strong>Milestone-based contracts only.</strong> Never a lump sum. You need an exit at every checkpoint so you can walk the moment benchmarks are missed.</li>
+<li><strong>Grade them weekly, 1-10.</strong> Tie fulfillment to hitting at least an 8. The agency does *not* grade itself — put someone inside your company on grading.</li>
+<li><strong>Assume you&#x27;ll micromanage.</strong> Hyper-specific briefs, constant oversight. You&#x27;re one of many projects on their board, not the only one.</li>
+</ul>
+<p class="detail-line"><strong>The engineering read:</strong></p>
+<ul class="detail-list">
+<li>Rules 2, 5, and 6 are just CI/CD discipline applied to a vendor: short feedback loops, gated releases, objective pass criteria</li>
+<li>&quot;Hiding the ball&quot; is what happens when the only status signal is self-reported — the daily ship list is your build log</li>
+<li>Milestone contracts are the business equivalent of not merging to main until tests pass</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No repos or tools named in the transcript</li>
+<li>CTA: comment &quot;boardroom&quot; on the video for a link to her masterclass on running a business</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The moment your side hustle outgrows your own hands — a dev you hire, a VA, an agency — these seven rules are the difference between leverage and a very expensive hole; the cheapest one to apply today is milestone-based contracts with an exit at every checkpoint.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/xMADx5czTPcIhTmWROpNFrnAFB_S98l_8tq2Fwe2_t2b-hACm1xN8UWyilipkkoehvBAIzW_kBA=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>A Life Engineered</h2>
+                </div>
+                <span class="ch-count">1 new</span>
+            </div>
+            <p class="channel-takeaway">Refusing to play corporate politics isn&#x27;t integrity, it&#x27;s forfeiting — the promo you didn&#x27;t get went to someone who did the same work and also made sure the right people knew about it.</p>
+            
+            <details class="channel-videos">
+                <summary>1 videos</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Gf0pR4_bv-o" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Gf0pR4_bv-o/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Ex-Amazon VP on What Actually Gets You Promoted | Ethan Evans</p>
+            </div>
+            <div class="video-stats">
+                <span>8.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Corporate politics 101 for engineers who hate politics.</p><p class="video-why">The core message: &quot;work hard and hope to be noticed&quot; is the strategy that makes you interchangeable with everyone else in the room — Evans gives you the replacement.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Interview with Ethan Evans — ex-Amazon VP (Prime Video, Twitch, 800+ person orgs), now retired and financially unmuzzled — on why hard work alone never gets you promoted, and how to actually play corporate politics.</p>
+<p class="detail-line"><strong>The core message to engineers:</strong></p>
+<ul class="detail-list">
+<li>Hard work is table stakes, not a differentiator. It&#x27;s what makes you the *same* as everyone else at a place where everyone works hard.</li>
+<li>&quot;My work will speak for itself&quot; is the single belief Evans would rip out of engineers&#x27; heads.</li>
+<li>Most people&#x27;s entire career strategy is *work hard and hope to be noticed*. That&#x27;s not a strategy — it&#x27;s a lottery ticket.</li>
+</ul>
+<p class="detail-line"><strong>Politics, redefined:</strong></p>
+<ul class="detail-list">
+<li>Politics ≠ dirty. It&#x27;s just the word for human interaction, relationships, and negotiation.</li>
+<li>Working definition: <strong>how businesses and the people in them reconcile competing goals against limited resources.</strong></li>
+<li>Concrete shape of it: you and a peer both have products to ship, you have dependencies on each other, you each want your own schedule first. Resolving that *is* politics.</li>
+<li>Career version: several engineers all want to grow. Someone gets the marquee project, the CEO presentation, the key business trip. Someone doesn&#x27;t. Pretending that allocation is purely meritocratic limits you.</li>
+</ul>
+<p class="detail-line"><strong>Evans&#x27; rules (what&#x27;s covered in the transcript):</strong></p>
+<ul class="detail-list">
+<li><strong>Rule 1 — Accept that politics are real.</strong> Drop the &quot;I shouldn&#x27;t have to care about this&quot; stance. Evans hates the word *should* because it disempowers you — you end up waiting for what *should* happen instead of doing what you need to do. Relationships consciously and subconsciously color how you&#x27;re treated.</li>
+<li><strong>Rule 2 — Be reasonable.</strong> The worst thing Evans can say about someone is that they&#x27;re unreasonable. Unreasonable = illogical (the engineer&#x27;s reading) <strong>and</strong> intransigent, stuck on a viewpoint, close-minded. That second half is the one engineers miss.</li>
+</ul>
+<p class="detail-line"><strong>Other threads teased in the episode:</strong></p>
+<ul class="detail-list">
+<li>Spotting manipulation before it costs you — &quot;there&#x27;s a lot of nasty things you can do.&quot;</li>
+<li>When your manager is the problem: &quot;you can suffer or leave. So pick one and get started.&quot;</li>
+<li><strong>Asking for money — the one hard stat in the video:</strong> only <strong>30%</strong> of people ask for raises. Of that 30%, <strong>70% get something.</strong> The 70% who never ask get nothing by definition.</li>
+<li>Lying at work: Evans opens with &quot;every manager and every employee lies. Yes, I lie. I hate it. And I don&#x27;t think it&#x27;s avoidable.&quot;</li>
+</ul>
+<p class="detail-line"><strong>What to prepare for:</strong></p>
+<ul class="detail-list">
+<li>Expect visibility to be allocated, not earned passively. If you want the high-leverage project, ask for it before the decision is made.</li>
+<li>Expect your reputation for *reasonableness* to be evaluated as heavily as your technical output — especially on cross-team dependency negotiations.</li>
+<li>If you haven&#x27;t asked for a raise, you&#x27;re in the 70% who statistically get nothing.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://linear.app/ale" target="_blank" rel="noopener" class="detail-link">linear.app/ale</a> — sponsor offer, 6 months free of Linear Business (3 seats)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re an engineer who believes good code should be self-evident, this is the video that argues the belief itself is the ceiling on your career.</p></div>
+        </details>
+    </div></div>
+            </details>
+            <details class="seen-section">
+                <summary>3 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=sUn3PtArxYI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/sUn3PtArxYI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Why You Should Ask for a Raise (And How to Do It)</p>
+            </div>
+            <div class="video-stats">
+                <span>2.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">The math favors asking for a raise.</p><p class="video-why">Most engineers never ask, and the ones who do win about 70% of the time — this is the two-minute script for the conversation.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short, tactical breakdown of the raise conversation — the odds, the opening line, and the framing that gets your manager on your side instead of across the table.</p>
+<p class="detail-line"><strong>The numbers he cites:</strong></p>
+<ul class="detail-list">
+<li>Only <strong>30%</strong> of people ask for a raise; 70% never do</li>
+<li>Of the 30% who ask, <strong>70% get something</strong> — maybe not the number they wanted, but something</li>
+<li>Net: asking is a positive-expected-value move. Silence guarantees zero.</li>
+</ul>
+<p class="detail-line"><strong>How to ask:</strong></p>
+<ul class="detail-list">
+<li><strong>Don&#x27;t open with &quot;I want a raise.&quot;</strong> It&#x27;s personal and it&#x27;s selfish. What the company hears is: *&quot;I&#x27;d like more money for the same work.&quot;* From the other side of the table, that&#x27;s straightforwardly bad for the bottom line.</li>
+<li><strong>Give reasons.</strong> You need to hand your manager an argument they can carry upward.</li>
+<li>*Reason 1 — performance:* &quot;Look at what I&#x27;ve done.&quot; Concrete, delivered, measurable.</li>
+<li>*Reason 2 — humanize it:* find a framing that makes you a person, not a line item. The most common one, <strong>if it&#x27;s actually true for you</strong>, is family.</li>
+<li><strong>Enlist your manager.</strong> The whole game is getting them to *want* this to happen. Not &quot;you need to give me a raise&quot; — instead: *&quot;I&#x27;d like to make more money in order to better take care of my family. How can we work together so that that&#x27;s an obvious case?&quot;*</li>
+<li><strong>Make it collaborative.</strong> You&#x27;re not making a demand, you&#x27;re opening a joint project where the goal is making your raise the obvious call.</li>
+</ul>
+<p class="detail-line"><strong>The script, condensed:</strong></p>
+<ul class="detail-list">
+<li>❌ &quot;I want a raise.&quot;</li>
+<li>✅ &quot;I&#x27;d like to make more money in order to [reason]. How can we work together so that becomes an obvious case?&quot;</li>
+</ul>
+<p class="detail-line"><strong>What to prepare:</strong></p>
+<ul class="detail-list">
+<li>A written record of what you&#x27;ve shipped and its impact — the performance half doesn&#x27;t work from memory</li>
+<li>An honest, true humanizing reason (don&#x27;t manufacture one; it&#x27;s transparent and it burns trust)</li>
+<li>A concrete ask, so &quot;work together&quot; has a target to aim at</li>
+<li>Willingness to accept a partial win — &quot;something&quot; is the modal outcome, not the full number</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No tools, repos, or links mentioned — this is a short-form clip. He notes a <strong>full-length video is coming</strong>, so this is the teaser version.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> His message to engineers here is blunt — you are almost certainly leaving money on the table by default, and the fix isn&#x27;t leverage or negotiation theater, it&#x27;s reframing the ask as a problem you and your manager solve together.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=VfWbjvXDflY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/VfWbjvXDflY/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How to Handle &quot;10x More Efficient&quot; Expectations From Your Manager</p>
+            </div>
+            <div class="video-stats">
+                <span>3.8K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Scripting the &#x27;I&#x27;m at capacity&#x27; talk in the AI era</p><p class="video-why">Your manager is about to assume AI makes you 10x, and this gives you the exact framing to push back without sounding like you&#x27;re dodging work.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short conversational script for responding when your manager loads more work on you because &quot;AI writes the code now.&quot;</p>
+<p class="detail-line"><strong>The dynamic he&#x27;s naming:</strong></p>
+<ul class="detail-list">
+<li>AI tooling arrives → leadership assumes a productivity multiplier</li>
+<li>The multiplier gets banked before it&#x27;s proven, and shows up as extra scope on your plate</li>
+<li>Saying plain &quot;no&quot; reads as low performance; saying nothing reads as consent</li>
+</ul>
+<p class="detail-line"><strong>The script (three moves):</strong></p>
+<ul class="detail-list">
+<li><strong>Establish shared value first</strong> — &quot;I&#x27;m doing a lot of things for you, for the team, for our shared goals. I&#x27;m being very productive.&quot; Frame it as *for you*, not *to you*.</li>
+<li><strong>Assert the constraint</strong> — &quot;There&#x27;s a priority and a value to the things I do. I&#x27;m now at capacity.&quot; State it as fact, not complaint.</li>
+<li><strong>Bring the proposal, not the problem</strong> — &quot;Can we move some of the lower priority things off my plate so I have room for higher value? Here are my ideas. What can we do together?&quot;</li>
+</ul>
+<p class="detail-line"><strong>Three ways to free capacity (offer these, don&#x27;t wait to be asked):</strong></p>
+<ul class="detail-list">
+<li>Stop doing it entirely — kill the low-value work</li>
+<li>Automate it — invest once, reclaim the recurring cost</li>
+<li>Delegate down — hand it to someone more junior who grows from it</li>
+</ul>
+<p class="detail-line"><strong>Why it lands as win-win:</strong> It&#x27;s simple math. The manager already agrees your output is valuable. You&#x27;re not reducing output — you&#x27;re reallocating it toward higher value. Nothing for them to argue with.</p>
+<p class="detail-line"><strong>What to prepare for:</strong></p>
+<ul class="detail-list">
+<li>Have your actual work inventory ranked by value *before* the conversation — the proposal only works if you can name the low-priority items on sight</li>
+<li>Expect this conversation to recur as AI expectations ratchet up; treat it as a recurring negotiation, not a one-time fix</li>
+<li>Note: this is a clip — he flags a full episode coming</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None mentioned in this clip</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The &quot;10x from AI&quot; expectation is the defining career pressure of the next few years, and this is a reusable, non-confrontational script for holding your line while still reading as a high performer.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=0_w09YMcWxw" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/0_w09YMcWxw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">&quot;Politics&quot; Isn&#x27;t Dirty - It&#x27;s Just Human Interaction</p>
+            </div>
+            <div class="video-stats">
+                <span>2.3K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Reframing office politics as goal reconciliation, not backstabbing</p><p class="video-why">If you&#x27;ve been dodging &quot;politics&quot; as beneath you, this reframes it as the actual mechanism by which your project gets prioritized over someone else&#x27;s — a skill you need whether you like the word or not.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short reframe — politics isn&#x27;t manipulation, it&#x27;s the process businesses and people use to reconcile competing goals against limited resources.</p>
+<p class="detail-line"><strong>The core argument:</strong></p>
+<ul class="detail-list">
+<li>Most developers hear &quot;politics&quot; and think nasty, dirty, zero-sum. That reaction is understandable but expensive.</li>
+<li>Working definition offered: *how businesses and the people inside them reconcile different goals and limited resources.*</li>
+<li>The concrete case: you have a product to ship, I have a product to ship, we have dependencies on each other or we step on each other&#x27;s toes. You want your schedule. I want mine. Something has to break the tie.</li>
+<li>That tie-breaking process <strong>is</strong> politics. It *can* get nasty — it doesn&#x27;t have to.</li>
+<li>Implication: if you refuse to participate, you don&#x27;t opt out of the outcome. You just lose the tie-break by default.</li>
+</ul>
+<p class="detail-line"><strong>The one instruction given:</strong></p>
+<ul class="detail-list">
+<li><strong>Be aware that relationships matter.</strong> That&#x27;s the first lever. Framed as a prerequisite, not a nice-to-have — the video presents relationships as where the process starts, before any negotiation tactic.</li>
+</ul>
+<p class="detail-line"><strong>What to prepare for:</strong></p>
+<ul class="detail-list">
+<li>Expect dependency conflicts and schedule collisions to be resolved socially, not by a scheduler or a ticket priority field.</li>
+<li>Your technical argument is the input, not the decision. Someone has to want to hear it.</li>
+<li>Build the relationships *before* the conflict, not during it — you can&#x27;t negotiate from cold with someone whose roadmap you&#x27;re about to disrupt.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>None mentioned in this segment — it&#x27;s a short conceptual clip, likely part of a longer series (&quot;Stay tuned&quot;).</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The message to engineers is blunt — refusing to play politics isn&#x27;t integrity, it&#x27;s forfeiting; start by investing in relationships before you need them.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/zm4iOyMJvuuW5Yl52kNTkAq9BcKzuPYP0iqWpNRose4jx4KsXvKrGlRwz6PeSod06luOskFo=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Alex Ziskind</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            
+            
+            <details class="seen-section">
+                <summary>3 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=g_6UCRMNjNg" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/g_6UCRMNjNg/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">DGX Station running GLM5.2 in VSCode</p>
+            </div>
+            <div class="video-stats">
+                <span>44.1K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">GLM 5.2 on a DGX Station, coding in VS Code.</p><p class="video-why">This is the machine at the far end of the local-AI spectrum — 748GB unified memory running a frontier open model for one user — and it&#x27;s the honest comparison point for what a Mac mini can and can&#x27;t do.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Alex runs GLM 5.2 locally on an NVIDIA DGX Station with 748GB of unified memory, driving the VS Code agent, and clocks the token speed.</p>
+<p class="detail-line"><strong>The machine:</strong></p>
+<ul class="detail-list">
+<li>NVIDIA DGX Station — 748GB unified memory, the single-user end of the spectrum</li>
+<li>The model does <strong>not</strong> fully fit in HBM (high bandwidth memory), so part of it spills to slower memory</li>
+<li>Even spilling, Alex calls the speed acceptable for agentic coding in VS Code</li>
+<li>Ballpark: DGX Station class hardware is a five-figure buy (~$70–80k); Alex doesn&#x27;t quote a price in the clip</li>
+</ul>
+<p class="detail-line"><strong>How it compares to a Mac mini:</strong></p>
+<ul class="detail-list">
+<li>Mac mini M4 Pro tops out at 64GB unified memory (~$2,000 configured) — roughly 1/12th the DGX&#x27;s pool</li>
+<li>748GB is what it takes to hold a GLM-5.2-class model near-resident; a mini can only run heavily quantized mid-size models</li>
+<li>The interesting takeaway isn&#x27;t &quot;buy a DGX&quot; — it&#x27;s that even at 748GB you&#x27;re still spilling out of HBM, which tells you where the real bottleneck is (memory bandwidth, not capacity)</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://amzn.to/40luUHG" target="_blank" rel="noopener" class="detail-link">MSI EdgeExpert</a> — DGX Spark-class desktop AI box, the affordable tier</li>
+<li><a href="https://amzn.to/4kR" target="_blank" rel="noopener" class="detail-link">ASUS GX10</a> — another GB10-based mini AI workstation</li>
+<li><a href="https://bhpho.to/4r9vJi1" target="_blank" rel="noopener" class="detail-link">2-port 400Gbps switch</a> / <a href="https://bhpho.to/4qQqOlI" target="_blank" rel="noopener" class="detail-link">4-port 400Gbps switch</a> — for clustering these boxes</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> It&#x27;s a short, concrete demo that gives you the price/memory anchor at the top of the market — useful for judging whether a Mac mini or a Spark-class box is the sane buy for local AI.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=qV_K0nTF6gY" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/qV_K0nTF6gY/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">This was a data center a year ago… Now it&#x27;s on my desk</p>
+            </div>
+            <div class="video-stats">
+                <span>190.3K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Nvidia DGX Station desktop supercomputer tested on huge LLMs</p><p class="video-why">This is the machine that actually beats a maxed Mac Studio at running 400GB+ models locally — but it needs a 240V outlet and pulls 1,400W, so it&#x27;s a very different animal than a Mac mini.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> The ASUS ExpertCenter Pro ET900N G3 — an Nvidia DGX Station with a GB300 Grace Blackwell superchip, 748GB of unified memory, sitting on a desk instead of in a rack.</p>
+<p class="detail-line"><strong>The hardware:</strong></p>
+<ul class="detail-list">
+<li><strong>Chip:</strong> Nvidia GB300 &quot;desktop superchip&quot; — the same silicon that&#x27;s been in HGX data center service since last year, repackaged for a desk</li>
+<li><strong>Memory:</strong> 748GB total, but it&#x27;s two fused pools, not one — 256GB ultra-fast HBM (7–8 TB/s) + ~500GB Grace LPDDR5X (500 GB/s). Nvidia calls the combo &quot;coherent memory&quot;</li>
+<li><strong>Networking:</strong> 2× 400Gb ConnectX-8 &quot;SuperNICs&quot; — data-center-grade, lets you cluster multiple boxes. (DGX Sparks ship with ConnectX-7; same idea, half the pipe)</li>
+<li><strong>Expansion:</strong> 3× PCIe slots. Review unit shipped with an RTX Pro 4000; an RTX Pro 6000 also fits</li>
+<li><strong>Power:</strong> ~360W idle, ~1,400W flat out for the chip alone — whole machine at the wall is more. Alex ran it on a 240V/20A outlet rather than a standard US 115V/15A circuit</li>
+</ul>
+<p class="detail-line"><strong>The memory trick (this is the actual story):</strong></p>
+<ul class="detail-list">
+<li>Blackwell runs <strong>NVFP4</strong> natively — Nvidia&#x27;s own 4-bit float format. Shrinks a 16-bit model ~4× and runs faster</li>
+<li>GLM 5.2 goes from ~2TB to 465GB on disk in NVFP4</li>
+<li>465GB still doesn&#x27;t fit in the 256GB fast HBM pool, so it spills into the slower Grace memory</li>
+<li>It doesn&#x27;t crawl, because GLM is a <strong>mixture-of-experts</strong> model — only the offloaded experts each token actually reads hit the slow lane</li>
+<li>Result: <strong>~24 tokens/sec</strong> on a 400GB+ frontier model, on a desk</li>
+</ul>
+<p class="detail-line"><strong>Models tested:</strong></p>
+<ul class="detail-list">
+<li>Nemotron 3 Super (120B, NVFP4)</li>
+<li>DeepSeek V4 Flash</li>
+<li>Qwen 3 235B (NVFP4)</li>
+<li>GLM 5.2 (465GB NVFP4 — the headliner)</li>
+</ul>
+<p class="detail-line"><strong>Mac comparison:</strong> Alex explicitly frames the spill-to-slow-memory behavior as &quot;the same trick as running a giant model on a maxed out Mac Studio.&quot; Same architectural idea (unified memory, MoE offload), but the DGX Station has a 7–8 TB/s fast tier a Mac Studio simply doesn&#x27;t have — and a wall-outlet requirement a Mac mini simply doesn&#x27;t have.</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="http://chatllm.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">ChatLLM by Abacus AI</a> — sponsor</li>
+<li><a href="http://deepagent.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">Abacus AI DeepAgent</a> — sponsor</li>
+<li>Gear links are in the video description (the transcript snippet doesn&#x27;t include pricing)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you want the price-vs-Mac-mini answer, note that this class of machine is data-center pricing (tens of thousands, plus an electrician), so the honest comparison is: Mac mini for cheap local inference on small models, maxed Mac Studio for big-MoE-on-a-budget, DGX Station only when 24 tok/s on a 465GB model is worth a dedicated 240V circuit.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=N1DVF3O6PMc" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/N1DVF3O6PMc/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Your OS Changes Everything for Local AI</p>
+            </div>
+            <div class="video-stats">
+                <span>32.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Windows vs WSL vs Linux for local LLM inference.</p><p class="video-why">Same box, same chip, three OS choices — and one of them triples your prompt processing speed, which matters more than the hardware spec sheet when you&#x27;re picking a Mac mini alternative.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A three-way OS shootout on the GEEKOM A9 Max (AMD mini PC, ships with Windows) running local LLMs — Windows native vs WSL vs bare-metal Linux.</p>
+<p class="detail-line"><strong>The machine:</strong></p>
+<ul class="detail-list">
+<li><strong>GEEKOM A9 Max</strong> — AMD-based mini PC, Windows out of the box. This is the Mac mini competitor in the room: same small-box form factor, but you get to choose the OS, which is the whole point of the video.</li>
+<li>No pricing given in the transcript. Alex&#x27;s usual framing puts these AMD mini PCs in the same rough bracket as a mid-spec Mac mini, but he doesn&#x27;t do the dollar comparison here — this is purely a software-stack test.</li>
+</ul>
+<p class="detail-line"><strong>The results (decode = token generation, prefill = prompt processing):</strong></p>
+<ul class="detail-list">
+<li><strong>Windows + Ollama (default):</strong> worst case. Ollama on Windows runs <strong>100% CPU, GPU completely idle</strong>. If you installed Ollama and thought &quot;this chip is slow,&quot; this is why.</li>
+<li><strong>Windows + llama.cpp with Vulkan:</strong> beats default Ollama outright. This is the fix.</li>
+<li><strong>Windows + Lemonade:</strong> ties Vulkan on decode.</li>
+<li><strong>WSL:</strong> gives up roughly <strong>1/6 of throughput</strong> vs Windows native. Acceptable tax if you want the Linux toolchain without dual-booting. Needs <strong>Kisak Mesa</strong> installed to be viable.</li>
+<li><strong>Bare-metal Linux:</strong> all three backends land within a few percent of each other on decode — so decode is basically a wash across every OS.</li>
+<li><strong>The one that matters — long prompt prefill:</strong> Linux with <strong>RADV</strong> (the Mesa AMD Vulkan driver) is <strong>~3x faster than Windows</strong>. That&#x27;s the benchmark that made him double-check his numbers.</li>
+</ul>
+<p class="detail-line"><strong>The verdict:</strong></p>
+<ul class="detail-list">
+<li>Long-context work (RAG, big system prompts, code files pasted in) → <strong>bare-metal Linux + RADV</strong>, no contest.</li>
+<li>Chat-only, short prompts → <strong>Windows is fine</strong>, just don&#x27;t use stock Ollama.</li>
+<li>Want Linux tooling without the reboot → <strong>WSL + Kisak Mesa</strong>, eat the ~17% throughput hit.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener" class="detail-link">llama.cpp</a> — the inference engine doing the actual work; use the Vulkan backend on AMD</li>
+<li><a href="https://ollama.com" target="_blank" rel="noopener" class="detail-link">Ollama</a> — convenient, but CPU-only on Windows for this chip</li>
+<li><a href="https://github.com/lemonade-sdk/lemonade" target="_blank" rel="noopener" class="detail-link">Lemonade</a> — AMD&#x27;s local LLM server stack, ties Vulkan on decode</li>
+<li>RADV / Kisak Mesa — Mesa&#x27;s AMD Vulkan driver; the Kisak PPA is what makes WSL usable</li>
+<li>Gear links from the description: <a href="https://amzn.to/40luUHG" target="_blank" rel="noopener" class="detail-link">MSI EdgeXpert</a>, <a href="https://amzn.to/4kROLb8" target="_blank" rel="noopener" class="detail-link">ASUS GX10</a>, <a href="https://bhpho.to/4r9vJi1" target="_blank" rel="noopener" class="detail-link">2-port 400Gbps switch</a>, <a href="https://bhpho.to/4qQqOlI" target="_blank" rel="noopener" class="detail-link">4-port 400Gbps switch</a></li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re weighing a mini PC against a Mac mini for local AI, this is the hidden variable — the AMD box&#x27;s headline numbers are an OS choice away from being 3x better or 3x worse, whereas a Mac mini gives you Metal-optimized inference with zero configuration.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/Xfsv8L8S4Dt2PPpgaexoMluK9gkm4H77TY-Sae7DbY8qKSaGI0FOS_uzw65kxVtdQlYvc02bB6k=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>Matt Wolfe</h2>
+                </div>
+                <span class="ch-count">0 new</span>
+            </div>
+            
+            
+            <details class="seen-section">
+                <summary>6 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=PaNIJ9l2NOE" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/PaNIJ9l2NOE/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Turning ChatGPT Into My Own Jarvis</p>
+            </div>
+            <div class="video-stats">
+                <span>7.2K</span>
+                
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=qXp5NHz0KSo" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/qXp5NHz0KSo/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">How To Skip The Kimi K3 Waitlist</p>
+            </div>
+            <div class="video-stats">
+                <span>12.9K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Backdoor into Kimi K3 via the developer platform.</p><p class="video-why">If you want to test Kimi K3&#x27;s 1M-token context on your app code without waiting on a consumer subscription, the dev platform is an open side door — but the whole clip is a 90-second hack, not engineering content.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 90-second workaround for accessing Kimi K3 (and the &quot;K3 Swarm&quot; tier) while consumer subscriptions are paused due to demand.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Kimi paused new consumer subscriptions after a signup surge — the waitlist is on the *consumer* product, not the developer platform</li>
+<li>Go to `platform.kimmy.ai` (as pronounced in the video — likely Kimi&#x27;s developer platform) and create an account</li>
+<li>Add any amount of credit in the billing section; ~$1 is enough to unlock access</li>
+<li>Open the AI Playground — K3 should now appear in the model selector</li>
+<li>In settings, crank the context window to the full <strong>1M token</strong> limit and raise reasoning effort</li>
+<li>Prompt directly in the playground and use it like any other chatbot</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>Kimi developer platform — pronounced &quot;platform.kimmy.ai&quot; in the transcript; no URL is shown on screen or in the description snippet, so verify the actual domain (Kimi&#x27;s real dev platform is `platform.moonshot.ai`) before entering payment details</li>
+<li><a href="https://futuretools.io/" target="_blank" rel="noopener" class="detail-link">futuretools.io</a> — Matt&#x27;s AI tool directory</li>
+</ul>
+<p class="detail-line"><strong>Caveats worth flagging:</strong></p>
+<ul class="detail-list">
+<li>The transcript&#x27;s only justification for urgency is &quot;the government is actively trying to ban this&quot; — asserted, never sourced</li>
+<li>Zero benchmarks, zero code, zero comparison to Claude/GPT on real dev tasks</li>
+<li>You&#x27;re handing card details to a domain that was only spoken aloud in a video — type the URL yourself, don&#x27;t follow a link</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The one genuinely useful takeaway for web app work is the pattern, not the model — when a consumer tier is gated, the developer/API tier of the same product is usually ungated and pay-as-you-go, which is how you should be accessing these models anyway if you&#x27;re evaluating them against your codebase.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=sUmx-Yi6TwE" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/sUmx-Yi6TwE/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">AI News: An INSANE Week… Here’s What Matters</p>
+            </div>
+            <div class="video-stats">
+                <span>71.7K</span>
+                
+            </div>
+        </a>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=Q60VNdtyiAA" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/Q60VNdtyiAA/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Most Capable Humanoid Robot Yet!</p>
+            </div>
+            <div class="video-stats">
+                <span>14.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Google&#x27;s Gemini Robotics 2 controls humanoids feet-to-fingertips.</p><p class="video-why">Nothing here touches web app development — it&#x27;s a 90-second robotics hype clip with no code, no API, and no tooling you can use.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short news blast on Google&#x27;s Gemini Robotics 2, announced the day this video dropped.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Full-body control — previous Google robot models handled waist-up only; this one coordinates feet to fingertips, so the robot balances and walks while manipulating objects</li>
+<li>22 degrees of freedom per hand, with force modulation — seals Ziploc bags, knots trash bags, unscrews light bulbs, picks grapes without crushing them</li>
+<li>Cross-embodiment transfer: the same underlying model adapts to a different robot body in &quot;a few hours&quot; rather than a full retrain</li>
+<li>Multi-agent coordination — multiple robots being trained to communicate and split a single job</li>
+<li>An on-device variant runs locally with no internet connection</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No repos, APIs, or tools mentioned in the transcript — it&#x27;s a reaction to a same-day announcement, not a walkthrough</li>
+<li>Matt&#x27;s usual hub: <a href="https://futuretools.io/" target="_blank" rel="noopener" class="detail-link">futuretools.io</a></li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> It doesn&#x27;t — this is robotics hardware news with zero surface area for web apps; the only transferable idea is that on-device model variants of frontier models are becoming standard, which is worth knowing but not worth 90 seconds of B-roll.</p>
+<p class="detail-line"><strong>Signal check:</strong> Pure noise for your focus. Skip.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=zdG2bgFPxl4" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/zdG2bgFPxl4/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">I can&#x27;t believe Claude figured this out</p>
+            </div>
+            <div class="video-stats">
+                <span>14.0K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Claude Code&#x27;s new in-app browser geolocates a photo</p><p class="video-why">The real signal isn&#x27;t the party trick — it&#x27;s that Claude Code now has a sandboxed browser pane, meaning your agent can research live web context and immediately build UI from it in the same loop.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A 60-second demo of Anthropic&#x27;s new native, sandboxed in-app browser in Claude Code on desktop — Matt hands Claude an untagged photo, it web-searches visual clues to pin the location, then builds an interactive &quot;time machine&quot; page from its own findings.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Photo dropped into a Claude Code project — no geotag, no address, no metadata hints.</li>
+<li>Prompt 1: *&quot;analyze every visible clue and use the web to find the exact location in the attached image.&quot;* Claude drives the browser pane itself — searching, opening pages, reading them — instead of relying on a search API wrapper.</li>
+<li>Prompt 2: *&quot;use everything you found to build me a digital time machine.&quot;* Research artifacts stay in-context, so Claude goes straight from findings → shipped interactive webpage.</li>
+<li>Output: a photo/present-day slider plus clickable clue annotations showing its reasoning chain.</li>
+<li>Key architectural detail: the browser sits <strong>beside</strong> the workspace, not behind an API. Same session, same context — research and code generation are one continuous loop with no copy-paste handoff.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>Claude Code (desktop) — the in-app sandboxed browser is where all of this happens; check the desktop app, not the CLI</li>
+<li><a href="https://futuretools.io/" target="_blank" rel="noopener" class="detail-link">futuretools.io</a> — Matt&#x27;s AI tool directory</li>
+<li><a href="https://futuretools.io/newsletter" target="_blank" rel="noopener" class="detail-link">futuretools.io/newsletter</a> — weekly roundup</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong></p>
+<ul class="detail-list">
+<li><strong>Live verification against real docs.</strong> Your agent can open the actual API reference or changelog page mid-task instead of hallucinating a signature from training data. That&#x27;s the single highest-value use for web app work.</li>
+<li><strong>Visual QA loop.</strong> A browser pane next to the workspace means the agent can load your own running app and look at it — the missing half of &quot;build feature, confirm it renders.&quot;</li>
+<li><strong>Scraping/integration scaffolding.</strong> Point it at a third-party page you need to integrate with; it reads the real DOM and writes the parser against what&#x27;s actually there.</li>
+<li><strong>Research → UI in one pass.</strong> The demo&#x27;s real lesson: skip the &quot;summarize findings, then I&#x27;ll build it&quot; two-step. Findings stay in context, so the build prompt can just reference them.</li>
+<li>Caveat: it&#x27;s a sandboxed browser in the desktop app. Don&#x27;t plan around it having your logged-in session or access to auth-walled internal tooling.</li>
+</ul>
+<p class="detail-line"><strong>Bottom line:</strong> Skip the video&#x27;s geolocation gimmick, act on the feature. If you&#x27;re building web apps in Claude Code, the browser pane changes your loop — verify against live docs, look at your own rendered output, and let research flow directly into code.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=_3qXTqdEFm4" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/_3qXTqdEFm4/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">#ad Why AI Intelligence Is Overrated</p>
+            </div>
+            <div class="video-stats">
+                <span>7.2K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Sponsored ServiceNow ad about enterprise AI guardrails.</p><p class="video-why">Skip it — it&#x27;s a 90-second ServiceNow commercial with zero technical substance for anyone building web apps.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A paid ServiceNow spot (#ServiceNowPartner) dressed as a hot take, running ~90 seconds with no demos, no code, no tools.</p>
+<p class="detail-line"><strong>The argument:</strong></p>
+<ul class="detail-list">
+<li>Models are smart, but &quot;smart doesn&#x27;t automatically mean operational&quot;</li>
+<li>Agents still misfire — sending unapproved emails, touching data they shouldn&#x27;t</li>
+<li>ServiceNow pitched as an &quot;AI control tower&quot; rather than a layer on top of your work</li>
+<li>Analogy: you don&#x27;t hand a new engineer prod access on day one — approvals, security review, compliance checks come first</li>
+<li>Closes with a link-in-bio article on &quot;AI chaos to AI control&quot;</li>
+</ul>
+<p class="detail-line"><strong>What&#x27;s actually missing:</strong></p>
+<ul class="detail-list">
+<li>No architecture, no permission model, no implementation detail</li>
+<li>No comparison to anything else in the space</li>
+<li>Two comments and 3.3K views — even the audience isn&#x27;t engaging</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.servicenow.com/" target="_blank" rel="noopener" class="detail-link">ServiceNow</a> — the sponsor; enterprise ITSM platform positioning itself as the agent governance layer</li>
+<li><a href="https://futuretools.io/" target="_blank" rel="noopener" class="detail-link">FutureTools</a> — Matt&#x27;s AI tool directory (channel standard, not video-specific)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The one transferable idea — scope your agents like you&#x27;d scope a new hire&#x27;s IAM permissions, with approval gates before any write action — is a single sentence you just read, and it doesn&#x27;t require an enterprise ITSM contract to apply to your own app.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+        <section class="card channel-card">
+            <div class="channel-header">
+                <div class="channel-name-row">
+                    <img src="https://yt3.ggpht.com/BZUEtMBQyhsDlobpQl4esoPOLwz1uh_B8M5QsxWoGAaEpHkTnWhsqH5tukqBXrTEo-50UYwB0A=s88-c-k-c0x00ffffff-no-rj" alt="" class="channel-avatar" />
+                    <h2>My First Million</h2>
+                </div>
+                <span class="ch-count">2 new</span>
+            </div>
+            <p class="channel-takeaway">Two lessons in the same shape: if you can&#x27;t state your investment thesis in four sentences you don&#x27;t have one (the Excel model is theater), and a nine-figure trade show empire started at a Pokemon party — boring niche events beat clever spreadsheets.</p>
+            
+            <details class="channel-videos">
+                <summary>2 videos</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=GHSJCfoaFwI" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/GHSJCfoaFwI/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">If you can&#x27;t explain your investment thesis to a 10 year old in four sentences, it&#x27;s a pass.</p>
+            </div>
+            <div class="video-stats">
+                <span>1.3K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Investing mental models: no Excel, four-sentence thesis test</p><p class="video-why">A short clip of an unnamed guest&#x27;s investing commandments — the takeaway is a filter you can apply, not a business breakdown, because the transcript never says who this is or how they made money.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A ~30-second clip of an MFM guest listing two of their &quot;ten commandments&quot; for investing decisions.</p>
+<p class="detail-line"><strong>The two rules stated:</strong></p>
+<ul class="detail-list">
+<li><strong>&quot;Thou shalt not use Excel.&quot;</strong> — If the case only works inside a spreadsheet model, the model is doing the convincing, not the business. Also the sponsor&#x27;s setup line: the video is fronted by a HubSpot CRM ad about &quot;small boy spreadsheets.&quot;</li>
+<li><strong>The four-sentence / 10-year-old test.</strong> — If you can&#x27;t explain the thesis to a 10-year-old in about four sentences, pass. Not a shortcut for lazy analysis — the guest is explicit that it *starts* complex, and compression to four sentences is the *evidence* you actually understood it.</li>
+</ul>
+<p class="detail-line"><strong>What&#x27;s NOT here (be warned):</strong></p>
+<ul class="detail-list">
+<li>No guest name, company, or background — the clip opens mid-sentence with &quot;One of my ten commandments.&quot;</li>
+<li>No revenue numbers, deal sizes, returns, or playbook steps.</li>
+<li>The other eight commandments are never mentioned.</li>
+<li>Under 60 seconds of substance; 1.3K views, 25 likes, 1 comment — a low-signal Shorts-style upload.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://mfmpod.link/hrd" target="_blank" rel="noopener" class="detail-link">HubSpot free CRM</a> — sponsor link from the description, not a guest recommendation</li>
+<li><a href="https://tinyurl.com/46rjnckx" target="_blank" rel="noopener" class="detail-link">MFM channel</a> — subscribe link from the description</li>
+</ul>
+<p class="detail-line"><strong>How to actually use the four-sentence test:</strong></p>
+<ul class="detail-list">
+<li>Apply it to your own side projects and investments: write the thesis in four sentences, no jargon, no projections.</li>
+<li>If you need a spreadsheet to make it sound good, that&#x27;s the signal — the tell is dependence on assumptions you can&#x27;t defend in plain language.</li>
+<li>Inverse of most pitch-deck culture: complexity reads as rigor, but here it reads as &quot;you don&#x27;t understand it yet.&quot;</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> You wanted the featured person and exactly how they made money — this clip delivers neither, so take the two mental models and skip the full watch.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=QHjaY27XFP8" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/QHjaY27XFP8/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">From a simple idea to 9 figures in revenue</p>
+            </div>
+            <div class="video-stats">
+                <span>1.6K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Pokemon party led to nine-figure trade show business</p><p class="video-why">A $600K check into three passionate Pokemon collectors turned into the world&#x27;s biggest Pokemon convention with 700,000 attendees and a nine-figure exit — a clean case study in backing obsessives inside a niche you just stumbled into.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> The origin story of the world&#x27;s largest Pokemon trade show, seeded by a guy who threw a money-losing Pokemon party and turned the relationships into a nine-figure investment.</p>
+<p class="detail-line"><strong>The person:</strong> An unnamed MFM guest/investor who chased a Logan Paul-inspired Pokemon obsession into a minority-but-massive stake in a convention business. The operators were a trio — one guy plus his two cousins — all deeply passionate Pokemon collectors with zero capital.</p>
+<p class="detail-line"><strong>How the money got made — step by step:</strong></p>
+<ul class="detail-list">
+<li><strong>Step 1 — Chase the trend, don&#x27;t overthink it.</strong> Logan Paul bought a ~$350,000 Pokemon box and set a world record. Guest&#x27;s reaction was literally &quot;that looks really fun, I&#x27;m gonna go do the same thing.&quot;</li>
+<li><strong>Step 2 — Buy access via a party, not a pitch.</strong> Threw &quot;the world&#x27;s biggest Pokemon party&quot; in Vegas. Cost: ~$150,000 out of pocket. Direct revenue: <strong>$0.</strong> Treat it as a customer-acquisition spend for relationships, not a P&amp;L line.</li>
+<li><strong>Step 3 — Recruit the scene&#x27;s actual kingmakers.</strong> Pulled in Steve Aoki (celebrity Pokemon collector) and &quot;Gary King Pokemon&quot; (the #1 Pokemon guy) to co-host. Credibility borrowed from insiders, not bought with ads.</li>
+<li><strong>Step 4 — Let deal flow come to you.</strong> ~1 month later, Gary calls: a party attendee wants to start a Pokemon convention but has no money. The $150K party generated a proprietary deal no amount of cold outreach would have.</li>
+<li><strong>Step 5 — Fund the obsessives.</strong> Lunch with the founder and his two cousins. Invested <strong>$600,000</strong> for a minority — but &quot;massive&quot; — stake. Capital was the missing piece; passion and domain knowledge were already there.</li>
+<li><strong>Step 6 — Scale the format.</strong> 4 years later: <strong>20 shows/year, 700,000 attendees</strong>, the biggest Pokemon trade show in the world. Nine-figure exit.</li>
+</ul>
+<p class="detail-line"><strong>The playbook underneath:</strong></p>
+<ul class="detail-list">
+<li>Losing $150K on a party was the cheapest possible option on a nine-figure outcome — ~0.15% of exit value.</li>
+<li>Events are a relationship-generating machine disguised as a business. The party made zero; the network it produced made everything.</li>
+<li>Fandom conventions monetize on tickets × frequency × merch/vendor booths. 700,000 attendees across 20 shows ≈ 35K per show — real scale in a niche most investors dismiss as kids&#x27; stuff.</li>
+<li>The founders had no money but had status inside the community. That&#x27;s the asymmetry: capital is commoditized, credibility with collectors is not.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No tools, repos, or URLs mentioned in this clip — it&#x27;s a pure story segment.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The whole mechanic is one number ($600K in) mapping to one outcome (nine-figure exit) via one repeatable move — spend real money to get inside a passionate niche, then fund the people who were already there.</p></div>
+        </details>
+    </div></div>
+            </details>
+            <details class="seen-section">
+                <summary>8 previously covered</summary>
+                <div class="video-list">
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=xuDAe4Y0cg8" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/xuDAe4Y0cg8/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The most powerful mindset I&#x27;ve ever seen</p>
+            </div>
+            <div class="video-stats">
+                <span>4.5K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">MFM producer with terminal cancer starts a 365-day journal</p><p class="video-why">There&#x27;s no business here — it&#x27;s a 90-second clip about a colleague facing stage four cancer, so skip it unless you want the mindset story.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short, unmonetized clip where Shaan and Sam talk about Ben Wilson, a former MFM producer diagnosed with stage four lung cancer six weeks prior.</p>
+<p class="detail-line"><strong>The story:</strong></p>
+<ul class="detail-list">
+<li>Ben Wilson — producer who worked with both hosts. Four kids, all under 5.</li>
+<li>Diagnosed with stage four lung cancer roughly six weeks before this recording (late June 2026).</li>
+<li>Started a journal titled <strong>&quot;Zero to 365&quot;</strong> — one entry per day, goal of filling the entire book.</li>
+<li>His framing, per the hosts: he may not finish it, but if he doesn&#x27;t, he&#x27;ll be &quot;really excited&quot; about meeting his maker. The goal is the practice, not the completion.</li>
+<li>Shaan&#x27;s takeaway: watching &quot;a great man be great in real time&quot; — responding to the worst possible news with dignity rather than collapse.</li>
+</ul>
+<p class="detail-line"><strong>Business/money content:</strong> None. Zero frameworks, zero deals, zero numbers. The only commercial element is the standard HubSpot CRM sponsor slot in the description.</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://mfmpod.link/hrd" target="_blank" rel="noopener" class="detail-link">HubSpot free CRM</a> — sponsor read, unrelated to the clip&#x27;s content</li>
+<li><a href="https://tinyurl.com/46rjnckx" target="_blank" rel="noopener" class="detail-link">MFM channel</a> — subscribe link</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> You come to this channel for teardowns of what people built and how they made money — this clip has none of that, so it&#x27;s a pass on your criteria even though it&#x27;s a genuinely moving 90 seconds.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=HSHPvLzVcvo" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/HSHPvLzVcvo/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The hidden story behind Lamine Yamal</p>
+            </div>
+            <div class="video-stats">
+                <span>13.9K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Elite talent comes from obsessive early specialization, not genes.</p><p class="video-why">It&#x27;s a 2-minute Shaan riff on the &#x27;golden window&#x27; theory of talent — no business, no revenue numbers, just parenting philosophy dressed up as an outlier framework.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short Shaan Puri monologue arguing that prodigies like Lamine Yamal aren&#x27;t born — they&#x27;re the output of absurd early access plus total focus during a narrow developmental window.</p>
+<p class="detail-line"><strong>The featured individual:</strong> Lamine Yamal — Barcelona/Spain winger, playing in the World Cup at 18. No business built, no money made. He&#x27;s used purely as an example, not a case study.</p>
+<p class="detail-line"><strong>The argument, step by step:</strong></p>
+<ul class="detail-list">
+<li>Yamal moved into a soccer academy at age seven and lived there until 17 — ten straight years of nothing but soccer</li>
+<li>By 18 he&#x27;s world-class, and Shaan&#x27;s claim is that this is *mostly* the reps, not the DNA</li>
+<li>The rhetorical gut-punch: your kid might have been that good too, if you&#x27;d shipped them off at six</li>
+<li>Cross-reference to *Outliers* by Malcolm Gladwell: Bill Gates and Paul Allen went to one of the only US schools with a computer, and got unlimited free after-hours access — the same structure of early access + unlimited reps</li>
+<li>Shaan&#x27;s takeaway is the &quot;golden window&quot; — a limited period in childhood where leaning in hard compounds disproportionately</li>
+</ul>
+<p class="detail-line"><strong>What Shaan says he&#x27;d actually do:</strong></p>
+<ul class="detail-list">
+<li>If his kid shows genuine interest in something, lean in &quot;way harder than most people would&quot; during that window</li>
+<li>Considering pulling the kid out of school for a sabbatical year in 5th or 6th grade — travel the world, full-time development</li>
+<li>Explicit framing: this is a trade, and most parents aren&#x27;t willing to make it</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.gladwellbooks.com/titles/malcolm-gladwell/outliers/9780316040341/" target="_blank" rel="noopener" class="detail-link">Outliers — Malcolm Gladwell</a> — the 10,000-hours / lucky-access book being referenced</li>
+</ul>
+<p class="detail-line"><strong>What&#x27;s missing:</strong> No survivorship-bias counterweight. Thousands of kids entered academies at seven and didn&#x27;t become Yamal. The clip treats one winner as proof of the mechanism.</p>
+<p class="detail-line"><strong>Why it matters for you:</strong> You asked for the featured individual and exactly how they made money — this one has no money story at all; it&#x27;s a parenting thesis using an athlete as a prop, so it&#x27;s skippable unless the golden-window framing is personally useful.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=O_nn3i1f4QA" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/O_nn3i1f4QA/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The richest man in Italy built this</p>
+            </div>
+            <div class="video-stats">
+                <span>33.9K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">How the Ferrero family built a $20B chocolate empire.</p><p class="video-why">A three-generation case study in how one product tweak (and obsessive secrecy about the machines that make it) compounds into a $32B fortune.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short breakdown of the Ferrero family — Italy&#x27;s richest, worth ~$32B — and the chocolate empire behind Nutella, Ferrero Rocher, Tic Tacs, and Kinder.</p>
+<p class="detail-line"><strong>The people &amp; the business:</strong></p>
+<ul class="detail-list">
+<li><strong>Ferrero family</strong>, Italy — richest family/individual in Italy at ~<strong>$32B</strong> net worth.</li>
+<li>Company does roughly <strong>$20B/year in revenue</strong>.</li>
+<li>Brand portfolio invented in-house: <strong>Nutella</strong>, <strong>Ferrero Rocher</strong>, <strong>Tic Tac</strong>, <strong>Kinder bars</strong>, <strong>Kinder eggs</strong>.</li>
+</ul>
+<p class="detail-line"><strong>How they made the money — step by step:</strong></p>
+<ul class="detail-list">
+<li><strong>Gen 1 (grandfather, post-WWII):</strong> Italy is economically wrecked, chocolate is an expensive luxury good. He starts making chocolate anyway — and instead of competing on solid bars, he creates a <strong>creamy chocolate spread in a jar</strong> called <strong>Supercrema</strong>. Cheaper per serving, stretches scarce cocoa, sells into a market that can&#x27;t afford luxury chocolate.</li>
+<li><strong>Result:</strong> Supercrema does okay — a real business, not a breakout.</li>
+<li><strong>Gen 2 (the son):</strong> More of an operator/innovator than his father. He <strong>renames Supercrema to Nutella</strong> and <strong>tweaks the recipe</strong> to make it better. Brand + product improvement turns a decent regional product into a global category-owner.</li>
+<li><strong>Product line extension via lab work:</strong> The son gets into the lab and notices breath mints are a good product with real problems (form factor, packaging, portability). He invents the <strong>Tic Tac form factor</strong> — the flip-top plastic case is arguably the product, not the mint.</li>
+<li><strong>Vertical integration as moat:</strong> Ferrero <strong>builds its own production machinery</strong> rather than buying it. Proprietary machines = competitors can&#x27;t replicate the texture, the shell, the fill.</li>
+<li><strong>Extreme secrecy as strategy:</strong> Factories are locked down. A journalist who got inside described it as &quot;less like Willy Wonka, more like Area 51&quot; — <strong>armed guards</strong> on site, because the machinery itself is the trade secret.</li>
+</ul>
+<p class="detail-line"><strong>The pattern worth stealing:</strong></p>
+<ul class="detail-list">
+<li>Enter an expensive category with a <strong>cheaper form factor</strong> (jar spread vs. luxury bar).</li>
+<li>Second generation wins on <strong>branding + recipe iteration</strong>, not on the original invention.</li>
+<li><strong>Own your manufacturing</strong> — the machine is the moat when the recipe alone can be reverse-engineered.</li>
+<li>Line-extend by fixing the <strong>packaging/form factor</strong> of an existing commodity (mints → Tic Tacs).</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://mfmpod.link/hrd" target="_blank" rel="noopener" class="detail-link">HubSpot free CRM</a> — episode sponsor, free CRM tier</li>
+<li><a href="https://tinyurl.com/46rjnckx" target="_blank" rel="noopener" class="detail-link">My First Million on YouTube</a> — channel subscribe link</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> It&#x27;s a clean, compressed case study of the exact thing you&#x27;re after — one family, four household-name products, and an explicit list of the moves (form factor swap, rebrand, in-house machinery, secrecy) that turned post-war scarcity into $20B/year.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=p80UFZeAAos" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/p80UFZeAAos/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">What happened when I accidentally sat next to...</p>
+            </div>
+            <div class="video-stats">
+                <span>25.5K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Ferrero family dynasty: how chocolate built $32B.</p><p class="video-why">A clean case study of one secretive family turning a post-war commodity hack into a $20B/yr empire — Nutella, Tic Tacs, Kinder — with the actual product decisions that made the money.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> Episode 847 — Shaan&#x27;s &quot;Billy of the Week&quot; breakdown of the Ferrero family (Ferrero Rocher, Nutella, Tic Tac, Kinder), framed as a dynastic-wealth study. Opens with a listener fan letter, then goes straight into the business.</p>
+<p class="detail-line"><strong>The featured individual/business:</strong></p>
+<ul class="detail-list">
+<li><strong>Ferrero Group</strong> — Italian confectionery company, one of the most secretive family-owned businesses in the world.</li>
+<li><strong>Giovanni Ferrero</strong> — the heir who runs it. Net worth <strong>~$32B</strong>. The richest man in Italy.</li>
+<li><strong>Revenue: ~$20B/year.</strong> Still fully family-controlled — no public market, no outside owners.</li>
+<li>Founded by the grandfather post-WWII in a wrecked Italian economy.</li>
+</ul>
+<p class="detail-line"><strong>What they actually did to make money:</strong></p>
+<ul class="detail-list">
+<li><strong>Attacked a luxury category with a cheap substitute.</strong> Post-WWII, chocolate was expensive and rare — not a checkout-counter item. Ferrero&#x27;s whole play was making chocolate accessible when nobody else could price it there.</li>
+<li><strong>Iterated on form factor until it sold.</strong> First attempt was wrong: a hard chocolate stick, butter-like, meant to be sliced onto toast. The pivot from that solid brick to a *spread* is the origin of Nutella — same product idea, different physical form, completely different market size.</li>
+<li><strong>Invented categories, not SKUs.</strong> Nutella (chocolate spread), Tic Tac (the mint-as-object), Kinder bars and Kinder Eggs (the toy-inside format). Each one created a shelf position that didn&#x27;t previously exist.</li>
+<li><strong>Sold premium through packaging.</strong> Shaan&#x27;s read on Ferrero Rocher: the gold foil, the plastic dome, the ridged cup — &quot;you really feel like you&#x27;re eating something special.&quot; A commodity chocolate ball priced and perceived as a gift item. Packaging *is* the product margin.</li>
+<li><strong>Rolled profits into acquisitions.</strong> The family now owns a portfolio of other food businesses beyond the original brands.</li>
+<li><strong>Kept it private and quiet.</strong> No IPO, no dilution, no quarterly theater — the mechanism by which the wealth stayed dynastic rather than getting distributed out.</li>
+</ul>
+<p class="detail-line"><strong>The pattern (this is the transferable part):</strong></p>
+<ul class="detail-list">
+<li>Take an expensive luxury → find the cost hack → sell it to everyone.</li>
+<li>If the product doesn&#x27;t sell, suspect the *form factor* before you suspect the idea.</li>
+<li>Own the category name; don&#x27;t compete inside someone else&#x27;s.</li>
+<li>Never sell.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://clickhubspot.com/uwwx" target="_blank" rel="noopener" class="detail-link">Unsexy Business Ideas Database</a> — HubSpot&#x27;s sponsored idea list, plugged in the description</li>
+<li><a href="https://x.com/theSamParr" target="_blank" rel="noopener" class="detail-link">@theSamParr</a> — Sam Parr</li>
+<li><a href="https://x.com/ShaanVP" target="_blank" rel="noopener" class="detail-link">@ShaanVP</a> — Shaan Puri</li>
+</ul>
+<p class="detail-line"><strong>Chapters:</strong> (0:00) Graduation invite · (2:19) The richest man in Italy · (16:09) The golden [...]</p>
+<p class="detail-line"><strong>Heads up:</strong> the transcript available here cuts off mid-story, right at the pivot from chocolate-brick to spread. The remaining ~40 min (including the &quot;golden&quot; segment at 16:09) isn&#x27;t captured — the numbers above are what&#x27;s actually stated on tape, not filled in from elsewhere.</p>
+<p class="detail-line"><strong>Why it matters for you:</strong> It&#x27;s the exact shape you want from this channel — one business, one family, and a concrete list of the moves (form-factor pivot, category invention, packaging-as-margin, no outside capital) that turned post-war scarcity into $32B.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=-skAqUAD5zA" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/-skAqUAD5zA/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The nine-figure business you never heard of</p>
+            </div>
+            <div class="video-stats">
+                <span>27.7K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Chris turned a $600K Pokémon bet into nine figures</p><p class="video-why">A clean case study of buying a minority stake in an operator with domain obsession and riding a collectibles trade show from one hotel ballroom to a nine-figure exit in four years.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short case study on how Chris (the guest) accidentally backed into a nine-figure Pokémon convention business after losing $150K on a party.</p>
+<p class="detail-line"><strong>The person / business:</strong></p>
+<ul class="detail-list">
+<li>Guest: Chris — investor who got Pokémon-pilled after watching Logan Paul buy a ~$350,000 sealed Pokémon box and set a world record</li>
+<li>Business: the largest Pokémon trade show / convention in the world (transcript doesn&#x27;t name it — almost certainly Pokémon-focused card conventions in the Texas orbit; treat the name as unstated)</li>
+<li>Founder: a convention-industry operator with <strong>20 years</strong> running shows, plus his two cousins — all three deeply passionate Pokémon collectors</li>
+</ul>
+<p class="detail-line"><strong>How the money actually got made:</strong></p>
+<ul class="detail-list">
+<li><strong>Step 1 — buy into the scene, at a loss.</strong> Chris threw &quot;the world&#x27;s biggest Pokémon party&quot; in Vegas. Cost: <strong>~$150,000</strong>. Revenue: <strong>$0</strong>. Entire thing written off as a loss + charity donation. This was the acquisition cost for a network, not a business.</li>
+<li><strong>Step 2 — the network pays out.</strong> He met Steve Aoki (celebrity Pokémon collector) and &quot;Gary King Pokémon&quot; (the #1 Pokémon guy) building the party. A month later Gary called with the deal — a party attendee wanted to start a Pokémon convention and had no capital.</li>
+<li><strong>Step 3 — back the operator, not the idea.</strong> One lunch. Chris said yes on the spot. The pitch was strong on the only two axes that matter: 20 years of literal convention operating experience + genuine collector obsession.</li>
+<li><strong>Step 4 — write the check, take real ownership.</strong> <strong>$600,000 invested</strong> for a *minority but massive* stake. Not a token angel check — enough equity to matter on exit, without taking control from the operator.</li>
+<li><strong>Step 5 — start embarrassingly small.</strong> Show #1 was in a small hotel convention room in <strong>Frisco, Texas</strong>.</li>
+<li><strong>Step 6 — compound the event count.</strong> 4 years later: <strong>20 shows/year, 700,000 attendees</strong>, biggest Pokémon trade show on earth.</li>
+<li><strong>Step 7 — exit.</strong> Nine figures. On a $600K basis.</li>
+</ul>
+<p class="detail-line"><strong>The playbook underneath it:</strong></p>
+<ul class="detail-list">
+<li>Events are a working-capital-light business — ticket revenue lands before most costs clear, so growth partly self-funds (&quot;we didn&#x27;t have much money&quot;)</li>
+<li>Repeatable format: one show that works × 20 cities is a spreadsheet, not a new invention each time</li>
+<li>Fandom + physical goods = a captive, high-intent audience that vendors will pay to reach. The attendees are the product sold to exhibitors.</li>
+<li>The $150K &quot;waste&quot; was actually deal flow. He bought his way into a scene, and the scene handed him the deal.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No repos, tools, or URLs mentioned in this clip — it&#x27;s a pure narrative case study.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The whole arc is $600K → nine figures in four years, and the mechanism is legible: minority stake, obsessed operator with 20 years of the exact right skill, one small show replicated 20×, sold to a 700K-person fandom.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=GVxarQAC4U4" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/GVxarQAC4U4/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The Investment Wall Street Ignored</p>
+            </div>
+            <div class="video-stats">
+                <span>9.2K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Betting everything on Nintendo Wii before Wall Street noticed</p><p class="video-why">A single anecdote about a 100%-portfolio bet on Nintendo&#x27;s ADR shows how walking a trade-show floor beat every analyst model — but this clip is a 60-second teaser, not the detailed money breakdown you want.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short clip (likely a Shorts-length teaser) where a guest recounts putting 100% of their portfolio into Nintendo&#x27;s ADR for a full year before Wall Street priced in the Wii.</p>
+<p class="detail-line"><strong>The actual play, step by step:</strong></p>
+<ul class="detail-list">
+<li><strong>Saw it in person.</strong> Attended E3 and watched the line of people picking up a Wii controller for the first time — the reaction, not the spec sheet, was the signal.</li>
+<li><strong>Read the market&#x27;s blind spot.</strong> Wall Street was fixated on the Xbox and PlayStation launches. Nobody modeled a new *platform* with a motion controller aimed at non-gamers.</li>
+<li><strong>Picked the accessible instrument.</strong> Nintendo trades in Japan, so they bought the <strong>Nintendo ADR</strong> — a US-listed tracking stock that mirrors the Japanese ticker. No Japanese brokerage account required.</li>
+<li><strong>Went 100% concentrated.</strong> Not a position — the whole portfolio. Conviction from firsthand observation, sized like it.</li>
+<li><strong>Held through the dead time.</strong> A *full year* of nothing before the re-rating. The edge wasn&#x27;t the insight; it was the willingness to sit in it while consensus caught up.</li>
+</ul>
+<p class="detail-line"><strong>The transferable pattern:</strong></p>
+<ul class="detail-list">
+<li>Consumer-behavior evidence you observe directly is a legitimate, legal edge — it&#x27;s public information nobody bothered to go look at.</li>
+<li>Analysts benchmark new products against existing categories. When something creates a *new* category (or a new buyer), the models are structurally wrong.</li>
+<li>Foreign winners are usually reachable via ADRs — check for one before assuming a company is untradeable.</li>
+</ul>
+<p class="detail-line"><strong>Reality check:</strong></p>
+<ul class="detail-list">
+<li>100% in one name is a survivorship story. You&#x27;re hearing this because it worked.</li>
+<li>Transcript is ~150 words and the description is just the title repeated — there&#x27;s no business teardown, revenue math, or dollar figures here.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>No repos, tools, or URLs mentioned in the clip.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> Great pattern-recognition anecdote for the &quot;how they actually made the money&quot; file, but at 150 words of transcript there&#x27;s no featured-business breakdown to extract — go find the full episode instead.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=6TguPg4Fy1w" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/6TguPg4Fy1w/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">Chris Camillo: I put 70% of my portfolio in this ONE stock</p>
+            </div>
+            <div class="video-stats">
+                <span>155.5K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">Retail trader&#x27;s social-signal method and his 2026 bets</p><p class="video-why">Camillo turned a normal job into a ~68% annualized, 15-year audited track record using nothing but observed changes in consumer behavior — a repeatable pattern-recognition skill, not a finance credential.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>Who he is:</strong> Chris Camillo — no finance background, no analyst job, self-taught retail investor who built a publicly audited multi-decade track record by reading culture instead of spreadsheets.</p>
+<p class="detail-line"><strong>The method — &quot;social arbitrage&quot; / observational investing:</strong></p>
+<ul class="detail-list">
+<li>Detect *change* in the world first: tech adoption, culture shifts, consumer behavior</li>
+<li>Connect that change to public companies that benefit or get hurt by it</li>
+<li>Buy before the change shows up in financials — the whole edge is the lag between people *talking* about a behavior change and the numbers reflecting it</li>
+<li>Explicitly rejects both technical analysis and fundamentals: &quot;I hate technicals. I hate fundamentals.&quot;</li>
+</ul>
+<p class="detail-line"><strong>Where the signal comes from:</strong></p>
+<ul class="detail-list">
+<li>Social media comments, Reddit forums, TikTok virality</li>
+<li>Core insight: people talk about changing their life *before* the evidence exists — e.g. developers debating AI adoption in Reddit threads is the leading indicator, not the earnings call</li>
+<li>Not just tech — a large share is plain consumer behavior</li>
+</ul>
+<p class="detail-line"><strong>Worked example — Sphere (Vegas):</strong></p>
+<ul class="detail-list">
+<li>Publicly traded stock most people don&#x27;t realize is investable</li>
+<li>Thesis: Sphere hadn&#x27;t hit product-market fit until the *Wizard of Oz* show — old movie + AI-upscaled visuals + 4D effects (tornado, wind) on the giant projection screen</li>
+<li>That combination created a shareable human experience → went viral on TikTok → international travel demand to Vegas</li>
+<li>He heard people talking about it, started tracking, bought. Stock up ~220% over the past year; entry was in the low-$20s, roughly 6x from his cost basis</li>
+</ul>
+<p class="detail-line"><strong>Track record (and how he wants it judged):</strong></p>
+<ul class="detail-list">
+<li>~15-year audited results cited around 68%</li>
+<li>Last MFM appearance he named three picks: Palantir, Bloom Energy ($92 → $240, +165%), Nvidia (up modestly)</li>
+<li>He *refuses* the credit: individual picks are noise, could be beta or luck, and new information could flip him to the other side of a trade the next day</li>
+<li>His stated standard: long-term, total-portfolio, audited, across multiple market regimes — nothing shorter counts</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://x.com/ChrisCamillo" target="_blank" rel="noopener" class="detail-link">Chris Camillo on X</a> — where he posts the ideas</li>
+<li><a href="https://x.com/ShaanVP" target="_blank" rel="noopener" class="detail-link">Shaan Puri</a> / <a href="https://x.com/theSamParr" target="_blank" rel="noopener" class="detail-link">Sam Parr</a> — hosts</li>
+<li><a href="https://clickhubspot.com/tb2s" target="_blank" rel="noopener" class="detail-link">Shaan&#x27;s $0→$1M guide</a> — episode sponsor lead magnet</li>
+<li>Episode 846 — the hook is 5 trades he&#x27;s betting on in 2026, with ~70% of his portfolio in one of them</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> You already live in the forums where behavior change surfaces first — Camillo&#x27;s whole edge is systematizing the thing you read every day and connecting it to tickers.</p></div>
+        </details>
+    </div>
+
+    <div class="video-row">
+        <a href="https://youtube.com/watch?v=pMwSCWyZXjw" target="_blank" rel="noopener" class="video-link">
+            <img src="https://i.ytimg.com/vi/pMwSCWyZXjw/mqdefault.jpg" alt="" class="thumbnail" loading="lazy" />
+            <div class="video-info">
+                <p class="video-title">The pricing lesson every founder should learn</p>
+            </div>
+            <div class="video-stats">
+                <span>17.2K</span>
+                
+            </div>
+        </a><div class="video-context"><p class="video-about">1775 steam engine startup invented outcome-based pricing.</p><p class="video-why">It&#x27;s a 250-year-old case study in charging for outcomes instead of units — the exact pricing move that lets a product sell itself into the accounts where it&#x27;s worth the most.</p></div>
+        <details class="video-details">
+            <summary>details</summary>
+            <div class="detail-body"><p class="detail-line"><strong>What it is:</strong> A short clip breaking down how Boulton &amp; Watt priced the steam engine in 1775 — and why it&#x27;s still the smartest pricing model in business.</p>
+<p class="detail-line"><strong>The featured business:</strong> Boulton &amp; Watt, the partnership between engineer James Watt and manufacturer Matthew Boulton, selling an improved (far more coal-efficient) steam engine into British mines.</p>
+<p class="detail-line"><strong>How they made money — the actual mechanics:</strong></p>
+<ul class="detail-list">
+<li><strong>Zero upfront price.</strong> They gave the engine away free. No capex hurdle, no procurement fight, no &quot;let me think about it.&quot;</li>
+<li><strong>Charged a third of the coal savings.</strong> Customer paid a recurring cut — one-third — of the money the new engine saved them on coal versus their old inefficient one.</li>
+<li><strong>Sold to installed base, not greenfield.</strong> They went to mines *already running* inefficient steam engines. The comparison baseline already existed, so savings were measurable and undeniable from day one.</li>
+<li><strong>Hardware as a service, 200 years early.</strong> The engine was a delivery mechanism for a metered savings contract, not a product sale.</li>
+<li><strong>Perfect incentive alignment.</strong> They only made money when the customer made money. No selling shelfware.</li>
+<li><strong>Geographic arbitrage on customer value.</strong> Coal cost more the farther a mine sat from a coalfield — remote tin mines paid the most. Those customers saved the most, so Boulton &amp; Watt earned the most. The pricing model automatically routed early installs to the highest-value accounts.</li>
+<li><strong>Captured the upside instead of a flat fee.</strong> A fixed sale price would have left the entire savings surplus with the customer. The percentage take scaled with the value created.</li>
+</ul>
+<p class="detail-line"><strong>The lineage:</strong></p>
+<ul class="detail-list">
+<li>Rolls-Royce &quot;Power by the Hour&quot; — airlines pay per hour the jet engine is in service, not per engine bought. Same model, ~175 years later.</li>
+<li>Modern equivalents: usage-based SaaS, outcome-based AI pricing, performance-fee agencies.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://mfmpod.link/hrd" target="_blank" rel="noopener" class="detail-link">Free HubSpot CRM</a> — episode sponsor</li>
+</ul>
+<p class="detail-line"><strong>The transferable playbook:</strong></p>
+<ul class="detail-list">
+<li>Find customers already paying a measurable, recurring cost.</li>
+<li>Remove the purchase decision entirely (free to install).</li>
+<li>Price as a percentage of the savings or revenue you generate.</li>
+<li>Let the model self-select into the accounts where your value is highest.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you ship anything that measurably reduces a cost or lifts a number, you can skip the pricing-page guessing game and just take a cut of the delta — the customers who benefit most will find you.</p></div>
+        </details>
+    </div></div>
+            </details>
+        </section>
+
+        
+        <h2 class="section-title shipped-title">What Shipped</h2>
+        <section class="card">
+            <div class="video-list">
+            <div class="video-row">
+                <a href="#" class="video-link tool-link">
+                    <img src="https://avatars.githubusercontent.com/u/76263028?v=4" alt="" class="channel-avatar" />
+                    <div class="video-info">
+                        <p class="video-title">claude-code</p>
+                    </div>
+                    <span class="tool-version">v2.1.221</span>
+                </a><div class="video-context"><p class="video-about">Focus view in VSCode, sandbox credential masking, permission-bypass fixes</p><p class="video-why">A zsh `[[ ]]` permission-check bypass got closed and VSCode gained a Focus view that collapses tool noise into per-turn summaries — both change how you drive Claude Code every day.</p></div>
+                <details class="video-details">
+                    <summary>details</summary>
+                    <div class="detail-body"><p class="detail-line"><strong>What changed:</strong></p>
+<ul class="detail-list">
+<li><strong>[VSCode] Focus view</strong> — chat-menu toggle that hides tool activity behind an expandable per-turn summary with a live running-tool indicator. Bind it with `Ctrl+Alt+F` or run &quot;Claude Code: Toggle Focus view&quot;</li>
+<li><strong>Sandbox credential masking</strong> — new `mode: &quot;mask&quot;` for credential files on Linux/WSL: sandboxed commands read a sentinel copy (whole file, or just spans matched by an `extract` regex) while the sandbox proxy swaps in the real value on egress. macOS falls back to `deny`</li>
+<li><strong>`prompt-audit` subcommand</strong> in the `claude-api` skill — audits your prompts and tool descriptions for patterns written for older models</li>
+<li><strong>`claude plugin validate`</strong> now warns when a marketplace or plugin name would be rejected by Claude Desktop&#x27;s managed marketplace sync</li>
+</ul>
+<p class="detail-line"><strong>Security fixes:</strong></p>
+<ul class="detail-list">
+<li>Bash tool permission-check bypass where zsh could execute hidden commands inside `[[ ]]` regex conditionals — those now prompt</li>
+<li>PowerShell permission checks mishandled paths containing quote characters on Windows — now prompt for approval</li>
+</ul>
+<p class="detail-line"><strong>Daily-driver bug fixes:</strong></p>
+<ul class="detail-list">
+<li>Thinking toggle no longer stuck off for the rest of a session that started with thinking disabled</li>
+<li>MCP servers from `--mcp-config` now connect before the first turn in print mode (`-p`) — previously the model emitted tool calls as literal text</li>
+<li>@-mentioned files no longer silently dropped when you Esc to retract a prompt and resubmit</li>
+<li>WebSearch no longer 400s at effort `xhigh`/`max` with thinking disabled</li>
+<li>`CLAUDE_CODE_RESUME_INTERRUPTED_TURN=0` now actually disables interrupted-turn auto-resume (falsy values honored)</li>
+<li>Session renames from Desktop/claude.ai now propagate to the CLI</li>
+<li>Plugin/org skills named after terminal built-ins (`/help`, `/feedback`) are invocable again in non-interactive sessions</li>
+<li>Vim mode: yank register survives dialogs, history search, and transcript view</li>
+<li>Fixed crash on SDK MCP tools named after built-in object properties (e.g. `constructor`), sandboxed large-upload TLS errors, MCP/WIF token double-refresh race on wake-from-sleep, Bedrock AWS SSO on Windows with a stray `HOME`, and a misleading Team/Enterprise spend-limit message</li>
+</ul>
+<p class="detail-line"><strong>Breaking changes:</strong></p>
+<ul class="detail-list">
+<li>None declared. Two behavioral shifts worth noting: commands hidden in zsh `[[ ]]` conditionals and quote-containing PowerShell paths now <strong>prompt for permission</strong> where they previously ran silently — automation relying on that silence will start blocking</li>
+</ul>
+<p class="detail-line"><strong>Links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.221" target="_blank" rel="noopener" class="detail-link">Release notes</a></li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you live in Claude Code, Focus view cuts the tool-call noise you scroll past all day, the `-p` MCP fix unblocks scripted/headless runs, and `prompt-audit` gives you a concrete way to modernize prompts you wrote for older models.</p></div>
+                </details>
+            </div></div>
+        </section>
+
+        
+        <h2 class="section-title buzz-title">What's Buzzing</h2>
+        <section class="card">
+            <div class="buzz-list">
+            <div class="buzz-item">
+                <div class="buzz-header">
+                    <img src="https://pbs.twimg.com/profile_images/1798110641414443008/XP8gyBaY_200x200.jpg" alt="" class="channel-avatar" />
+                    <p class="buzz-handle">@claudeai</p>
+                    <span class="buzz-age">1w ago</span>
+                </div>
+                <p class="buzz-tweet"><a href="https://x.com/claudeai/status/2080699495453528290#m" target="_blank" rel="noopener" class="detail-link">Introducing Claude Opus 5. It&#x27;s a thoughtful and proactive model that comes close to the frontier intelligence of Fable 5 at half the price.</a></p>
+            </div>
+            <div class="buzz-item">
+                <div class="buzz-header">
+                    <img src="https://pbs.twimg.com/profile_images/1885410181409820672/ztsaR0JW_200x200.jpg" alt="" class="channel-avatar" />
+                    <p class="buzz-handle">@sama</p>
+                    <span class="buzz-age">2d ago</span>
+                </div>
+                <p class="buzz-tweet"><a href="https://x.com/sama/status/2083560847889023219#m" target="_blank" rel="noopener" class="detail-link">team humanity</a></p>
+            </div>
+            <div class="buzz-item">
+                <div class="buzz-header">
+                    <img src="https://pbs.twimg.com/profile_images/1798110641414443008/XP8gyBaY_200x200.jpg" alt="" class="channel-avatar" />
+                    <p class="buzz-handle">@AnthropicAI</p>
+                    <span class="buzz-age">4d ago</span>
+                </div>
+                <p class="buzz-tweet"><a href="https://x.com/AnthropicAI/status/2082965101083320543#m" target="_blank" rel="noopener" class="detail-link">In a review of our cybersecurity evaluations, we found three incidents in which a Claude model reached the internet from within or while interacting with a third-party evaluation environment, and then</a></p>
+            </div>
+            <div class="buzz-item">
+                <div class="buzz-header">
+                    <img src="https://pbs.twimg.com/profile_images/1902044548936953856/J2jeik0t_200x200.jpg" alt="" class="channel-avatar" />
+                    <p class="buzz-handle">@bcherny</p>
+                    <span class="buzz-age">1w ago</span>
+                </div>
+                <p class="buzz-tweet"><a href="https://x.com/ehsanik/status/2080750942333374870#m" target="_blank" rel="noopener" class="detail-link">RT by @bcherny: 55.7% -&gt; 70.6% on OSWorld v2 (released just a few weeks ago) Genuinely would love to have a harder computer use evals. Happy to sponsor a computer use benchmark that Opus 5 gets bel</a></p>
+            </div>
+            <div class="buzz-item">
+                <div class="buzz-header">
+                    
+                    <p class="buzz-handle">@nutlope</p>
+                    <span class="buzz-age">15h ago</span>
+                </div>
+                <p class="buzz-tweet"><a href="https://x.com/nutlope/status/2084373926113587606#m" target="_blank" rel="noopener" class="detail-link">Announcing LogoCreator v2! Create professional logos &amp; brand images in seconds. Free and 100% open source → http://logo-creator.io</a></p>
+            </div></div>
+        </section>
+
+        <footer>
+            <p class="muted">Generated at 06:03 &middot; mx-brief</p>
+        </footer>
+    </div>
+    </div>
+    <script>
+    (function() {
+        const HASH = '5f4c9a78e77a3b76d5f8e8a7c3d2b1e0';
+        function md5(s) {
+            // Simple hash — not cryptographic, just a gate
+            let h = 0;
+            for (let i = 0; i < s.length; i++) {
+                h = ((h << 5) - h) + s.charCodeAt(i);
+                h |= 0;
+            }
+            return h.toString(16);
+        }
+        function check(code) {
+            return code === 'eitaaio';
+        }
+        const saved = sessionStorage.getItem('mx-brief-pass');
+        if (saved && check(saved)) {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+        document.getElementById('pass').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const val = this.value;
+                if (check(val)) {
+                    sessionStorage.setItem('mx-brief-pass', val);
+                    document.getElementById('gate').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                } else {
+                    document.getElementById('pass-err').style.display = 'block';
+                    this.value = '';
+                }
+            }
+        });
+    })();
+    </script>
+</body>
+</html>
