@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watch This If Your Coding Agent is Ignoring Your Rules (You Need Hooks) — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>Watch This If Your Coding Agent is Ignoring Your Rules (You Need Hooks)</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-08-27 · 7,648 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=msfMqW92Y8Q" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/msfMqW92Y8Q/mqdefault.jpg" alt="">
+  <div class="tldr">Hooks turn agent guidance into deterministic guarantees.</div>
+  <p class="why">Your mx-workflow leans hard on rules, agents, and slash commands — all probabilistic guidance — and Cole&#x27;s argument is that the quality gates you care most about (validate, ratchet, check-ignores) should be hooks, not instructions the agent can skip.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Cole&#x27;s most-requested video — a framework for when to move logic out of rules/skills and into hooks, the one primitive in a coding agent that&#x27;s actually deterministic.</p>
+<p class="detail-line"><strong>The core claim:</strong></p>
+<ul class="detail-list">
+<li>Hooks are &quot;actions you guarantee are performed whenever we hit certain events&quot; in the agent loop.</li>
+<li>Everything else — CLAUDE.md rules, skills, sub-agent instructions — is *guidance*. LLMs are probabilistic; they interpret and drop steps, especially in large codebases with long checklists.</li>
+<li>Hooks are the only layer that gives you a <strong>guarantee</strong>. That word is the whole video.</li>
+<li>He&#x27;s audited AI coding setups for hundreds of devs and entire companies: almost nobody uses enough hooks.</li>
+</ul>
+<p class="detail-line"><strong>The five components of a coding harness (his taxonomy):</strong></p>
+<ul class="detail-list">
+<li><strong>Rules</strong> — persistent guidance (CLAUDE.md / AGENTS.md)</li>
+<li><strong>Sub-agents</strong> — delegation</li>
+<li><strong>MCP servers</strong> — platform connections</li>
+<li><strong>Skills</strong> — reusable workflows and prompts</li>
+<li><strong>Hooks</strong> — deterministic automations ← the underused one</li>
+</ul>
+<p class="detail-line"><strong>The canonical example he walks through:</strong></p>
+<ul class="detail-list">
+<li>Classic failure: your rules say &quot;run the test suite and validate your work.&quot; Agent runs *part* of the suite, declares done, half your tests are still red.</li>
+<li>Hook version: a <strong>Stop hook</strong> fires when the conversation ends → runs the full suite deterministically → on failure, forces the agent to resume and fix.</li>
+<li>Same intent, but the agent no longer has to *remember* the order of operations.</li>
+</ul>
+<p class="detail-line"><strong>The framework — when should a rule become a hook?</strong></p>
+<ul class="detail-list">
+<li>If it&#x27;s phrased &quot;when X happens, do Y&quot; → that&#x27;s event-shaped, make it a hook.</li>
+<li>If it&#x27;s a validation/audit/security check → hook, always. Don&#x27;t ask the model to police itself.</li>
+<li>If it&#x27;s logging/observability → hook.</li>
+<li>Goal: <strong>extract the process away from the agent</strong> so correctness doesn&#x27;t depend on instruction-following.</li>
+</ul>
+<p class="detail-line"><strong>Event surface he references:</strong></p>
+<ul class="detail-list">
+<li>Pre-tool (e.g. before a file read — block for security, audit access)</li>
+<li>Post-tool</li>
+<li>Stop / conversation-end (his favorite for validation gates)</li>
+<li>Portable across harnesses: Claude Code, Codex, and Pi all support the hook primitive.</li>
+</ul>
+<p class="detail-line"><strong>Supporting signal:</strong></p>
+<ul class="detail-list">
+<li>He ties this to Anthropic cutting the Claude Code system prompt by ~80% — the industry direction is *less* prompt-borne instruction, more structural enforcement.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/coleam00/Archon" target="_blank" rel="noopener" class="detail-link">Cole&#x27;s Archon</a> — his open-source agent orchestration / harness engineering project, the usual home for these patterns</li>
+<li><a href="https://docs.claude.com/en/docs/claude-code/hooks" target="_blank" rel="noopener" class="detail-link">Claude Code hooks docs</a> — event list and matcher config</li>
+<li>Harnesses named as hook-capable: Claude Code, OpenAI Codex, Pi</li>
+<li>*(Transcript is truncated before the demo section — specific repo drops in the back half of the video aren&#x27;t captured here.)*</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> <a href="https://github.com/joshtune/mx-workflow" target="_blank" rel="noopener" class="detail-link">mx-workflow</a> is almost entirely guidance-layer — 40+ slash commands and a dozen review agents that only fire if you or the model remember to invoke them; the highest-leverage change is wiring `/mx:validate` and `/mx:ratchet` into a <strong>Stop hook</strong> and `/mx:check-ignores` into a <strong>PostToolUse</strong> hook on Edit/Write, so the quality bar is enforced by the harness instead of requested from the model.</p></section>
+</div>
+</body>
+</html>

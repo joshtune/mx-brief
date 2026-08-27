@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>224GB of GPU Memory on 1 Desk... This Should Not Work — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>224GB of GPU Memory on 1 Desk... This Should Not Work</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-08-26 · 41,597 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=Idoif7BzZbg" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/Idoif7BzZbg/mqdefault.jpg" alt="">
+  <div class="tldr">AMD Strix Halo mini PC plus external Nvidia GPU, together.</div>
+  <p class="why">It&#x27;s the first mini PC with an OCuLink port, which means a Strix Halo box can now take a real desktop GPU — a very different price/performance story than stacking Mac minis.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A hands-on test of the GMKtec EVO X3 (AMD Strix Halo, 128GB unified memory) with an RTX 5080 bolted on via OCuLink, then both GPUs driven at once on a single 122B-parameter model.</p>
+<p class="detail-line"><strong>The machines on the desk:</strong></p>
+<ul class="detail-list">
+<li><strong>GMKtec EVO X3</strong> — AMD Strix Halo APU (Radeon 8060S iGPU + CPU sharing one memory pool, up to 128GB, most of which can be handed to the GPU). Ships with Windows; Alex dual-boots Linux and reports both GPUs behave identically on either OS.</li>
+<li><strong>RTX 5080 eGPU</strong> — 16GB of very fast VRAM, plugged into the EVO X3&#x27;s OCuLink port.</li>
+<li><strong>224GB total</strong> graphics memory across the pair; a $10,000-class GPU test is teased later in the video.</li>
+</ul>
+<p class="detail-line"><strong>The new trick — OCuLink:</strong></p>
+<ul class="detail-list">
+<li>A PCIe slot with an external port on the back of the mini PC, ~63 GB/s.</li>
+<li>Same electrical slot a desktop GPU uses internally — first time a Strix Halo machine can take one.</li>
+<li>Nobody else in this form factor has it, including Nvidia&#x27;s DGX Spark.</li>
+</ul>
+<p class="detail-line"><strong>The numbers that matter:</strong></p>
+<ul class="detail-list">
+<li>Qwen 2.5 32B on the older EVO X2: ~11 tok/s. On the X3: <strong>11.2 tok/s</strong> — same chip, same speed, so the generational bump is the port, not the silicon.</li>
+<li>RTX 5080 on a model that fits in 16GB: <strong>~3x faster</strong> than the built-in 8060S.</li>
+<li>RTX 5080 on a model that *doesn&#x27;t* fit: falls off a cliff to <strong>~1.6 tok/s</strong> vs 11.2 on the iGPU. VRAM at 100%, GPU pegged, nothing coming out.</li>
+<li>Both GPUs together on the 122B model: <strong>33–34 tok/s</strong> combined, split across AMD and Nvidia. A separate combined run hit <strong>87 tok/s</strong>.</li>
+<li>Runtime note: all tests on <strong>llama.cpp</strong>, not Ollama — Ollama is measurably slower on this hardware.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://amzn.to/3SvEU0E" target="_blank" rel="noopener" class="detail-link">GMKtec EVO X3 (Amazon)</a> — the OCuLink Strix Halo mini PC under test</li>
+<li><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener" class="detail-link">llama.cpp</a> — the inference runtime he uses instead of Ollama</li>
+<li><a href="https://github.com/Syllo/nvtop" target="_blank" rel="noopener" class="detail-link">nvtop</a> — GPU monitor showing both cards spiking during the dual-GPU run</li>
+</ul>
+<p class="detail-line"><strong>On cost vs. a Mac mini:</strong> the video doesn&#x27;t quote prices in the portion covered here. Rough street ballpark for framing, not from Alex: a 128GB Strix Halo mini PC lands near $2,000, an RTX 5080 adds roughly $1,000+, and an M4 Pro Mac mini tops out at 64GB unified memory for around $2,000 — so the EVO X3 buys you 2x the addressable model size at similar money, plus an upgrade path a Mac mini structurally cannot have.</p>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re sizing a box to run local LLMs, this is the machine that breaks the Mac mini&#x27;s memory ceiling *and* lets you bolt on a discrete GPU later — but the 1.6 tok/s cliff is the real lesson: VRAM capacity beats VRAM speed the moment your model doesn&#x27;t fit.</p></section>
+</div>
+</body>
+</html>
