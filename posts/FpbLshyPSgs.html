@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DGX Spark cluster — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>DGX Spark cluster</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-08-29 · 31,165 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=FpbLshyPSgs" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/FpbLshyPSgs/mqdefault.jpg" alt="">
+  <div class="tldr">Eight DGX Sparks clustered into 1TB of unified VRAM</div>
+  <p class="why">This is the current ceiling for local LLM hardware — and the price-per-GB math is what tells you whether a stack of Sparks or a maxed Mac mini/Studio is the smarter buy.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex wires DGX Sparks together past NVIDIA&#x27;s officially documented two-node limit — four nodes for 512GB of pooled memory, eight for a 1TB &quot;VRAM&quot; cluster.</p>
+<p class="detail-line"><strong>The hardware:</strong></p>
+<ul class="detail-list">
+<li>Each DGX Spark contributes 128GB unified memory; 4 nodes = 512GB, 8 nodes = 1TB</li>
+<li>Interconnect is 400Gbps switching — the expensive, unglamorous part nobody budgets for</li>
+<li>NVIDIA only documents 2-node pairing; going to 4 and 8 is off-script</li>
+</ul>
+<p class="detail-line"><strong>Scaling numbers (VL32 model, 66GB):</strong></p>
+<ul class="detail-list">
+<li>1 node — 3.58 tok/s generation</li>
+<li>2 nodes — 6.14 tok/s (~1.7x)</li>
+<li>4 nodes — 11.36 tok/s (~3.2x), plus a solid jump in prompt processing</li>
+<li>Scaling is close to linear, which is the actual headline — most multi-node setups fall apart here</li>
+</ul>
+<p class="detail-line"><strong>The cost reality check:</strong></p>
+<ul class="detail-list">
+<li>Even at 4 nodes, ~3.58 → 11.36 tok/s is slow for a 66GB model. You&#x27;re buying *capacity*, not speed</li>
+<li>Sparks land around $3–4k each; four of them plus a 400Gbps switch is a five-figure build before you&#x27;ve run a single token</li>
+<li>A maxed Mac Studio gets you 512GB in one box, one power cable, no switch, and no cluster orchestration — same memory ceiling, far less complexity</li>
+<li>A Mac mini tops out much lower on memory but costs a fraction; it&#x27;s the wrong comparison for 100GB+ models and the right one for everything under ~64GB</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://bhpho.to/4r9vJi1" target="_blank" rel="noopener" class="detail-link">2-port 400Gbps switch</a> — minimum for a 2-node pair</li>
+<li><a href="https://bhpho.to/4qQqOlI" target="_blank" rel="noopener" class="detail-link">4-port 400Gbps switch</a> — what you need for the 4-node build</li>
+<li><a href="https://amzn.to/40luUHG" target="_blank" rel="noopener" class="detail-link">MSI EdgeExpert</a> — alternate Spark-class box</li>
+<li><a href="https://amzn.to/4" target="_blank" rel="noopener" class="detail-link">ASUS GX10</a> — another DGX Spark variant (link truncated in description)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you want to run 100GB+ models locally, this is the honest picture — clustering works and scales well, but the switch tax and the tok/s ceiling mean a single big-memory Mac is usually the better dollar unless you specifically need to go past 512GB.</p></section>
+</div>
+</body>
+</html>
