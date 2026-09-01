@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Gave Local AI and the Cloud the Exact Same Job — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>I Gave Local AI and the Cloud the Exact Same Job</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-08-31 · 265,637 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=ujs0_cpAnaw" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/ujs0_cpAnaw/mqdefault.jpg" alt="">
+  <div class="tldr">Four clustered Mac Studios vs. a $10/mo cloud agent.</div>
+  <p class="why">This is the hardware math you actually want: a $60K four-node 512GB Mac Studio cluster (2TB unified memory) benchmarked head-to-head against a cloud subscription — the clearest read yet on what buying local silicon actually gets you over renting.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Round two of Alex&#x27;s local-vs-cloud death match — four 512GB Mac Studios wired into a 2TB unified-memory cluster running Kimi K3, against Abacus AI&#x27;s cloud &quot;Supercomputer&quot; agent, both handed an identical front-end build prompt.</p>
+<p class="detail-line"><strong>The hardware (the part you care about):</strong></p>
+<ul class="detail-list">
+<li><strong>4× Mac Studio, 512GB each = 2TB unified memory</strong>, ~$60,000 total. That&#x27;s roughly <strong>$15K per node</strong> — versus a base Mac mini at a few hundred bucks, or a maxed mini in the low thousands.</li>
+<li>Interconnect: <strong>Thunderbolt 5 mesh, 6 cables</strong>, every machine wired to every other machine. No switch, no InfiniBand. Running <strong>RDMA</strong> over it.</li>
+<li>Software stack: <strong>MLX distributed</strong> for tensor parallelism across nodes.</li>
+<li>Live memory split during the run: 208GB / ~200GB / 177GB / 215GB across the four Studios.</li>
+</ul>
+<p class="detail-line"><strong>Why four and not three:</strong></p>
+<ul class="detail-list">
+<li>Kimi K3 is <strong>2.8 trillion parameters</strong>, <strong>1.56TB on disk</strong> at original 8-bit precision. Doesn&#x27;t fit on one Studio at Q4 or even Q2.</li>
+<li>Alex runs a smaller quantization but <strong>unpruned — all 896 experts</strong>, ~<strong>817GB of weights</strong> on disk.</li>
+<li>Two nodes *looks* like enough (2×512 = 1TB &gt; 817GB) but large context blows past that.</li>
+<li>Hard constraint: <strong>tensor parallelism splits model dimensions evenly</strong>, so node count must be 1, 2, 4, or 8. Three is not an option.</li>
+</ul>
+<p class="detail-line"><strong>The cloud contender:</strong></p>
+<ul class="detail-list">
+<li><strong>Abacus AI Supercomputer</strong> (sponsor) — an always-on virtual machine, not a chat box. No cold start, no container provisioning. Scheduled tasks, databases, storage, GitHub integration, SSH.</li>
+<li>One login, <strong>100+ frontier models</strong>: GPT 5.6 Soul, Claude Fable 5, Grok 4.5, Llama 2.5, DeepSeek V4 Flash/Pro, GLM 5.2, and Kimi K3 itself. RouteLLM picks per context.</li>
+<li><strong>Hermes agent</strong> runs server-side — nothing installed locally.</li>
+<li>Alex ran the test with <strong>Opus 5 High</strong> and <strong>GPT 5.6 Soul</strong>.</li>
+</ul>
+<p class="detail-line"><strong>The task:</strong> identical extensive prompt — TypeScript front end for a &quot;silicon compute exchange,&quot; mock data, dark mode, microinteractions, accessibility, unit tests, and agentic self-verification (the model runs commands to validate its own work).</p>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://supercomputer.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">Abacus AI Supercomputer</a> — always-on cloud VM + multi-model agent (sponsor)</li>
+<li>MLX distributed — Apple&#x27;s framework doing the tensor-parallel split across the four Studios</li>
+<li>Prompt is published as a GitHub gist; the Thunderbolt 5 mesh build has its own prior video (both linked in the description, not spelled out in the transcript)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The cost delta is brutal and clean — <strong>$60,000 of Mac Studio versus $10/month</strong> — and the real takeaway is that fitting a frontier-class model locally isn&#x27;t a mini-vs-Studio spec question at all, it&#x27;s a &quot;do you have 2TB of unified memory and a Thunderbolt mesh&quot; question, which puts models like Kimi K3 categorically out of reach for any single-box Mac mini setup.</p></section>
+</div>
+</body>
+</html>

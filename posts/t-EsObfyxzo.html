@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Hidden Flaw of EVERY Coding Agent Now Has a Solution — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>The Hidden Flaw of EVERY Coding Agent Now Has a Solution</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-08-30 · 3,746 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=t-EsObfyxzo" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/t-EsObfyxzo/mqdefault.jpg" alt="">
+  <div class="tldr">Sponsored spot on Sonar&#x27;s Hunter Agent for business-logic bugs</div>
+  <p class="why">It&#x27;s a 2-minute ad, but the framing — agents write code that&#x27;s *correct and wrong* — is the exact gap your review agents in mx-workflow don&#x27;t cover, and Hunter&#x27;s playbook→hunt→prove→determinism loop is a pattern worth stealing.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A ~2-minute sponsored segment for Sonar&#x27;s new <strong>Hunter Agent</strong>, wrapped in a genuinely useful thesis about why AI code review misses the bugs that actually hurt.</p>
+<p class="detail-line"><strong>The thesis (the part worth your time):</strong></p>
+<ul class="detail-list">
+<li>Every existing scanner is built to find code that is <strong>wrong</strong> — syntactically broken or unsafe. SQL injection, XSS, path traversal. Pattern-matchable shapes.</li>
+<li>But most agent failures aren&#x27;t bad code. It&#x27;s code that <strong>runs exactly as the agent intended</strong> and still isn&#x27;t what the business needed.</li>
+<li>The recurring offenders: <strong>access control, business logic, authentication/sessions</strong> — the rules the product runs on.</li>
+<li>Key insight: *a business rule doesn&#x27;t have a shape.* Code that violates a rule is syntactically indistinguishable from code that honors it. The only way to detect a violation is to already know what the rule was supposed to be.</li>
+<li>Cole&#x27;s field note: when companies he consults for get bad results from coding agents, it&#x27;s &quot;almost never the model&#x27;s fault&quot; — it&#x27;s that their entire verification layer is aimed at the wrong class of defect.</li>
+</ul>
+<p class="detail-line"><strong>How Hunter Agent works:</strong></p>
+<ul class="detail-list">
+<li>Not &quot;let an agent rummage around the repo&quot; and not a traditional LLM code review. It runs <strong>playbooks</strong>.</li>
+<li>Three-phase loop: <strong>derive</strong> what the app is supposed to enforce → <strong>hunt</strong> for instances where it doesn&#x27;t → <strong>prove</strong> each finding before surfacing it.</li>
+<li><strong>Deterministic:</strong> run it twice on the same code, get the same answer twice. Cole calls this out explicitly as the thing LLM-built apps normally can&#x27;t do.</li>
+<li>Findings land as regular issues in SonarQube Cloud — no new surface to learn.</li>
+<li>GA now, <strong>Cloud Enterprise plan only</strong>.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.sonarsource.com/products/sonarcloud/" target="_blank" rel="noopener" class="detail-link">Sonar / SonarQube Cloud</a> — static analysis platform; Hunter Agent surfaces findings as normal issues here</li>
+<li>Hunter Agent — linked in the video description; no standalone repo (closed, commercial)</li>
+<li>No open-source drop this time. <a href="https://github.com/coleam00/Archon" target="_blank" rel="noopener" class="detail-link">Archon</a> is untouched in this video.</li>
+</ul>
+<p class="detail-line"><strong>What he&#x27;s doing differently:</strong></p>
+<ul class="detail-list">
+<li>Shifting the review conversation from *vulnerability classes* to *intent classes*. The unit of review becomes &quot;the rule this app enforces,&quot; not &quot;the pattern this line matches.&quot;</li>
+<li>Treating <strong>determinism as a product feature</strong> of an agent, achieved by constraining the agent to playbooks rather than free-roaming a repo.</li>
+<li>Insisting on a <strong>proof step</strong> between detection and surfacing — the agent has to demonstrate the violation, not just claim it.</li>
+</ul>
+<p class="detail-line"><strong>How mx-workflow can improve:</strong></p>
+<ul class="detail-list">
+<li>Your review fleet (`mx-code-reviewer`, `mx-silent-failure-hunter`, `mx-performance-auditor`, `mx-type-design-analyzer`) is entirely *shape-based* — each hunts a pattern. <strong>None of them knows what your app is supposed to enforce.</strong> That&#x27;s the gap Cole is describing, and it&#x27;s live in your repo.</li>
+<li>Add a <strong>rules-extraction step</strong>: derive an explicit, checked-in list of business/access-control invariants (from the PRD in `/mx:prd`, from RLS policies emitted by `mx-schema-builder`) into something like `.mx/invariants.md`. That artifact is the missing input.</li>
+<li>Then add an <strong>`mx-invariant-hunter`</strong> agent that takes those invariants as input and hunts for violations — the playbook model. Different from every agent you have now, because it&#x27;s given the rule instead of inferring one.</li>
+<li>Steal the <strong>prove-before-surface</strong> rule for `/mx:review` and `/mx:reject`: a finding without a concrete failure path (inputs → wrong state) gets dropped, not reported. Kills the noise that makes review agents ignorable.</li>
+<li>Steal <strong>determinism as a bar</strong>: same diff twice → same findings twice. Worth testing on your existing agents; they almost certainly fail it today, and that&#x27;s why `/mx:ratchet` is hard to trust.</li>
+<li>Your `mx-schema-builder` already writes RLS policies — that&#x27;s a machine-readable access-control spec sitting right there. Feeding it back in as review input is the cheapest version of this whole idea.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The pattern — extract the rules, hunt against them, prove each hit, stay deterministic — is portable to mx-workflow as a new agent class, and it plugs the one hole your entire review suite currently shares.</p></section>
+</div>
+</body>
+</html>
