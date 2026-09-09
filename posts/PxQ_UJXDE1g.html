@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Safest Way I&#x27;ve Found to Let AI Coding Agents Run Real Infrastructure — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>The Safest Way I&#x27;ve Found to Let AI Coding Agents Run Real Infrastructure</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-09-08 · 2,333 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=PxQ_UJXDE1g" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/PxQ_UJXDE1g/mqdefault.jpg" alt="">
+  <div class="tldr">Sandbox coding agents behind Kestra YAML workflows, not credentials.</div>
+  <p class="why">Cole&#x27;s permission model here (agent invokes named workflows, never touches secrets) is a directly liftable pattern for how mx-workflow&#x27;s build/ship/deploy commands should expose infra actions to Claude.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A sponsored Kestra 2.0 walkthrough where Cole shows how he lets coding agents touch real infrastructure without ever handing them cloud keys, DB URLs, or raw shell.</p>
+<p class="detail-line"><strong>What Cole is doing differently now:</strong></p>
+<ul class="detail-list">
+<li>Still writes every line with coding agents, still validates everything by hand. His trust ceiling isn&#x27;t the model, it&#x27;s the blast radius of what the agent can reach.</li>
+<li>Stops giving agents raw credentials. Instead, an orchestrator wraps the agent and exposes a fixed list of workflows it&#x27;s allowed to invoke.</li>
+<li>Credentials live inside the orchestrator&#x27;s workflow definitions, never in the agent&#x27;s context or env.</li>
+<li>Example agent in the demo can only restart services and scale replicas. Nothing else. That allowlist IS the whole permission model.</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Agents and operations are defined as YAML files committed to Git alongside the agent config.</li>
+<li>Each agent gets a declared set of callable flows; anything outside that list simply doesn&#x27;t exist from the agent&#x27;s point of view.</li>
+<li>Every agent call becomes a normal Kestra execution with inputs, logs, and results visible in the dashboard, so unattended runs stay observable.</li>
+<li>Kestra 2.0 is out; the AI agent piece ships in the Apache 2.0 open-source core, not gated behind enterprise.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://kestra.io" target="_blank" rel="noopener" class="detail-link">Kestra</a> — open-source orchestration platform; workflows-as-YAML in Git, now with a first-class agent layer</li>
+<li><a href="https://github.com/kestra-io/kestra" target="_blank" rel="noopener" class="detail-link">Kestra on GitHub</a> — Apache 2.0 core</li>
+<li><a href="https://kestra.io/docs" target="_blank" rel="noopener" class="detail-link">Kestra docs</a> — flow/YAML reference for defining the allowlisted operations</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/joshtune/mx-workflow" target="_blank" rel="noopener" class="detail-link">mx-workflow</a> currently lets `/mx:shipit`, `/mx:release`, and `/mx:build` run git push, deploys, and Supabase schema changes with whatever creds are in the shell. That&#x27;s exactly the exposure Cole is closing.</li>
+<li>Concrete lift: define infra actions (deploy, migrate, restart, publish) as named workflows with creds injected at execution time, and have the mx commands call those by name rather than executing raw commands. Kestra is one option; the pattern also works with a thin local runner.</li>
+<li>Second lift: per-command allowlists. `/mx:qa` shouldn&#x27;t be able to reach anything `/mx:release` can. Right now they share one permission surface.</li>
+<li>Third lift: every agent-triggered infra action should leave an execution record (inputs, logs, result) you can audit after the fact. mx has agents run unattended; it doesn&#x27;t yet have that ledger.</li>
+</ul>
+<p class="detail-line"><strong>Caveats:</strong></p>
+<ul class="detail-list">
+<li>Sponsored, short, demo-only. No real migration story shown, no failure cases, no discussion of how the agent discovers flows or handles a denied call.</li>
+<li>Kestra is a JVM service you&#x27;d need to run on the mini; weigh that against a simpler allowlisted-script approach before adopting wholesale.</li>
+</ul></section>
+</div>
+</body>
+</html>
