@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>No One Talks Enough About Security for AI Coding. Here&#x27;s How I Do It in My Workflows — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>No One Talks Enough About Security for AI Coding. Here&#x27;s How I Do It in My Workflows</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-09-10 · 6,527 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=SGodxQHnVxc" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/SGodxQHnVxc/mqdefault.jpg" alt="">
+  <div class="tldr">Deterministic security gates for AI-generated code via Archon + SonarQube.</div>
+  <p class="why">Cole&#x27;s shifted from &#x27;agent reviews agent&#x27; to hard-coded scanner gates inside Archon workflows, which is exactly the pattern mx-workflow&#x27;s review/QA stage is missing.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Cole&#x27;s argument that AI coding agents ship insecure code more often than they ship slow or undocumented code, and his fix: deterministic vulnerability gates (SonarQube) wired into Archon workflows so nothing reaches a PR without a scan.</p>
+<p class="detail-line"><strong>What he&#x27;s doing differently now:</strong></p>
+<ul class="detail-list">
+<li>Runs *every* coding workflow through Archon as the engine. Each process (plan, build, verify, ship) is one file of stitched nodes: agents plus scripts, executable in parallel.</li>
+<li>Security is a <strong>deterministic node</strong>, not another Claude call. He explicitly rejects the &#x27;obvious&#x27; fix of a second agent doing a security review as the primary control.</li>
+<li>The gate runs *before* a PR opens or control returns to him. The agent must detect *and* iterate on findings, not just report them.</li>
+<li>Partnered with Sonar, so expect SonarQube to be his default scanner going forward.</li>
+</ul>
+<p class="detail-line"><strong>How the vulnerabilities get in (his taxonomy):</strong></p>
+<ul class="detail-list">
+<li><strong>Direct code vulns</strong> — agent writes the SQL injection itself.</li>
+<li><strong>Dependency vulns</strong> — agent installs a package (or version) with a known CVE without checking.</li>
+<li><strong>Transitive vulns</strong> — the package is clean but a sub-dependency carries a CVE. Agents research the top level at best, never the chain.</li>
+<li><strong>CVE list is massive</strong> — no agent is going to reason over it from context. It has to be a tool lookup.</li>
+</ul>
+<p class="detail-line"><strong>How the workflow works:</strong></p>
+<ul class="detail-list">
+<li>Archon node graph: coding agent → SonarQube scan (SAST + dependency/CVE check) → agent reads findings → fix loop → gate passes → PR opens.</li>
+<li>Determinism comes from scripts, not prompts. The scanner either passes or it doesn&#x27;t.</li>
+<li>Agent still does all the work; the harness just refuses to hand back control until the gate is green.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://github.com/coleam00/Archon" target="_blank" rel="noopener" class="detail-link">Archon</a> — Cole&#x27;s open-source harness builder; packages agent + script processes into single executable workflow files.</li>
+<li><a href="https://www.sonarsource.com/products/sonarqube/" target="_blank" rel="noopener" class="detail-link">SonarQube</a> — SAST + dependency vulnerability detection; his deterministic gate. (Sponsor, disclosed.)</li>
+<li><a href="https://cve.mitre.org/" target="_blank" rel="noopener" class="detail-link">CVE database</a> — the list he says agents can&#x27;t reason over without tooling.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong></p>
+<ul class="detail-list">
+<li>mx-workflow already has `/mx:deps` and `/mx:review` with 8 review agents, but those are <strong>agent-as-reviewer</strong>, the pattern Cole says isn&#x27;t sufficient on its own. Add a deterministic scanner node.</li>
+<li>Concrete moves for <a href="https://github.com/joshtune/mx-workflow" target="_blank" rel="noopener" class="detail-link">mx-workflow</a>:</li>
+<li>Wire `/mx:deps` into `/mx:ratchet` or `/mx:reject` as a hard gate: fail the verdict on any known CVE, including transitive, rather than reporting it.</li>
+<li>Add a `security-scan` step to `/mx:build` and `/mx:pr` that runs a real tool (`pnpm audit`/`osv-scanner`/Semgrep/SonarQube) and feeds findings back to the implementing agent as a fix loop, not a report.</li>
+<li>Give `mx-quality-keeper` a scanner it can invoke, so the QA gate has a deterministic input and isn&#x27;t purely another Claude opinion.</li>
+<li>Consider the Archon &#x27;one file per process&#x27; shape: mx-workflow&#x27;s commands are already close, but they don&#x27;t yet stitch script nodes and agent nodes into one executable graph.</li>
+<li>Net: Cole&#x27;s thesis is &#x27;agents build, scripts verify.&#x27; mx-workflow verifies with agents. That&#x27;s the gap.</li>
+</ul></section>
+</div>
+</body>
+</html>
