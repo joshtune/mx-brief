@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Ran A 27B Model On A Hand-Sized PC… Didn&#x27;t Expect This — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>I Ran A 27B Model On A Hand-Sized PC… Didn&#x27;t Expect This</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-09-13 · 93,209 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=1_8pzU44n-M" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/1_8pzU44n-M/mqdefault.jpg" alt="">
+  <div class="tldr">Khadas Mind Pro runs Qwen 27B; speculative decoding doubles it.</div>
+  <p class="why">The machine is a Khadas Mind Pro (Intel Panther Lake, 64GB, ~100 GB/s real bandwidth) that lands roughly in base Mac mini territory on decode speed, and the real takeaway is that a free draft model beats buying hardware.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex benchmarks a palm-sized Intel Panther Lake mini PC on a 27B coding model, then shows speculative decoding more than doubles token output for free.</p>
+<p class="detail-line"><strong>The machine:</strong></p>
+<ul class="detail-list">
+<li><strong>Khadas Mind Pro</strong> — smallest Core Ultra X7 358H (Panther Lake) box he&#x27;s seen</li>
+<li>64 GB shared system memory, Intel Arc B390 integrated GPU</li>
+<li>Proprietary magnetic dock connector; the big dock houses a discrete GPU (an RTX 5060 Ti in his unit), a smaller dock just adds ports</li>
+<li><strong>Price:</strong> not stated in the transcript — check <a href="https://www.khadas.com/" target="_blank" rel="noopener" class="detail-link">Khadas</a> for current Mind Pro + dock pricing</li>
+</ul>
+<p class="detail-line"><strong>Mac mini comparison (bandwidth is the whole game):</strong></p>
+<ul class="detail-list">
+<li>Mind Pro measured real bandwidth: <strong>~100 GB/s</strong> (model size 17.66 GB × 5.42 tok/s)</li>
+<li>Base M4 Mac mini: ~120 GB/s rated — roughly the same class, similar 5–6 tok/s on a 27B Q4 model</li>
+<li>M4 Pro Mac mini: ~273 GB/s — expect ~2.5× the decode speed of the Mind Pro out of the box</li>
+<li>The Mind Pro only pulls ahead when you bolt on the discrete-GPU dock, which adds cost and size</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Model: Qwen3 27B at Q4_K_M (~18 GB weights); 4-bit with sensitive layers kept at higher precision</li>
+<li>Four backends tested on the iGPU: CPU, Vulkan, SYCL, OpenVINO</li>
+<li>Prefill (reading): CPU 17 tok/s → OpenVINO 446 tok/s, a 27× jump</li>
+<li>Decode (writing): CPU &lt;5, Vulkan 5.4, SYCL 5.7, OpenVINO 2.6 tok/s — backend choice barely matters</li>
+<li>Bottleneck is memory bandwidth: every token streams all 18 GB of weights past the chip</li>
+<li><strong>Speculative decoding:</strong> a ~1.5 GB draft model guesses several tokens ahead, the big model verifies them in one pass; iGPU went from ~5 to ~11 tok/s</li>
+<li>Sweet spot is draft depth (n_max) of 3 on both the iGPU and the RTX 5060 Ti; n_max 8 gets ugly from wasted guesses</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.khadas.com/" target="_blank" rel="noopener" class="detail-link">Khadas Mind Pro</a> — the mini PC and dock ecosystem</li>
+<li><a href="https://huggingface.co/Qwen" target="_blank" rel="noopener" class="detail-link">Qwen on Hugging Face</a> — quants often ship the draft model alongside</li>
+<li><a href="http://chatllm.abacus.ai/ltf" target="_blank" rel="noopener" class="detail-link">ChatLLM / Abacus AI</a> — sponsor</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> A base Mac mini already matches this box on local-LLM decode, so before spending on hardware, turn on speculative decoding — it&#x27;s the cheapest 2× you&#x27;ll ever get.</p></section>
+</div>
+</body>
+</html>

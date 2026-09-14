@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthropic Engineer Explains: What to Build Instead of AI Agents — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Nate Herk | AI Automation</div>
+    <h1>Anthropic Engineer Explains: What to Build Instead of AI Agents</h1>
+    <div class="meta">
+      <span>Nate Herk | AI Automation · 2026-09-13 · 103,897 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=HIRDzMtuWFk" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/HIRDzMtuWFk/mqdefault.jpg" alt="">
+  <div class="tldr">Build reusable Claude Code skills, not bespoke agents.</div>
+  <p class="why">Nate distills Anthropic&#x27;s own skill-building playbook into four concrete practices (saved scripts, progressive disclosure, etc.) you can apply to your Claude Code setup today.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A breakdown of why Anthropic&#x27;s skills creators (Barry Zhang and Mahesh Murag) stopped building one-off agents and started packaging jobs as skills for one general-purpose agent, plus four practices that make skills actually work.</p>
+<p class="detail-line"><strong>The core mental model:</strong></p>
+<ul class="detail-list">
+<li>Model = processor, agent runtime (Claude Code) = operating system, skills = apps</li>
+<li>You don&#x27;t rebuild the OS for every job; you give the same agent a skill containing the process, context, scripts, and examples for that specific task</li>
+<li>Claude Code already reads files, writes code, and calls tools, so a skill just needs to steer it, not rebuild it</li>
+</ul>
+<p class="detail-line"><strong>Practice 1: DRY for Claude (save proven scripts):</strong></p>
+<ul class="detail-list">
+<li>Anthropic&#x27;s team watched Claude rewrite the same slide-styling Python script every run, burning tokens and producing inconsistent output</li>
+<li>Fix: have Claude save the script inside the skill as a &quot;tool for its future self&quot; and execute that file on future runs</li>
+<li>Nate&#x27;s carousel workflow does this: renderers, templates, and scripts are fixed; Claude only changes the content</li>
+<li>The prompt he uses: &quot;Save the script you just used inside the skill&#x27;s scripts folder. Update SKILL.md so future runs execute that file instead of rewriting it. Run the skill again and verify the result.&quot;</li>
+<li>Still test it: run the same task twice, compare the important parts, confirm the skill is actually calling the saved file</li>
+</ul>
+<p class="detail-line"><strong>Practice 2: Progressive disclosure (the mechanic&#x27;s toolbox):</strong></p>
+<ul class="detail-list">
+<li>Claude doesn&#x27;t load every skill&#x27;s full instructions, examples, and scripts at startup</li>
+<li>It starts with only the name and description of each skill, then loads the full body only when the job matches</li>
+<li>Write skill names and descriptions so Claude can route correctly without reading everything (the transcript cuts off here; practices 3 and 4 are in the remainder of the video)</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills" target="_blank" rel="noopener" class="detail-link">Anthropic Agent Skills docs</a> — official spec for SKILL.md, scripts folders, and progressive disclosure</li>
+<li><a href="https://github.com/anthropics/skills" target="_blank" rel="noopener" class="detail-link">anthropics/skills on GitHub</a> — Anthropic&#x27;s public skills repo with reference examples</li>
+<li><a href="https://www.skool.com/ai-automation-society/about" target="_blank" rel="noopener" class="detail-link">Nate&#x27;s free AI Automation Society community</a> — where he shares his workflows and skill files</li>
+<li><a href="https://app.aiautomationsociety.ai/opaa-ads-optin" target="_blank" rel="noopener" class="detail-link">Nate&#x27;s $1M AI agency playbook</a> — paid funnel, referenced in description</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re maintaining a pile of custom agents or watching Claude Code regenerate the same helper code every session, this is the concrete recipe for turning that into a self-improving skills library.</p></section>
+</div>
+</body>
+</html>
