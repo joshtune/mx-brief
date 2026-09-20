@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Tested Jev on 12 Real Use Cases. My Honest Thoughts. — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Nate Herk | AI Automation</div>
+    <h1>I Tested Jev on 12 Real Use Cases. My Honest Thoughts.</h1>
+    <div class="meta">
+      <span>Nate Herk | AI Automation · 2026-09-19 · 110,179 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=ymgH8jS6Wb8" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/ymgH8jS6Wb8/mqdefault.jpg" alt="">
+  <div class="tldr">Nate stress-tests Jev, a decision-only AI model, on 12 real use cases.</div>
+  <p class="why">Jev skips text generation entirely and just outputs decisions — if you&#x27;re building classification, routing, or real-time filtering automations, this could replace slower/costlier LLM calls in your stack.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong></p>
+<ul class="detail-list">
+<li>Jev is a new type of AI model that makes decisions but never generates text — no chat, no reasoning tokens, just structured output.</li>
+<li>Built via a training method called RLCD (&quot;reinforcement learning for calibrated decisions&quot;), announced by one of ChatGPT&#x27;s co-inventors, detailed on the model creator&#x27;s blog.</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>Three output types only: a <strong>yes/no</strong> with a confidence score, a <strong>choice</strong> (pick one category), and a <strong>score</strong> (e.g. 0–10 scale).</li>
+<li>Example from the video: a support ticket gets classified as urgent (99% confidence), routed to &quot;technical&quot; team, and scored 1/2 on frustration — all as structured JSON, no generated prose.</li>
+<li>You configure it by defining the decision criteria/classification rules upfront; it doesn&#x27;t infer intent the way a chat model does.</li>
+<li>Claimed 20–200x faster and 40–400x cheaper than typical LLMs for these tasks, since output tokens are free (it&#x27;s not generating token-by-token text).</li>
+<li>Limitation: can&#x27;t write, summarize, find themes, or do deep analysis — decisions only.</li>
+<li>Limitation: small 64K token context window vs. ~1M for models like Claude/GPT.</li>
+</ul>
+<p class="detail-line"><strong>Demo use cases shown:</strong></p>
+<ul class="detail-list">
+<li>A Chrome extension that labels X/Twitter posts in real time as &quot;breaking,&quot; &quot;golden nugget,&quot; or &quot;AI slop&quot; using Jev on the backend as content streams in.</li>
+<li>A &quot;Jev trader&quot; bot that re-evaluates Bitcoin price direction every second and places trades in real time, leaning on Jev&#x27;s speed for rapid-fire decisions.</li>
+<li>A YouTube comment-processing test (feeding in ~5,000 comments) to test categorization at scale — cut off in the available transcript.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>Access Jev via the model creator&#x27;s waitlist (referred to in video as &quot;Typesafe AI&quot;) — sign up and wait for access.</li>
+<li>Also accessible now through <strong>Vercel&#x27;s AI Gateway</strong> and <strong>OpenRouter</strong> without the waitlist.</li>
+<li><a href="https://app.aiautomationsociety.ai/optin/first-client-SOP/" target="_blank" rel="noopener" class="detail-link">Nate&#x27;s free First Client SOP</a></li>
+<li><a href="https://www.skool.com/ai-automation-society/about?el=higgsfield-api&amp;hcategory=youtube-videos&amp;utm_campaign=free-group" target="_blank" rel="noopener" class="detail-link">Nate&#x27;s free community/resources (Skool)</a></li>
+<li><a href="https://get.glaido.com/nate" target="_blank" rel="noopener" class="detail-link">Glaido voice-to-text tool</a> — free month, code NATEHERK</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re building automations that classify, route, or score high-volume input (tickets, comments, tweets, trades) instead of generating text, Jev&#x27;s speed/cost profile could make LLM calls in those paths obsolete — worth testing before committing to GPT/Claude for pure classification work.</p></section>
+</div>
+</body>
+</html>
