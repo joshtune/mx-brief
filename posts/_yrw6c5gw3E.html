@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M5 Ultra vs 2 DGX Sparks… The Number You&#x27;re Not Looking At — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>M5 Ultra vs 2 DGX Sparks… The Number You&#x27;re Not Looking At</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-10-01 · 332,620 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=_yrw6c5gw3E" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/_yrw6c5gw3E/mqdefault.jpg" alt="">
+  <div class="tldr">M5 Ultra Mac Studio vs dual DGX Spark for local LLMs</div>
+  <p class="why">It tells you exactly which machines Alex runs big local AI models on and what they cost, with the Mac side priced at $14K, so you can sanity-check it against a Mac mini without sitting through the benchmark weeds.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Head-to-head of a 256 GB M5 Ultra Mac Studio against two clustered NVIDIA DGX Sparks (also 256 GB total) running big local LLMs.</p>
+<p class="detail-line"><strong>The machines &amp; what they cost:</strong></p>
+<ul class="detail-list">
+<li><strong>Mac Studio M5 Ultra</strong> — 256 GB unified memory, 8 TB SSD, configured at <strong>$14,000</strong>. One box, loads the whole model.</li>
+<li><strong>2x NVIDIA DGX Spark</strong> — 128 GB each (256 GB total), 4 TB each (8 TB total). Launched at ~$4K each, now almost <strong>$5K each, ~$10K for the pair</strong>, plus the pricey QSFP cable.</li>
+<li><strong>Link</strong> — one 200 Gb QSFP cable running RoCE (RDMA over Converged Ethernet), so the Sparks can write directly into each other&#x27;s memory.</li>
+<li><strong>Mac mini comparison:</strong> the transcript excerpt never prices a Mac mini. Both rigs here are in the $10-14K league, a different tier from a mini. Treat any mini comparison as your own back-of-napkin math.</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>Headline result:</strong> both generated exactly 800 tokens. The M5 Ultra did <strong>38.7 tok/s</strong> and the dual Spark cluster did <strong>34.3 tok/s</strong>, so basically neck and neck. Alex says this is the closest they get for the rest of the video.</li>
+<li><strong>Why two Sparks:</strong> DeepSeek V4 Flash is ~150-160 GB, so it won&#x27;t fit on one 128 GB Spark. Split across two, each node holds ~111 GB.</li>
+<li><strong>Split method:</strong> vLLM with tensor parallel. Every layer is cut in half, and the boxes swap results over the cable on every token. That&#x27;s a lot of chatter.</li>
+<li><strong>Same model, different files:</strong> both run 4-bit quantized builds, but not the identical file.</li>
+<li><strong>Software:</strong> Sparks run vLLM (llama.cpp also works). The Mac was tested with both llama.cpp and MLX, and the winner varies.</li>
+<li><strong>Models tested:</strong> DeepSeek V4 Flash and Qwen 3.8 Flash Next, which also needs two Sparks.</li>
+<li><strong>Cut off:</strong> the transcript ends before the actual &#x27;number you&#x27;re not looking at&#x27; from the title, so the real verdict isn&#x27;t in the excerpt. The description hints the M5 Ultra &#x27;needs something from you before it really pulls ahead&#x27;.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://www.getmerlin.in/pricing?coupon=merlin" target="_blank" rel="noopener" class="detail-link">Merlin AI</a> — sponsor, all-in-one ChatGPT/Claude/Gemini access, code ALX5, ~$60/yr</li>
+<li>vLLM — high-throughput inference/serving engine, used for the Spark cluster (no URL given in the transcript)</li>
+<li>llama.cpp and MLX — local inference engines used on the Mac (no URLs given in the transcript)</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> If you&#x27;re pricing local AI hardware, this puts the ceiling at $10-14K for 256 GB, which is far above Mac mini money. Only worry about it if you need to run 150 GB+ models.</p></section>
+</div>
+</body>
+</html>
