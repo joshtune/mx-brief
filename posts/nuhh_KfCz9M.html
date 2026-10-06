@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>your house needs TWO networks (here&#x27;s why) — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; NetworkChuck</div>
+    <h1>your house needs TWO networks (here&#x27;s why)</h1>
+    <div class="meta">
+      <span>NetworkChuck · 2026-10-05 · 194,952 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=nuhh_KfCz9M" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/nuhh_KfCz9M/mqdefault.jpg" alt="">
+  <div class="tldr">Splitting a flat home network into VLANs with OPNsense</div>
+  <p class="why">Part two of Chuck&#x27;s OPNsense home-lab build: it shows the firewall and VLAN foundation that quarantines IoT junk, though the AI-on-a-Raspberry-Pi piece is only teased in the part of the transcript we have.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Part 2 of a network rebuild for &quot;Mike&quot;. Chuck uses an OPNsense firewall on a Japanese mini PC to split one flat home network into separate VLANs for work, users, and a quarantined IoT network.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>The problem:</strong> Smart bulbs, locks, cameras, fridges, and switches all share one flat network. One vulnerable device lets an attacker pivot to everything else. The worst cases are botnets, malware, and camera feeds ending up on the internet.</li>
+<li><strong>The fix:</strong> Put IoT devices on their own quarantined network so they can&#x27;t reach family devices, even if compromised. Where you can&#x27;t segregate, a guest network is the fallback.</li>
+<li><strong>Why VLANs:</strong> Consumer routers usually can&#x27;t do multiple networks. A VLAN (virtual LAN) creates a new network on a single physical device, with no second router needed.</li>
+<li><strong>Setup in OPNsense:</strong> Interfaces → Devices → VLAN → add (+). Parent interface is the LAN port (`re1`). Set a VLAN tag (Chuck used 13 for the &quot;user network&quot;). Save.</li>
+<li><strong>Parent interface:</strong> Each VLAN attaches to a physical port, and all VLANs share that one port.</li>
+<li><strong>Hardware:</strong> A QNAP managed switch is untested going in, and Chuck flags compatibility with the firewall as an open question.</li>
+<li><strong>Teaser:</strong> An AI running on a Raspberry Pi is billed as part of protecting the network. The provided transcript cuts off in the sponsor read, so we don&#x27;t know what it does.</li>
+<li><strong>Sponsor:</strong> Flare, a threat-exposure and infostealer-monitoring service. The pitch is that attackers log in with stolen credentials rather than hack in.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://opnsense.org" target="_blank" rel="noopener" class="detail-link">OPNsense</a> — open source firewall/router with VLAN support. Chuck&#x27;s firewall platform.</li>
+<li><a href="https://docs.opnsense.org" target="_blank" rel="noopener" class="detail-link">OPNsense VLAN docs</a> — the documentation Chuck read to set up VLANs.</li>
+<li><a href="https://ntck.co/flare-opnsense" target="_blank" rel="noopener" class="detail-link">Flare</a> — sponsor: credential and infostealer exposure monitoring.</li>
+<li>QNAP managed switch — VLAN-capable switch, model not named in the transcript.</li>
+<li>Raspberry Pi running AI — role unclear from the transcript.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> This is the home-lab infrastructure layer worth copying (OPNsense plus VLANs plus a managed switch). Anything AI-related, like the Pi, will have to wait for the rest of the video, because this transcript excerpt doesn&#x27;t cover it.</p></section>
+</div>
+</body>
+</html>
