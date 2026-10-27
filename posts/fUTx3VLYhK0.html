@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Ran A 27B Model On A Hand-Sized PC… Didn&#x27;t Expect This — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>I Ran A 27B Model On A Hand-Sized PC… Didn&#x27;t Expect This</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-10-26 · 23,334 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=fUTx3VLYhK0" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/fUTx3VLYhK0/mqdefault.jpg" alt="">
+  <div class="tldr">27B model on a tiny Khadas PC with eGPU</div>
+  <p class="why">You get the hardware answer fast (Khadas Mind Pro with a dock holding a 16GB RTX 5060 Ti), but the excerpt gives no prices, so the Mac mini comparison isn&#x27;t covered.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex runs a 27B model on a palm-sized Khadas Mind Pro PC, using a dock with an RTX 5060 Ti (16GB VRAM), then finds that a smaller quantization beats all his layer-split tuning.</p>
+<p class="detail-line"><strong>The machine:</strong></p>
+<ul class="detail-list">
+<li><strong>PC:</strong> Khadas Mind Pro, the hand-sized box in the title</li>
+<li><strong>GPU:</strong> RTX 5060 Ti with 16GB VRAM, attached through a dock that sits on a magnet</li>
+<li><strong>Cost vs Mac mini:</strong> not stated in the transcript excerpt. Prices are probably in the video or the gear links, so check there. I&#x27;m not guessing numbers.</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li>The Q4_K_M model is 17.6 GB, so it misses the 16GB VRAM by about 1.7 GB.</li>
+<li>The model has about 62 layers, and some can be offloaded to the CPU.</li>
+<li>Offloading nothing to the GPU gives about 4.5 tok/s. Putting 48 layers on it gives about 11 tok/s, and 56 layers gives about 14 tok/s.</li>
+<li>At 60 layers it collapses to 0.82 tok/s, about 17x slower than at 56. The model spills past VRAM and the bus becomes the bottleneck.</li>
+<li>The fix was a different quantization, not more tuning. IQ4_XS is about 13 GB, still 4-bit, and fits fully in VRAM.</li>
+<li>Prompt processing went from about 474 to 943 tok/s. Generation went from about 14 to 27 tok/s. Both roughly doubled.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://link.amazon/B04w9tltf" target="_blank" rel="noopener" class="detail-link">Khadas Mind Pro + dock deal</a> — the tiny PC bundle (link as given in the description)</li>
+<li><a href="https://link.amazon/B0g6vWx6K" target="_blank" rel="noopener" class="detail-link">The little dock</a> — the GPU enclosure/dock</li>
+<li><a href="https://amzn.to/40u9M3b" target="_blank" rel="noopener" class="detail-link">Thunderbolt 5 cable</a> — connection</li>
+<li><a href="https://amzn.to/4fsyN35" target="_blank" rel="noopener" class="detail-link">Thunderbolt 5 dock</a> — alternative dock</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> A 16GB-VRAM mini PC can run a 27B model at around 27 tok/s if the weights fit entirely in VRAM. You&#x27;ll need the video&#x27;s pricing to compare it against a Mac mini.</p></section>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Ran A 27B Model On A PC That Fits In One Hand… Didn&#x27;t Expect This — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Alex Ziskind</div>
+    <h1>I Ran A 27B Model On A PC That Fits In One Hand… Didn&#x27;t Expect This</h1>
+    <div class="meta">
+      <span>Alex Ziskind · 2026-10-27 · 2 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=4LpNAIM0I4U" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/4LpNAIM0I4U/mqdefault.jpg" alt="">
+  <div class="tldr">27B model on a tiny Khadas Intel mini PC</div>
+  <p class="why">It names the machine (Khadas Mind Pro, 64GB), but the price and Mac mini comparison aren&#x27;t in the transcript we have, so skim for those.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> Alex runs a 27B-parameter model on the Khadas Mind Pro, a palm-sized Intel Panther Lake mini PC, and benchmarks four ways to run it.</p>
+<p class="detail-line"><strong>The machine:</strong></p>
+<ul class="detail-list">
+<li><strong>Box:</strong> Khadas Mind Pro, billed as the smallest Core Ultra X7 358H machine he&#x27;s seen</li>
+<li><strong>Memory:</strong> 64 GB, shared between CPU and GPU</li>
+<li><strong>GPU:</strong> integrated Intel Arc B390 (no discrete card)</li>
+<li><strong>Model:</strong> 27B, about 17.66 GB of weights</li>
+</ul>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>Four backends tested:</strong> CPU, Vulkan, SYCL and OpenVINO, with the last three all targeting the same iGPU</li>
+<li><strong>Prefill (reading the prompt):</strong></li>
+<li>CPU: ~17 tok/s</li>
+<li>OpenVINO: ~446 tok/s, about 27x faster</li>
+<li><strong>Decode (writing the answer):</strong></li>
+<li>CPU: under 5 tok/s</li>
+<li>Vulkan: 5.4 tok/s</li>
+<li>SYCL: 5.7 tok/s</li>
+<li>OpenVINO: 2.6 tok/s, the slowest</li>
+<li><strong>Why decode is slow:</strong> every token streams all ~18 GB of weights through shared memory</li>
+<li><strong>Measured bandwidth:</strong> ~100 GB/s (17.66 GB × 5.42 tok/s), the real figure, not the advertised one</li>
+<li><strong>Takeaway:</strong> the GPU sits idle waiting on memory, so memory bandwidth caps writing speed and compute barely matters</li>
+</ul>
+<p class="detail-line"><strong>Cost vs Mac mini:</strong></p>
+<ul class="detail-list">
+<li><strong>Not covered in the transcript we have.</strong> It cuts off mid-bandwidth discussion, with no price for the Khadas and no Mac mini comparison.</li>
+<li>The description has an Amazon bundle deal for the Mind Pro plus dock, but no price is shown.</li>
+<li>Check the video or the link for the price.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://link.amazon/B04w9tltf" target="_blank" rel="noopener" class="detail-link">Khadas Mind Pro + dock deal</a> — the machine, bundled with a dock (affiliate link)</li>
+<li><a href="https://link.amazon/B0g6vWx6K" target="_blank" rel="noopener" class="detail-link">The little dock</a> — companion dock</li>
+<li><a href="https://amzn.to/40u9M3b" target="_blank" rel="noopener" class="detail-link">Thunderbolt 5 cable</a> — cable from the gear list</li>
+<li><a href="https://amzn.to/4fsyN35" target="_blank" rel="noopener" class="detail-link">Thunderbolt 5 dock</a> — dock from the gear list</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> Expect ~5 tok/s writing on a 27B model, which is slow for chat. A Mac mini&#x27;s unified memory is probably faster at decode, but the video as quoted doesn&#x27;t say.</p></section>
+</div>
+</body>
+</html>
