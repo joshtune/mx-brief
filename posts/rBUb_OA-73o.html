@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Coding Agent Has a MASSIVE Blind Spot (You Need to Fix It) — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Cole Medin</div>
+    <h1>Your Coding Agent Has a MASSIVE Blind Spot (You Need to Fix It)</h1>
+    <div class="meta">
+      <span>Cole Medin · 2026-11-12 · 1,227 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=rBUb_OA-73o" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/rBUb_OA-73o/mqdefault.jpg" alt="">
+  <div class="tldr">Give coding agents live production telemetry, not just code</div>
+  <p class="why">Short sponsored pitch, but the underlying idea (agents verifying runtime behavior, not just reading source) is a real gap you can close in your mx-workflow skills.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> A Dynatrace-sponsored ~2 min pitch arguing coding agents are blind to runtime behavior, so you should wire production observability into them. Light on detail, heavy on the sponsor.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>The failure story:</strong> Cole shipped a new version of his email-drafting agent (part of his AI second brain). It passed evals, then on its first production run it saw two unanswered emails, made zero tool calls, and reported nothing needed attention.</li>
+<li><strong>Why nobody caught it:</strong> no crash, no error, and nothing in the codebase made the bug obvious. He only found it by watching the actual run. Fix took ~7 minutes once seen.</li>
+<li><strong>The thesis:</strong> the agent sees the whole codebase but not what the code does once running.</li>
+<li><strong>The Dynatrace demo:</strong> an app with ~89 second response times. The agent is asked for the top 5 methods hitting the database hardest and gets a ranking from real telemetry.</li>
+<li><strong>Code + telemetry join:</strong> because the same agent can read source, it traces the worst offender to an exact line, a search query doing a full table scan on every call.</li>
+<li><strong>The fix:</strong> add a database index, with zero application code changes. Reading the code alone, it looked like a normal query. Only the numbers showed where CPU was going.</li>
+<li><strong>Takeaway:</strong> whatever tool you use, give the agent a way to see runtime behavior.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li>Dynatrace MCP Server — streams production telemetry into the agent in your IDE. Cole says the link is in the video description; no URL is given in the transcript, so grab it there.</li>
+<li>MCP (Model Context Protocol) — the transport that connects the agent to the observability data.</li>
+<li>No repos mentioned. Archon and his second-brain agent are referenced only in passing or by implication, with no links.</li>
+</ul>
+<p class="detail-line"><strong>What he does differently:</strong></p>
+<ul class="detail-list">
+<li>Treats runtime observability as a first-class input to the coding agent, not just a human dashboard.</li>
+<li>His own lesson is that evals passing is not the same as production working. The real check was watching a live run.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you (mx-workflow):</strong></p>
+<ul class="detail-list">
+<li><strong>Add a post-deploy verify step.</strong> After `/mx:ship` or `/mx:implement`, have the agent inspect logs, traces or a real run output, not just lint, type-check and tests from `/mx:validate`.</li>
+<li><strong>Hunt silent no-ops.</strong> His bug was an agent that did nothing and reported success. Extend `mx:silent-failure-hunter` or `mx:hallucination-check` with a check like: did the agent make the tool calls it should have, and does the output claim match the trace?</li>
+<li><strong>Feed `mx:performance-auditor` real data.</strong> It is static-analysis only today. Optionally let it consume telemetry (Dynatrace MCP or any APM or log MCP) to rank hotspots by measured cost rather than guesswork.</li>
+<li><strong>Caveat:</strong> this is a sponsored segment with no repo and no walkthrough. Treat it as a prompt to design the hook, not a recipe to copy.</li>
+</ul></section>
+</div>
+</body>
+</html>
