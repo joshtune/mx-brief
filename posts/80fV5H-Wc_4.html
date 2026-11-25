@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Just Silently Released a Cheaper Mode — Summary</title>
+<style>
+:root {
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.93 0 0);
+    --card: oklch(0.17 0.005 260);
+    --muted-foreground: oklch(0.6 0 0);
+    --border: oklch(1 0 0 / 8%);
+    --accent-blue: oklch(0.7 0.15 250);
+    --accent-amber: oklch(0.75 0.15 75);
+    --radius: 0.5rem;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.back-link { display: inline-block; color: var(--muted-foreground); text-decoration: none; font-size: 0.8rem; margin-bottom: 1rem; }
+.back-link:hover { color: var(--foreground); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin: 0.25rem 0 0.5rem; line-height: 1.25; }
+.meta { color: var(--muted-foreground); font-size: 0.85rem; }
+.meta a { color: var(--accent-blue); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+.thumb { width: 100%; border-radius: var(--radius); margin-bottom: 1.25rem; }
+.tldr { font-size: 1.05rem; color: var(--foreground); background: linear-gradient(135deg, oklch(0.18 0.01 260), var(--card)); border-left: 3px solid var(--accent-amber); padding: 1rem 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; }
+.why { font-size: 0.9rem; color: var(--accent-blue); font-style: italic; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+.detail-line { margin: 0.4rem 0; }
+.detail-list { list-style: none; padding-left: 0; margin: 0.4rem 0; }
+.detail-list li { position: relative; padding-left: 1.25rem; margin: 0.35rem 0; }
+.detail-list li::before { content: "—"; position: absolute; left: 0; color: var(--muted-foreground); }
+.detail-link { color: var(--accent-blue); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="/mx-brief/browse.html">&larr; Browse</a>
+  <header class="header">
+    <div class="eyebrow">Summary &middot; Nate Herk | AI Automation</div>
+    <h1>Claude Code Just Silently Released a Cheaper Mode</h1>
+    <div class="meta">
+      <span>Nate Herk | AI Automation · 2026-11-24 · 58,807 views</span>
+      &nbsp;&middot;&nbsp;
+      <a href="https://youtube.com/watch?v=80fV5H-Wc_4" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+    </div>
+  </header>
+  <img class="thumb" src="https://i.ytimg.com/vi/80fV5H-Wc_4/mqdefault.jpg" alt="">
+  <div class="tldr">Claude Code&#x27;s code mode: fewer tokens, slower runs</div>
+  <p class="why">Nate benchmarks code mode against normal Claude Code on four real jobs and gives the exact setup steps, so you can decide whether the token savings are worth the slowdown.</p>
+  <section class="card"><p class="detail-line"><strong>What it is:</strong> An experimental Claude Code setting where Claude writes one JavaScript program to make its tool calls, instead of calling tools one at a time. In Nate&#x27;s tests it cut input tokens by about 35% and ran slower.</p>
+<p class="detail-line"><strong>How it works:</strong></p>
+<ul class="detail-list">
+<li><strong>Normal mode:</strong> Claude reads a file, reads the result, decides the next step, then calls the next tool. Everything it reads stays in the chat context for the rest of the session.</li>
+<li><strong>Code mode:</strong> Claude writes a short JS program that runs many calls in parallel and chains results. Only the final answer comes back into context.</li>
+<li><strong>You don&#x27;t write or read the code.</strong> You prompt as usual. The name is misleading, since it isn&#x27;t a mode for coding.</li>
+<li><strong>His analogy:</strong> normal mode sends an assistant to the filing cabinet one folder at a time. Code mode hands them a note saying &quot;pull all 40 folders, total each customer, and come back with the top three.&quot;</li>
+<li><strong>Anthropic&#x27;s own precedent:</strong> engineers tested this idea outside Claude Code about a year ago. An agent pulled a meeting transcript from Google Drive and attached it to a Salesforce lead. Writing code instead of calling tools directly dropped that job from 150,000 tokens to about 2,000.</li>
+</ul>
+<p class="detail-line"><strong>How to turn it on:</strong></p>
+<ul class="detail-list">
+<li><strong>Where it works:</strong> Claude Code in the terminal only. It doesn&#x27;t work in the desktop app, the VS Code panel, or cloud sessions.</li>
+<li><strong>Version:</strong> 2.1.323 or later.</li>
+<li><strong>Account:</strong> a Claude subscription or a Console account.</li>
+<li><strong>Model:</strong> a current model such as Opus 5.5.</li>
+<li><strong>Switch:</strong> set the environment variable `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1`. Set it in the terminal before launching `claude`, or put it in your settings file.</li>
+<li><strong>Lazy route (his usual):</strong> paste the code mode docs link into Claude Code and tell it to set this up.</li>
+<li><strong>First launch:</strong> a screen warns that Claude will write JS to call its tools and that the feature is experimental. <strong>Claude in Chrome and computer use are off while code mode is on.</strong> Pick &quot;yes, turn on code mode&quot; and a &quot;code mode is on&quot; line appears at the top.</li>
+</ul>
+<p class="detail-line"><strong>His test setup:</strong></p>
+<ul class="detail-list">
+<li><strong>Four small-business jobs:</strong></li>
+<li>Find the top 3 customers across 40 days of order files.</li>
+<li>Find every broken link in a folder of 30 docs.</li>
+<li>Change a phone number and a price across a 25-page website.</li>
+<li>Ask one quick question about a single file.</li>
+<li><strong>Method:</strong> each job ran once with code mode off and once with it on, with the same model, effort and prompt. The orders job ran twice, which gives five comparisons.</li>
+</ul>
+<p class="detail-line"><strong>Results (transcript cuts off before the full breakdown):</strong></p>
+<ul class="detail-list">
+<li><strong>Accuracy:</strong> every run got the right answer in both modes, so code mode didn&#x27;t make Claude smarter or dumber.</li>
+<li><strong>Tokens:</strong> fewer input tokens in all five comparisons, about 35% fewer overall.</li>
+<li><strong>Where the savings come from:</strong> mostly the fixed per-message overhead, not job execution. In his setup that overhead is about 60k tokens per message with code mode off and about 38k with it on, because the full tool list is swapped for a single code tool.</li>
+<li><strong>Speed:</strong> noticeably slower. He says this is the trade-off.</li>
+<li><strong>Not covered:</strong> the cutoff means we don&#x27;t get his final take on when he&#x27;d use it in his own setup.</li>
+</ul>
+<p class="detail-line"><strong>Tools &amp; links:</strong></p>
+<ul class="detail-list">
+<li><a href="https://app.aiautomationsociety.ai/optin/ai-os/?utm_source=youtube&amp;utm_medium=organic&amp;utm_content=claude-code-code-mode&amp;sl=yt_claude-code-code-mode" target="_blank" rel="noopener" class="detail-link">FREE AI OS Template</a> — Nate&#x27;s free template, linked in the description.</li>
+<li><a href="https://www.skool.com/ai-automation-society-plus/about" target="_blank" rel="noopener" class="detail-link">AI Automation Society Plus (Skool)</a> — his paid community, pitched as &quot;how I built an AI agency from 0 to over $1M per year.&quot; The description link is truncated in the source and may carry tracking parameters.</li>
+<li><strong>Claude Code</strong> (terminal CLI, v2.1.323+) — the tool being tested. No repo is mentioned.</li>
+<li><strong>`CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1`</strong> — the env var that enables the feature.</li>
+<li><strong>Claude Code code mode docs</strong> — he says to paste this link into Claude Code to auto-configure. The URL isn&#x27;t given in the transcript, so look it up in the official Claude Code docs.</li>
+<li><strong>Anthropic&#x27;s engineering write-up on code execution with tools</strong> — the source of the 150k to 2k token example. Not linked in the transcript.</li>
+</ul>
+<p class="detail-line"><strong>Why it matters for you:</strong> The mechanism, version gate, env var and trade-offs are all concrete enough to replicate in five minutes. Test it on your own token-heavy, multi-file jobs where slower runs are fine. Skip it for anything interactive or anything that needs Chrome or computer use.</p></section>
+</div>
+</body>
+</html>
